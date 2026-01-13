@@ -27,7 +27,8 @@ This application is a reference implementation for the **Vidos Authorizer**, dem
     *   **Format**: `bun run format`.
 *   **API Client**: `openapi-fetch`.
     *   Schema: `src/api/authorizer.ts` (auto-generated).
-    *   Generation: `bun run generate-api`.
+    *   Generation with local OpenAPI spec: `bun run generate-api:local`.
+    *   Generation with production OpenAPI spec: `bun run generate-api:prod`.
 
 ## 3. Directory Structure & Path Aliases
 *   **Aliases**: Use `@/` to resolve to `./src/`.
@@ -55,7 +56,7 @@ src/
 4.  **API Integration**:
     *   **Pattern**: Use `createAuthorizerClient` from `@/api/client`.
     *   **Types**: Allow `openapi-fetch` to infer types from the generated schema.
-    *   **Regeneration**: Run `bun run generate-api` if API specs change.
+    *   **Regeneration**: Run `bun run generate-api:local` if the local API specs change.
 5.  **Clean Code**:
     *   Use double quotes and tabs (Biome defaults).
     *   Sort imports (Biome handles this).

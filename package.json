@@ -10,7 +10,8 @@
 		"lint": "biome lint",
 		"format": "biome check --write",
 		"preview": "vite preview",
-		"generate-api": "openapi-typescript https://vidos.id/docs/spec/openapi/authorizer.service.yaml --output src/api/authorizer.ts"
+		"generate-api:local": "openapi-typescript authorizer.service.yaml --output src/api/authorizer.ts",
+		"generate-api:prod": "openapi-typescript https://vidos.id/docs/spec/openapi/authorizer.service.yaml --output src/api/authorizer.ts"
 	},
 	"dependencies": {
 		"@radix-ui/react-slot": "^1.2.4",
