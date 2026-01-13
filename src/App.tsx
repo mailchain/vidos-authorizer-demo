@@ -1,20 +1,22 @@
-import { useMemo } from "react";
 import "./App.css";
-import { createAuthorizerClient } from "./api/client";
-import { Button } from "./components/ui/button";
-import { AUTHORIZER_API_URL, VIDOS_API_KEY } from "./tmp";
+import { AuthorizationFlow } from "./components/AuthorizationFlow";
+import { AuthorizationProvider } from "./context/AuthorizationContext";
 
 function App() {
-	const client = useMemo(
-		() => createAuthorizerClient(AUTHORIZER_API_URL, VIDOS_API_KEY),
-		[],
-	);
-
 	return (
-		<div>
-			<h1 className="text-3xl font-bold underline">Hello world!</h1>
-			<Button>Click me</Button>
-		</div>
+		<AuthorizationProvider>
+			<div className="min-h-screen bg-background p-4 md:p-8">
+				<header className="text-center mb-8">
+					<h1 className="text-2xl font-bold">Vidos Authorizer Example</h1>
+					<p className="text-muted-foreground">
+						OID4VP Authorization Request Demo
+					</p>
+				</header>
+				<main>
+					<AuthorizationFlow />
+				</main>
+			</div>
+		</AuthorizationProvider>
 	);
 }
 

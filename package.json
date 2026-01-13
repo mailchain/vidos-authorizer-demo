@@ -14,11 +14,14 @@
 		"generate-api:prod": "openapi-typescript https://vidos.id/docs/spec/openapi/authorizer.service.yaml --output src/api/authorizer.ts"
 	},
 	"dependencies": {
+		"@radix-ui/react-label": "^2.1.8",
+		"@radix-ui/react-select": "^2.2.6",
 		"@radix-ui/react-slot": "^1.2.4",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"lucide-react": "^0.562.0",
 		"openapi-fetch": "^0.15.0",
+		"qrcode.react": "^4.2.0",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
 		"tailwind-merge": "^3.4.0",
