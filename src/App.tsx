@@ -7,7 +7,13 @@ function App() {
 		<AuthorizationProvider>
 			<div className="min-h-screen bg-background p-4 md:p-8">
 				<header className="text-center mb-8">
-					<h1 className="text-2xl font-bold">Vidos Authorizer Example</h1>
+					<div className="flex items-center justify-center mb-4">
+						<img
+							src="/vidos-logo.svg"
+							alt="Vidos Logo"
+							className="h-16 w-auto"
+						/>
+					</div>
 					<p className="text-muted-foreground">
 						OID4VP Authorization Request Demo
 					</p>
