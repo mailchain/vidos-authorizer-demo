@@ -10,7 +10,7 @@ function App() {
 				<header className="text-center mb-8">
 					<div className="flex items-center justify-center mb-4">
 						<img
-							src="/vidos-logo.svg"
+							src="/vidos-authorizer-demo/vidos-logo.svg"
 							alt="Vidos Logo"
 							className="h-16 w-auto"
 						/>
