@@ -37,7 +37,15 @@ export function AuthorizerConfig() {
 				<p className="text-sm text-destructive">Please enter a valid URL</p>
 			)}
 			<p className="text-sm text-muted-foreground">
-				Enter your Vidos Gateway authorizer URL
+				Enter your Vidos Gateway authorizer URL.{" "}
+				<a
+					href="https://github.com/mailchain/vidos-authorizer-demo/blob/main/GATEWAY_SETUP.md"
+					target="_blank"
+					rel="noopener noreferrer"
+					className="text-primary underline hover:no-underline"
+				>
+					Setup guide
+				</a>
 			</p>
 		</div>
 	);
