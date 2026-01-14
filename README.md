@@ -1,4 +1,4 @@
-## Vidos Authorizer Example
+## Vidos Authorizer Demo
 
 This application is a reference implementation demonstrating how Vidos Authorizer can be used to verify credentials in OID4VP-based flows, as well as other credential verification scenarios.
 

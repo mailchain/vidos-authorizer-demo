@@ -199,9 +199,16 @@ export function CustomCredentialCaseDialog({
 						<p className="text-sm text-muted-foreground">
 							See{" "}
 							<code className="bg-muted px-1 py-0.5 rounded">
-								src/config/credential-cases.ts
+								<a
+									href="https://github.com/mailchain/vidos-authorizer-demo/blob/main/CUSTOM_CREDENTIAL_CASE.md"
+									target="_blank"
+									rel="noopener noreferrer"
+									className="text-primary hover:underline"
+								>
+									custom credential case documentation
+								</a>
 							</code>{" "}
-							for examples and the interface definition.
+							for definition and examples.
 						</p>
 					</div>
 

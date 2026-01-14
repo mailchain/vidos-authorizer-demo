@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Vidos Authorizer Example: React+TS+Vite app demonstrating OID4VP credential verification flows. Uses Bun, shadcn/ui, Tailwind v4, Biome.
+Vidos Authorizer Demo: React+TS+Vite app demonstrating OID4VP credential verification flows. Uses Bun, shadcn/ui, Tailwind v4, Biome.
 
 **Links:** https://vidos.id | https://dashboard.vidos.id | https://docs.vidos.id
 

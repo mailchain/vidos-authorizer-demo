@@ -44,13 +44,13 @@ export function CredentialRequestBuilder({
 		const format = formats[0];
 
 		if (format) {
-			// Auto-select all attributes for new format
+			// Start with no attributes selected
 			onChange({
 				...request,
 				documentType,
 				formatId: format.id,
 				format: format.format,
-				attributes: format.attributes.map((attr) => attr.id),
+				attributes: [],
 			});
 		}
 	};
@@ -59,12 +59,12 @@ export function CredentialRequestBuilder({
 		const formatDef = getFormatDefinitionById(formatId);
 		if (!formatDef) return;
 
-		// Auto-select all attributes for new format
+		// Start with no attributes selected
 		onChange({
 			...request,
 			formatId,
 			format: formatDef.format,
-			attributes: formatDef.attributes.map((attr) => attr.id),
+			attributes: [],
 		});
 	};
 

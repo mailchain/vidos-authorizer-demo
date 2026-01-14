@@ -1,4 +1,4 @@
-# Vidos Authorizer Example App - Specification
+# Vidos Authorizer Demo App - Specification
 
 ## Overview
 
