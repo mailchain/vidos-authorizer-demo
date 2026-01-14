@@ -1,4 +1,3 @@
-import { DevTools } from "@/components/DevTools";
 import { ProgressIndicator } from "@/components/ProgressIndicator";
 import { AuthorizationStage } from "@/components/stages/AuthorizationStage";
 import { CreateStage } from "@/components/stages/CreateStage";
@@ -15,8 +14,6 @@ export function AuthorizationFlow() {
 			{state.stage === "create" && <CreateStage />}
 			{state.stage === "authorization" && <AuthorizationStage />}
 			{state.stage === "result" && <ResultStage />}
-
-			<DevTools />
 		</div>
 	);
 }
