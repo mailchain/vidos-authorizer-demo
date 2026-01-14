@@ -2,235 +2,110 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Plan Mode
+
+- Make the plan extremely concise. Sacrifice grammar for the sake of concision.
+- At the end of each plan, give me a list of unresolved questions to answer, if any.
+
 ## Project Overview
 
-This is a Vidos Authorizer Example application that demonstrates how to integrate with the Vidos Authorizer service for verifying credentials in OID4VP (OpenID for Verifiable Presentations) flows. It's a React + TypeScript + Vite application using shadcn/ui for components.
+Vidos Authorizer Example: React+TS+Vite app demonstrating OID4VP credential verification flows. Uses Bun, shadcn/ui, Tailwind v4, Biome.
 
-**Key Links:**
+**Links:** https://vidos.id | https://dashboard.vidos.id | https://docs.vidos.id
 
-- Main site: https://vidos.id
-- Dashboard: https://dashboard.vidos.id
-- Documentation: https://docs.vidos.id
-
-## Prerequisites
-
-This project uses **Bun** as the package manager and runtime. Install from https://bun.sh
-
-## Common Commands
-
-### Development
+## Commands
 
 ```bash
-bun install           # Install dependencies
-bun run dev          # Start dev server with hot reload
+bun install              # deps
+bun run dev              # dev server
+bun run type-check       # TS check (no emit)
+bun run lint             # Biome lint
+bun run format           # Biome format+fix
+bun run build            # type-check + prod build
+bun run generate-api:prod # regen src/api/authorizer.ts from OpenAPI (NEVER edit manually)
 ```
-
-### Code Quality
-
-```bash
-bun run type-check   # Run TypeScript type checking (no emit)
-bun run lint         # Lint code with Biome
-bun run format       # Format and fix code with Biome
-```
-
-### Build & Preview
-
-```bash
-bun run build        # Type check and build for production
-bun run preview      # Preview production build locally
-```
-
-### API Types Generation
-
-```bash
-bun run generate-api:prod  # Generate types from production OpenAPI spec
-bun run generate-api:local # Generate types from local OpenAPI spec file
-```
-
-The production command fetches the latest OpenAPI spec from `https://vidos.id/docs/spec/openapi/authorizer.service.yaml` and generates types to `src/api/authorizer.ts`. **Do not manually edit the generated file.**
 
 ## Architecture
 
-### Tech Stack
+**Stack:** Vite 7, React 19, TS strict mode, Tailwind v4 Vite plugin (not PostCSS), shadcn/ui "new-york", openapi-fetch client
 
-- **Build Tool:** Vite 7 with React plugin
-- **Framework:** React 19 with TypeScript
-- **Styling:** Tailwind CSS v4 (using @tailwindcss/vite plugin)
-- **UI Components:** shadcn/ui (New York style)
-- **API Client:** openapi-fetch with auto-generated types from openapi-typescript
-- **Code Quality:** Biome (linting + formatting)
+**Code Style:** Tabs, double quotes (Biome enforced)
 
-### Code Style
+**Path Aliases:** `@/*` → `src/*` (via vite-tsconfig-paths)
 
-- **Indentation:** Tabs (enforced by Biome)
-- **Quotes:** Double quotes for JavaScript/TypeScript (enforced by Biome)
-- **Import Organization:** Auto-organized by Biome assist actions
+**API Client:** OpenAPI spec → `openapi-typescript` → `src/api/authorizer.ts` (auto-generated) → `createAuthorizerClient()` in `src/api/client.ts` creates typed fetch client
 
-### Project Structure
+### Three-Stage Flow (AuthorizationContext.tsx)
 
-```
-src/
-├── api/
-│   ├── authorizer.ts          # Auto-generated OpenAPI types (DO NOT EDIT)
-│   └── client.ts              # Authorizer API client factory
-├── components/
-│   ├── ui/                    # shadcn/ui components
-│   ├── stages/                # Three-stage flow components
-│   │   ├── CreateStage/       # Stage 1: Configure authorization
-│   │   ├── AuthorizationStage/# Stage 2: Present QR/DC API button
-│   │   └── ResultStage/       # Stage 3: Display verification results
-│   ├── AuthorizationFlow.tsx  # Main flow orchestrator
-│   ├── ProgressIndicator.tsx  # Stage progress visualization
-│   └── JsonCollapsible.tsx    # Collapsible JSON display
-├── context/
-│   └── AuthorizationContext.tsx # Global app state management
-├── hooks/
-│   ├── useCreateAuthorization.ts # Create authorization requests
-│   ├── useAuthorizationStatus.ts # Poll authorization status
-│   └── usePolicyResponse.ts      # Fetch policy evaluation results
-├── types/
-│   └── app.ts                 # Core TypeScript types and interfaces
-├── utils/
-│   ├── queryBuilder.ts        # Build DCQL queries
-│   ├── requestBuilder.ts      # Build authorization request bodies
-│   ├── dcapi.ts               # Digital Credentials API utilities
-│   └── validation.ts          # Input validation helpers
-├── config/
-│   └── credential-cases.ts    # Credential definitions (PID, MDL, etc.)
-├── lib/
-│   └── utils.ts               # Utility functions (cn helper, etc.)
-├── App.tsx                    # Main application component
-└── main.tsx                   # React entry point
-```
-
-### Path Aliases
-
-The project uses TypeScript path aliases configured in `tsconfig.json`:
-
-- `@/*` maps to `src/*`
-- Import components as `@/components/ui/button`
-- Import utils as `@/lib/utils`
-- Resolved at build time via `vite-tsconfig-paths` plugin
-
-### API Client Architecture
-
-The application uses a type-safe API client pattern:
-
-1. **Type Generation:** OpenAPI spec → TypeScript types via `openapi-typescript`
-2. **Client Creation:** `createAuthorizerClient()` in `src/api/client.ts` creates a typed `openapi-fetch` client
-3. **Usage:** The client is instantiated with base URL and API key, providing full IntelliSense for all Vidos Authorizer endpoints
-
-The client automatically handles:
-
-- Authorization header with Bearer token
-- Type-safe request/response bodies
-- Path parameters and query strings
-
-### Component System
-
-Uses shadcn/ui with:
-
-- **Style:** "new-york" variant
-- **Icon Library:** lucide-react
-- **Utilities:** `cn()` helper from `class-variance-authority` + `tailwind-merge`
-- **Animations:** tw-animate-css for Tailwind animations
-
-To add new shadcn/ui components, use the shadcn CLI (configuration in `components.json`).
-
-## Application Architecture
-
-### Three-Stage Flow Pattern
-
-The app implements a wizard-style flow with three distinct stages managed by `AuthorizationContext`:
+Wizard-style React Context + useReducer managing:
 
 1. **Create Stage** (`stage: "create"`)
-   - Configure authorizer URL (persisted to localStorage)
-   - Build multiple credential requests with attribute selection
-   - Configure response mode (direct_post, direct_post.jwt, dc_api, dc_api.jwt)
-   - Generates DCQL query from credential requests
+
+   - Configure authorizer URL (localStorage persisted)
+   - Build credential requests array (multiple allowed)
+   - Select response mode: `direct_post`, `direct_post.jwt`, `dc_api`, `dc_api.jwt`
+   - Generate DCQL query via `queryBuilder.ts`
 
 2. **Authorization Stage** (`stage: "authorization"`)
-   - Displays QR code with `openid4vp://` URI for standard flows
-   - **OR** presents "Get Credentials" button for DC API flows
-   - Polls authorization status every 2 seconds
-   - Transitions to Result stage when status becomes terminal
+
+   - Standard flows: QR code with `openid4vp://` URI
+   - DC API flows: "Get Credentials" button invoking `navigator.credentials.get()`
+   - Polls status every 2s via `useAuthorizationStatus`
+   - Transitions on terminal status
 
 3. **Result Stage** (`stage: "result"`)
-   - Shows authorization outcome (authorized/rejected/expired/error)
-   - Displays policy evaluation results with credential attributes
-   - Provides structured view of which attributes were verified
+   - Shows outcome: authorized/rejected/expired/error
+   - Displays policy evaluation results fetched by `usePolicyResponse`
 
-### State Management Pattern
+**State Properties:**
 
-**Global State:** React Context + useReducer pattern in `AuthorizationContext.tsx`
+- `stage`, `credentialRequests`, `responseModeConfig`, `authorizationId`
+- `authorizeUrl` (null for DC API), `digitalCredentialGetRequest` (null for standard)
+- `policyResponse`, `authorizationStatus`
 
-Key state properties:
-- `stage`: Current flow stage
-- `credentialRequests`: Array of credential requests with unique IDs
-- `responseModeConfig`: Response mode and DC API protocol settings
-- `authorizationId`: Created authorization ID
-- `authorizeUrl`: OID4VP URL (null for DC API flows)
-- `digitalCredentialGetRequest`: DC API request object (null for standard flows)
-- `policyResponse`: Verification results from authorizer
-- `authorizationStatus`: Lifecycle status (created → pending → authorized/rejected/expired/error)
+### Response Modes
 
-### Response Mode Architecture
+**Standard OID4VP:** `direct_post`, `direct_post.jwt` (posted to authorizer)
+**DC API:** `dc_api`, `dc_api.jwt` (browser native flow)
 
-The application supports multiple response modes for credential presentation:
+DC API requires:
 
-**Standard OID4VP Modes:**
-- `direct_post`: Response posted directly to authorizer
-- `direct_post.jwt`: Signed JWT response posted to authorizer
+- `protocol`: `openid4vp-v1-unsigned` or `openid4vp-v1-signed`
+- `expectedOrigins` array (signed only)
+- Browser support check: `checkDCAPISupport()` in `dcapi.ts`
 
-**Digital Credentials API (DC API) Modes:**
-- `dc_api`: Browser native credential flow (unsigned)
-- `dc_api.jwt`: Browser native credential flow (signed)
-
-DC API modes require:
-- `protocol`: Either `openid4vp-v1-unsigned` or `openid4vp-v1-signed`
-- `expectedOrigins`: Array of allowed origins (for signed protocol only)
-- Browser support check via `navigator.credentials.get()`
-
-The `requestBuilder.ts` utility builds appropriate request bodies based on the selected mode.
+`requestBuilder.ts` constructs request bodies based on mode.
 
 ### DCQL Query Building
 
-Credential requests are converted to DCQL (Digital Credentials Query Language) format via `queryBuilder.ts`. The query structure varies by credential format:
+`queryBuilder.ts` converts credential requests to DCQL:
 
-**SD-JWT credentials:** Use `vct` (verifiable credential type)
-**mDoc credentials:** Use `doctype` and `namespace`
-
-Multiple credential requests result in multiple entries in the DCQL query array.
+- **SD-JWT:** uses `vct` (verifiable credential type)
+- **mDoc:** uses `doctype` + `namespace`
 
 ### Credential Definitions
 
-`src/config/credential-cases.ts` defines supported credential types:
-- **PID:** Person Identification Data (supports both dc+sd-jwt and mso_mdoc)
-- **MDL:** Mobile Driving License (mso_mdoc only)
-- **Photo ID:** Generic photo identification (both formats)
+`src/config/credential-cases.ts` defines PID, MDL, Photo ID with:
 
-Each credential case includes:
-- Document type and format mappings
-- Available attributes with display names
-- Format-specific attribute paths (mDoc vs SD-JWT paths differ)
-- Credential type identifiers (vct for SD-JWT, doctype/namespace for mDoc)
+- Format mappings (dc+sd-jwt / mso_mdoc)
+- Attribute definitions + display names
+- Format-specific paths (mDoc vs SD-JWT differ)
+- Type identifiers (vct / doctype+namespace)
 
-## TypeScript Configuration
+## Key Files
 
-- **Strict mode enabled** with additional strictness:
-  - `noUnusedLocals`, `noUnusedParameters`
-  - `noFallthroughCasesInSwitch`
-  - `noUncheckedSideEffectImports`
-  - `erasableSyntaxOnly` (for type-only imports)
-- **Target:** ES2022 with DOM types
-- **Module Resolution:** bundler mode with Vite
-- Uses `vite-tsconfig-paths` plugin for path alias resolution
+- `AuthorizationContext.tsx`: global state, stage transitions
+- `src/hooks/useCreateAuthorization.ts`: creates auth requests
+- `src/hooks/useAuthorizationStatus.ts`: polls status
+- `src/hooks/usePolicyResponse.ts`: fetches verification results
+- `src/utils/requestBuilder.ts`: builds request bodies per response mode
+- `src/utils/queryBuilder.ts`: builds DCQL from credential requests
+- `src/utils/dcapi.ts`: DC API support detection + request building
+- `src/config/credential-cases.ts`: credential type definitions
 
-## Important Notes
+## Critical Notes
 
-- When regenerating API types with `bun run generate-api:prod`, the entire `src/api/authorizer.ts` file is replaced
-- Biome is configured to work with Tailwind directives in CSS files
-- The project uses Vite 7's new features and Tailwind v4's Vite plugin (not PostCSS)
-- Authorization URL is persisted to localStorage for convenience across sessions
-- The tsconfig files `tsconfig.app.json` and `tsconfig.node.json` have been removed; all configuration is now in `tsconfig.json`
-- DC API functionality requires HTTPS context and modern browser support (check via `checkDCAPISupport()`)
+- `src/api/authorizer.ts` auto-generated: NEVER manually edit
+- Single `tsconfig.json` (app+node configs removed)
+- DC API needs HTTPS + modern browser
+- Authorization URL persisted to localStorage
