@@ -78,10 +78,8 @@ export interface AppState {
 	// DC API request object (alternative to authorizeUrl)
 	digitalCredentialGetRequest: unknown | null;
 
-	authorizationStatus: AuthorizationStatus | null;
 	expiresAt: string | null;
 	error: { message: string; details?: string } | null;
-	isLoading: boolean;
 
 	// Policy response data
 	policyResponse: PolicyResponse | null;
@@ -90,38 +88,3 @@ export interface AppState {
 	lastResponse: object | null;
 	showPreview: boolean;
 }
-
-export type AppAction =
-	| { type: "SET_AUTHORIZER_URL"; payload: string }
-	// Multiple credential management
-	| { type: "ADD_CREDENTIAL_REQUEST"; payload: CredentialRequestWithId }
-	| {
-			type: "UPDATE_CREDENTIAL_REQUEST";
-			payload: { id: string; request: Partial<CredentialRequestWithId> };
-	  }
-	| { type: "REMOVE_CREDENTIAL_REQUEST"; payload: string } // ID to remove
-	| { type: "SET_RESPONSE_MODE_CONFIG"; payload: ResponseModeConfig }
-	| { type: "CREATE_AUTHORIZATION_START" }
-	| {
-			type: "CREATE_AUTHORIZATION_SUCCESS";
-			payload: {
-				authorizationId: string;
-				authorizeUrl?: string; // Optional for DC API modes
-				digitalCredentialGetRequest?: unknown; // For DC API modes
-				expiresAt: string;
-			};
-	  }
-	| {
-			type: "CREATE_AUTHORIZATION_ERROR";
-			payload: { message: string; details?: string };
-	  }
-	| { type: "UPDATE_STATUS"; payload: AuthorizationStatus }
-	| { type: "SET_ERROR"; payload: { message: string; details?: string } | null }
-	// Policy response
-	| { type: "SET_POLICY_RESPONSE"; payload: PolicyResponse }
-	| { type: "START_OVER" }
-	| { type: "SET_LAST_REQUEST"; payload: object }
-	| { type: "SET_LAST_RESPONSE"; payload: object }
-	| { type: "SHOW_PREVIEW" }
-	| { type: "HIDE_PREVIEW" }
-	| { type: "GO_BACK" };

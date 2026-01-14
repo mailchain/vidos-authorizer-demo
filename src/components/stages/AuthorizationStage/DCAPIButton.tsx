@@ -1,43 +1,55 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { createAuthorizerClient } from "@/api/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { useAuthorization } from "@/context/AuthorizationContext";
+import { authorizationKeys } from "@/queries/keys";
+import { useFlowStore } from "@/stores/useFlowStore";
 import type { AuthorizationStatus } from "@/types/app";
 import { checkDCAPISupport, invokeDCAPI } from "@/utils/dcapi";
 
 export function DCAPIButton() {
-	const { state, dispatch } = useAuthorization();
+	const digitalCredentialGetRequest = useFlowStore(
+		(state) => state.digitalCredentialGetRequest,
+	);
+	const authorizationId = useFlowStore((state) => state.authorizationId);
+	const authorizerUrl = useFlowStore((state) => state.authorizerUrl);
+	const responseModeConfig = useFlowStore((state) => state.responseModeConfig);
+	const setError = useFlowStore((state) => state.setError);
+	const error = useFlowStore((state) => state.error);
+
+	const queryClient = useQueryClient();
 	const [isInvoking, setIsInvoking] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+	const [localError, setLocalError] = useState<string | null>(null);
 
 	const handleInvoke = async () => {
-		if (!state.digitalCredentialGetRequest || !state.authorizationId) {
-			setError("Missing DC API request data");
+		if (!digitalCredentialGetRequest || !authorizationId) {
+			setLocalError("Missing DC API request data");
 			return;
 		}
 
 		// Check browser support
 		const support = checkDCAPISupport();
 		if (!support.available) {
-			setError(support.reason || "DC API not supported");
+			setLocalError(support.reason || "DC API not supported");
 			return;
 		}
 
 		setIsInvoking(true);
+		setLocalError(null);
 		setError(null);
 
 		try {
 			// Invoke DC API
-			const credential = await invokeDCAPI(state.digitalCredentialGetRequest);
+			const credential = await invokeDCAPI(digitalCredentialGetRequest);
 
 			// Submit response to appropriate endpoint
-			const client = createAuthorizerClient(state.authorizerUrl);
+			const client = createAuthorizerClient(authorizerUrl);
 			const endpoint =
-				state.responseModeConfig.mode === "dc_api"
-					? `/openid4/vp/v1_0/authorizations/${state.authorizationId}/dc_api`
-					: `/openid4/vp/v1_0/authorizations/${state.authorizationId}/dc_api.jwt`;
+				responseModeConfig.mode === "dc_api"
+					? `/openid4/vp/v1_0/authorizations/${authorizationId}/dc_api`
+					: `/openid4/vp/v1_0/authorizations/${authorizationId}/dc_api.jwt`;
 
 			const { data, error: submitError } = await client.POST(endpoint as any, {
 				body: {
@@ -47,19 +59,24 @@ export function DCAPIButton() {
 			});
 
 			if (submitError) {
-				setError(submitError.message || "Failed to submit DC API response");
+				setLocalError(
+					submitError.message || "Failed to submit DC API response",
+				);
 				return;
 			}
 
 			// DC API endpoints return status directly
 			if (data && typeof data === "object" && "status" in data) {
-				dispatch({
-					type: "UPDATE_STATUS",
-					payload: (data as { status: AuthorizationStatus }).status,
+				// Update status in React Query cache
+				queryClient.setQueryData(authorizationKeys.status(authorizationId), {
+					status: (data as { status: AuthorizationStatus }).status,
 				});
 			}
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Failed to invoke DC API");
+			const errorMessage =
+				err instanceof Error ? err.message : "Failed to invoke DC API";
+			setLocalError(errorMessage);
+			setError({ message: errorMessage });
 		} finally {
 			setIsInvoking(false);
 		}
@@ -85,9 +102,9 @@ export function DCAPIButton() {
 				</Button>
 			</div>
 
-			{error && (
+			{(localError || error) && (
 				<Alert variant="destructive">
-					<AlertDescription>{error}</AlertDescription>
+					<AlertDescription>{localError || error?.message}</AlertDescription>
 				</Alert>
 			)}
 		</div>

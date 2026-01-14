@@ -2,18 +2,20 @@ import { ProgressIndicator } from "@/components/ProgressIndicator";
 import { AuthorizationStage } from "@/components/stages/AuthorizationStage";
 import { CreateStage } from "@/components/stages/CreateStage";
 import { ResultStage } from "@/components/stages/ResultStage";
-import { useAuthorization } from "@/context/AuthorizationContext";
+import { useFlowTransitions } from "@/hooks/useFlowTransitions";
+import { useFlowStore } from "@/stores/useFlowStore";
 
 export function AuthorizationFlow() {
-	const { state } = useAuthorization();
+	const stage = useFlowStore((state) => state.stage);
+	useFlowTransitions(); // Enable automatic stage transitions
 
 	return (
 		<div className="w-full max-w-lg mx-auto">
-			<ProgressIndicator currentStage={state.stage} />
+			<ProgressIndicator currentStage={stage} />
 
-			{state.stage === "create" && <CreateStage />}
-			{state.stage === "authorization" && <AuthorizationStage />}
-			{state.stage === "result" && <ResultStage />}
+			{stage === "create" && <CreateStage />}
+			{stage === "authorization" && <AuthorizationStage />}
+			{stage === "result" && <ResultStage />}
 		</div>
 	);
 }

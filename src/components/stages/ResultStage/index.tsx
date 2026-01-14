@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -13,10 +14,11 @@ import {
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { useAuthorization } from "@/context/AuthorizationContext";
-import { usePolicyResponse } from "@/hooks/usePolicyResponse";
 import { cn } from "@/lib/utils";
-import type { AuthorizationStatus } from "@/types/app";
+import { useAuthorizationStatusQuery } from "@/queries/useAuthorizationStatusQuery";
+import { usePolicyResponseQuery } from "@/queries/usePolicyResponseQuery";
+import { useFlowStore } from "@/stores/useFlowStore";
+import type { AuthorizationStatus, PolicyResult } from "@/types/app";
 import { PolicyResults } from "./PolicyResults";
 
 const statusConfig: Record<
@@ -56,19 +58,22 @@ const statusConfig: Record<
 };
 
 export function ResultStage() {
-	const { state, dispatch } = useAuthorization();
+	const startOver = useFlowStore((state) => state.startOver);
+	const error = useFlowStore((state) => state.error);
+	const queryClient = useQueryClient();
 
-	// Fetch policy response if authorized
-	usePolicyResponse();
+	// Get status and policy from React Query
+	const { data: statusData } = useAuthorizationStatusQuery();
+	const { data: policyResponse, error: policyError } = usePolicyResponseQuery();
 
 	const handleStartOver = () => {
-		dispatch({ type: "START_OVER" });
+		startOver();
+		queryClient.clear(); // Clear all React Query cache
 	};
 
-	const status = state.authorizationStatus;
+	const status = statusData?.status;
 	const config = status ? statusConfig[status] : null;
-	const hasPolicyResults =
-		state.policyResponse && state.policyResponse.data.length > 0;
+	const hasPolicyResults = policyResponse && policyResponse.data.length > 0;
 
 	return (
 		<Card>
@@ -104,22 +109,22 @@ export function ResultStage() {
 					</Alert>
 				)}
 
-				{state.error && (
+				{(error || policyError) && (
 					<Alert variant="destructive">
 						<AlertDescription>
-							{state.error.message}
-							{state.error.details && (
+							{error?.message || policyError?.message}
+							{error?.details && (
 								<span className="block mt-1 text-xs opacity-70">
-									{state.error.details}
+									{error.details}
 								</span>
 							)}
 						</AlertDescription>
 					</Alert>
 				)}
 
-				{hasPolicyResults && state.policyResponse && (
+				{hasPolicyResults && policyResponse && (
 					<>
-						<PolicyResults results={state.policyResponse.data} />
+						<PolicyResults results={policyResponse.data as PolicyResult[]} />
 
 						<Collapsible>
 							<CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground w-full">
@@ -128,7 +133,7 @@ export function ResultStage() {
 							</CollapsibleTrigger>
 							<CollapsibleContent className="mt-2">
 								<pre className="p-4 bg-muted rounded-md text-xs overflow-auto max-h-96">
-									{JSON.stringify(state.policyResponse, null, 2)}
+									{JSON.stringify(policyResponse, null, 2)}
 								</pre>
 							</CollapsibleContent>
 						</Collapsible>

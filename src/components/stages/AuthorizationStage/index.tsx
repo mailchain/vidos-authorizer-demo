@@ -9,15 +9,24 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAuthorization } from "@/context/AuthorizationContext";
-import { useAuthorizationStatus } from "@/hooks/useAuthorizationStatus";
+import { useAuthorizationStatusQuery } from "@/queries/useAuthorizationStatusQuery";
+import { useFlowStore } from "@/stores/useFlowStore";
 import { AuthorizeLink } from "./AuthorizeLink";
 import { DCAPIButton } from "./DCAPIButton";
 import { QRCodeDisplay } from "./QRCodeDisplay";
 
 export function AuthorizationStage() {
-	const { state, dispatch } = useAuthorization();
-	const { status } = useAuthorizationStatus();
+	const digitalCredentialGetRequest = useFlowStore(
+		(state) => state.digitalCredentialGetRequest,
+	);
+	const authorizeUrl = useFlowStore((state) => state.authorizeUrl);
+	const lastResponse = useFlowStore((state) => state.lastResponse);
+	const error = useFlowStore((state) => state.error);
+	const expiresAt = useFlowStore((state) => state.expiresAt);
+	const goBack = useFlowStore((state) => state.goBack);
+
+	const { data: statusData, error: statusError } =
+		useAuthorizationStatusQuery();
 
 	const statusLabels: Record<string, string> = {
 		created: "Waiting for wallet...",
@@ -28,8 +37,8 @@ export function AuthorizationStage() {
 		expired: "Request expired",
 	};
 
-	const isDCAPI = state.digitalCredentialGetRequest !== null;
-	const isDirectPost = state.authorizeUrl !== null;
+	const isDCAPI = digitalCredentialGetRequest !== null;
+	const isDirectPost = authorizeUrl !== null;
 
 	return (
 		<Card>
@@ -44,10 +53,10 @@ export function AuthorizationStage() {
 			<CardContent className="space-y-6">
 				{isDCAPI ? (
 					<DCAPIButton />
-				) : isDirectPost && state.authorizeUrl ? (
+				) : isDirectPost && authorizeUrl ? (
 					<>
-						<QRCodeDisplay url={state.authorizeUrl} />
-						<AuthorizeLink url={state.authorizeUrl} />
+						<QRCodeDisplay url={authorizeUrl} />
+						<AuthorizeLink url={authorizeUrl} />
 					</>
 				) : (
 					<div className="flex justify-center">
@@ -55,10 +64,10 @@ export function AuthorizationStage() {
 					</div>
 				)}
 
-				{state.lastResponse && (
+				{lastResponse && (
 					<JsonCollapsible
 						title="Authorization Response"
-						data={state.lastResponse}
+						data={lastResponse}
 						defaultOpen={false}
 					/>
 				)}
@@ -66,27 +75,27 @@ export function AuthorizationStage() {
 				<div className="flex items-center justify-center gap-2">
 					<div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
 					<span className="text-sm text-muted-foreground">
-						{status ? statusLabels[status] || status : "Checking status..."}
+						{statusData?.status
+							? statusLabels[statusData.status] || statusData.status
+							: "Checking status..."}
 					</span>
 				</div>
 
-				{state.error && (
+				{(error || statusError) && (
 					<Alert variant="destructive">
-						<AlertDescription>{state.error.message}</AlertDescription>
+						<AlertDescription>
+							{error?.message || statusError?.message}
+						</AlertDescription>
 					</Alert>
 				)}
 
-				{state.expiresAt && (
+				{expiresAt && (
 					<p className="text-xs text-center text-muted-foreground">
-						Request expires at {new Date(state.expiresAt).toLocaleTimeString()}
+						Request expires at {new Date(expiresAt).toLocaleTimeString()}
 					</p>
 				)}
 
-				<Button
-					variant="outline"
-					onClick={() => dispatch({ type: "GO_BACK" })}
-					className="w-full"
-				>
+				<Button variant="outline" onClick={goBack} className="w-full">
 					Go Back
 				</Button>
 			</CardContent>

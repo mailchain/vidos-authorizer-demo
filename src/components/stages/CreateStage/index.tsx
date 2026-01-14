@@ -9,8 +9,8 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useAuthorization } from "@/context/AuthorizationContext";
-import { useCreateAuthorization } from "@/hooks/useCreateAuthorization";
+import { useCreateAuthorizationMutation } from "@/queries/useCreateAuthorizationMutation";
+import { useFlowStore } from "@/stores/useFlowStore";
 import { buildAuthorizationRequestBody } from "@/utils/requestBuilder";
 import { validateAuthorizationRequest } from "@/utils/validation";
 import { AuthorizerConfig } from "./AuthorizerConfig";
@@ -18,35 +18,43 @@ import { CredentialRequestList } from "./CredentialRequestList";
 import { ResponseModeSelector } from "./ResponseModeSelector";
 
 export function CreateStage() {
-	const { state, dispatch } = useAuthorization();
-	const { createAuthorization, isLoading } = useCreateAuthorization();
+	const authorizerUrl = useFlowStore((state) => state.authorizerUrl);
+	const credentialRequests = useFlowStore((state) => state.credentialRequests);
+	const responseModeConfig = useFlowStore((state) => state.responseModeConfig);
+	const showPreview = useFlowStore((state) => state.showPreview);
+	const lastRequest = useFlowStore((state) => state.lastRequest);
+	const error = useFlowStore((state) => state.error);
+	const setShowPreview = useFlowStore((state) => state.setShowPreview);
+	const setLastRequest = useFlowStore((state) => state.setLastRequest);
+
+	const mutation = useCreateAuthorizationMutation();
 
 	const validation = validateAuthorizationRequest(
-		state.authorizerUrl,
-		state.credentialRequests,
-		state.responseModeConfig,
+		authorizerUrl,
+		credentialRequests,
+		responseModeConfig,
 	);
 
 	const handleShowPreview = () => {
-		if (state.credentialRequests.length === 0) return;
+		if (credentialRequests.length === 0) return;
 		const requestBody = buildAuthorizationRequestBody(
-			state.credentialRequests,
-			state.responseModeConfig,
+			credentialRequests,
+			responseModeConfig,
 		);
-		dispatch({ type: "SET_LAST_REQUEST", payload: requestBody });
-		dispatch({ type: "SHOW_PREVIEW" });
+		setLastRequest(requestBody);
+		setShowPreview(true);
 	};
 
-	const handleConfirmAndSend = async () => {
-		await createAuthorization();
-		dispatch({ type: "HIDE_PREVIEW" });
+	const handleConfirmAndSend = () => {
+		mutation.mutate({ authorizerUrl, credentialRequests, responseModeConfig });
+		setShowPreview(false);
 	};
 
-	const handleCreateDirect = async () => {
-		await createAuthorization();
+	const handleCreateDirect = () => {
+		mutation.mutate({ authorizerUrl, credentialRequests, responseModeConfig });
 	};
 
-	if (state.showPreview) {
+	if (showPreview) {
 		return (
 			<Card>
 				<CardHeader>
@@ -58,17 +66,17 @@ export function CreateStage() {
 				<CardContent className="space-y-6">
 					<JsonCollapsible
 						title="Authorization Request"
-						data={state.lastRequest}
+						data={lastRequest}
 						defaultOpen={true}
 					/>
 
-					{state.error && (
+					{(error || mutation.error) && (
 						<Alert variant="destructive">
 							<AlertDescription>
-								{state.error.message}
-								{state.error.details && (
+								{error?.message || mutation.error?.message}
+								{error?.details && (
 									<span className="block mt-1 text-xs opacity-70">
-										{state.error.details}
+										{error.details}
 									</span>
 								)}
 							</AlertDescription>
@@ -78,18 +86,18 @@ export function CreateStage() {
 					<div className="flex gap-3">
 						<Button
 							variant="outline"
-							onClick={() => dispatch({ type: "HIDE_PREVIEW" })}
-							disabled={isLoading}
+							onClick={() => setShowPreview(false)}
+							disabled={mutation.isPending}
 							className="flex-1"
 						>
 							Go Back
 						</Button>
 						<Button
 							onClick={handleConfirmAndSend}
-							disabled={isLoading}
+							disabled={mutation.isPending}
 							className="flex-1"
 						>
-							{isLoading ? "Sending..." : "Confirm & Send"}
+							{mutation.isPending ? "Sending..." : "Confirm & Send"}
 						</Button>
 					</div>
 				</CardContent>
@@ -133,13 +141,13 @@ export function CreateStage() {
 					</Alert>
 				)}
 
-				{state.error && (
+				{(error || mutation.error) && (
 					<Alert variant="destructive">
 						<AlertDescription>
-							{state.error.message}
-							{state.error.details && (
+							{error?.message || mutation.error?.message}
+							{error?.details && (
 								<span className="block mt-1 text-xs opacity-70">
-									{state.error.details}
+									{error.details}
 								</span>
 							)}
 						</AlertDescription>
@@ -149,15 +157,15 @@ export function CreateStage() {
 				<div className="flex gap-3">
 					<Button
 						onClick={handleCreateDirect}
-						disabled={!validation.valid || isLoading}
+						disabled={!validation.valid || mutation.isPending}
 						className="flex-1"
 					>
-						{isLoading ? "Creating..." : "Create Authorization"}
+						{mutation.isPending ? "Creating..." : "Create Authorization"}
 					</Button>
 					<Button
 						variant="outline"
 						onClick={handleShowPreview}
-						disabled={!validation.valid || isLoading}
+						disabled={!validation.valid || mutation.isPending}
 						className="flex-1"
 					>
 						Preview Request

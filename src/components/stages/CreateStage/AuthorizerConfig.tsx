@@ -1,12 +1,13 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuthorization } from "@/context/AuthorizationContext";
+import { useFlowStore } from "@/stores/useFlowStore";
 
 export function AuthorizerConfig() {
-	const { state, dispatch } = useAuthorization();
+	const authorizerUrl = useFlowStore((state) => state.authorizerUrl);
+	const setAuthorizerUrl = useFlowStore((state) => state.setAuthorizerUrl);
 
 	const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		dispatch({ type: "SET_AUTHORIZER_URL", payload: e.target.value });
+		setAuthorizerUrl(e.target.value);
 	};
 
 	const isValidUrl = (url: string) => {
@@ -19,7 +20,7 @@ export function AuthorizerConfig() {
 		}
 	};
 
-	const showError = state.authorizerUrl && !isValidUrl(state.authorizerUrl);
+	const showError = authorizerUrl && !isValidUrl(authorizerUrl);
 
 	return (
 		<div className="space-y-2">
@@ -28,7 +29,7 @@ export function AuthorizerConfig() {
 				id="authorizer-url"
 				type="url"
 				placeholder="https://<my-gateway>.gateway.service.eu.vidos.dev/<my-authorizer>"
-				value={state.authorizerUrl}
+				value={authorizerUrl}
 				onChange={handleUrlChange}
 				className={showError ? "border-destructive" : ""}
 			/>

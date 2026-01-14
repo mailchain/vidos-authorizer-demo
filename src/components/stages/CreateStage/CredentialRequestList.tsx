@@ -11,13 +11,21 @@ import {
 	getCredentialCase,
 	getFormatDefinitionById,
 } from "@/config/credential-cases";
-import { useAuthorization } from "@/context/AuthorizationContext";
+import { useFlowStore } from "@/stores/useFlowStore";
 import type { CredentialRequestWithId } from "@/types/app";
 import { CredentialRequestBuilder } from "./CredentialRequestBuilder";
 
 export function CredentialRequestList() {
-	const { state, dispatch } = useAuthorization();
-	const requests = state.credentialRequests;
+	const requests = useFlowStore((state) => state.credentialRequests);
+	const addCredentialRequest = useFlowStore(
+		(state) => state.addCredentialRequest,
+	);
+	const updateCredentialRequest = useFlowStore(
+		(state) => state.updateCredentialRequest,
+	);
+	const removeCredentialRequest = useFlowStore(
+		(state) => state.removeCredentialRequest,
+	);
 
 	const handleAdd = () => {
 		const newRequest: CredentialRequestWithId = {
@@ -28,18 +36,15 @@ export function CredentialRequestList() {
 			attributes: [], // Will be auto-filled when format is selected
 		};
 
-		dispatch({ type: "ADD_CREDENTIAL_REQUEST", payload: newRequest });
+		addCredentialRequest(newRequest);
 	};
 
 	const handleUpdate = (id: string, request: CredentialRequestWithId) => {
-		dispatch({
-			type: "UPDATE_CREDENTIAL_REQUEST",
-			payload: { id, request },
-		});
+		updateCredentialRequest(id, request);
 	};
 
 	const handleRemove = (id: string) => {
-		dispatch({ type: "REMOVE_CREDENTIAL_REQUEST", payload: id });
+		removeCredentialRequest(id);
 	};
 
 	const getDocumentTypeAbbrev = (displayName: string): string => {

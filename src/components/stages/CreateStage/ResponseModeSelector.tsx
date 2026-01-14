@@ -1,36 +1,32 @@
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useAuthorization } from "@/context/AuthorizationContext";
+import { useFlowStore } from "@/stores/useFlowStore";
 import type { DCAPIProtocol, ResponseMode } from "@/types/app";
 import { checkDCAPISupport } from "@/utils/dcapi";
 
 export function ResponseModeSelector() {
-	const { state, dispatch } = useAuthorization();
-	const config = state.responseModeConfig;
+	const config = useFlowStore((state) => state.responseModeConfig);
+	const setResponseModeConfig = useFlowStore(
+		(state) => state.setResponseModeConfig,
+	);
 	const dcApiSupported = checkDCAPISupport().available;
 
 	const handleModeChange = (mode: ResponseMode) => {
-		dispatch({
-			type: "SET_RESPONSE_MODE_CONFIG",
-			payload: {
-				mode,
-				// Reset DC API specific fields if switching away
-				...(mode.startsWith("dc_api")
-					? {
-							dcApiProtocol: "openid4vp-v1-unsigned" as DCAPIProtocol,
-						}
-					: {}),
-			},
+		setResponseModeConfig({
+			mode,
+			// Reset DC API specific fields if switching away
+			...(mode.startsWith("dc_api")
+				? {
+						dcApiProtocol: "openid4vp-v1-unsigned" as DCAPIProtocol,
+					}
+				: {}),
 		});
 	};
 
 	const handleProtocolChange = (protocol: DCAPIProtocol) => {
-		dispatch({
-			type: "SET_RESPONSE_MODE_CONFIG",
-			payload: {
-				...config,
-				dcApiProtocol: protocol,
-			},
+		setResponseModeConfig({
+			...config,
+			dcApiProtocol: protocol,
 		});
 	};
 
@@ -80,7 +76,10 @@ export function ResponseModeSelector() {
 								id="mode-dc-api"
 								disabled={!dcApiSupported}
 							/>
-							<Label htmlFor="mode-dc-api" className="font-normal cursor-pointer">
+							<Label
+								htmlFor="mode-dc-api"
+								className="font-normal cursor-pointer"
+							>
 								dc_api{" "}
 								{!dcApiSupported && (
 									<span className="text-xs text-muted-foreground ml-2">
@@ -158,8 +157,8 @@ export function ResponseModeSelector() {
 						<div className="space-y-2">
 							<p className="text-xs text-muted-foreground">
 								The signed protocol will use the current application origin (
-								{typeof window !== "undefined" ? window.location.origin : "..."})
-								to validate the response.
+								{typeof window !== "undefined" ? window.location.origin : "..."}
+								) to validate the response.
 							</p>
 						</div>
 					)}
