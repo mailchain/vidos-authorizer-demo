@@ -11,32 +11,82 @@ interface PolicyResultsProps {
 	results: PolicyResult[];
 }
 
+function camelToTitleCase(str: string): string {
+	return str
+		.replace(/([A-Z])/g, " $1")
+		.replace(/^./, (s) => s.toUpperCase())
+		.trim();
+}
+
 export function PolicyResults({ results }: PolicyResultsProps) {
-	// Group by credential (using first path element as credential index)
-	const groupedByCredential = results.reduce(
+	// Separate presentation-level results from credential-level results
+	const presentationResults = results.filter((r) => r.path.length === 0);
+	const credentialResults = results.filter((r) => r.path.length > 0);
+
+	// Group credential results by path[0] (credential UUID)
+	const groupedByCredential = credentialResults.reduce(
 		(acc, result) => {
-			const credIndex = result.path[0] as number;
-			if (!acc[credIndex]) acc[credIndex] = [];
-			acc[credIndex].push(result);
+			const credId = result.path[0];
+			if (credId !== undefined) {
+				const key = String(credId);
+				if (!acc[key]) {
+					acc[key] = [];
+				}
+				acc[key].push(result);
+			}
 			return acc;
 		},
-		{} as Record<number, PolicyResult[]>,
+		{} as Record<string, PolicyResult[]>,
 	);
 
 	return (
 		<div className="space-y-4">
 			<h3 className="text-lg font-semibold">Policy Evaluation Results</h3>
 
-			{Object.entries(groupedByCredential).map(([credIndex, credResults]) => {
+			{/* Presentation-level results */}
+			{presentationResults.length > 0 && (
+				<div className="border rounded-md p-4 space-y-3">
+					<div className="flex items-center justify-between">
+						<h4 className="font-medium">Authorization Results</h4>
+						<div className="flex gap-2">
+							{presentationResults.filter((r) => !r.error).length > 0 && (
+								<Badge variant="default">
+									{presentationResults.filter((r) => !r.error).length} passed
+								</Badge>
+							)}
+							{presentationResults.filter((r) => r.error).length > 0 && (
+								<Badge variant="destructive">
+									{presentationResults.filter((r) => r.error).length} failed
+								</Badge>
+							)}
+						</div>
+					</div>
+
+					<div className="space-y-2">
+						{presentationResults.map((result) => (
+							<PolicyResultItem
+								key={`${result.path.join("-")}-${result.policy}-${result.service}`}
+								result={result}
+							/>
+						))}
+					</div>
+				</div>
+			)}
+
+			{/* Credential-level results */}
+			{Object.entries(groupedByCredential).map(([credId, credResults], index) => {
 				const passed = credResults.filter((r) => !r.error).length;
 				const failed = credResults.filter((r) => r.error).length;
 
 				return (
-					<div key={credIndex} className="border rounded-md p-4 space-y-3">
+					<div key={credId} className="border rounded-md p-4 space-y-3">
 						<div className="flex items-center justify-between">
-							<h4 className="font-medium">
-								Credential {Number(credIndex) + 1}
-							</h4>
+							<div>
+								<h4 className="font-medium">Credential {index + 1}</h4>
+								<p className="text-xs text-muted-foreground font-mono mt-1">
+									{credId}
+								</p>
+							</div>
 							<div className="flex gap-2">
 								{passed > 0 && <Badge variant="default">{passed} passed</Badge>}
 								{failed > 0 && (
@@ -77,17 +127,18 @@ function PolicyResultItem({ result }: { result: PolicyResult }) {
 
 				<div className="flex-1 min-w-0">
 					<div className="flex items-center justify-between gap-2">
-						<div>
-							<p className="font-medium text-sm">{result.policy}</p>
-							<p className="text-xs text-muted-foreground">
-								Service: {result.service}
+						<div className="space-y-1">
+							<p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+								{result.service.charAt(0).toUpperCase() + result.service.slice(1)}
+							</p>
+							<p className="font-medium text-sm">
+								{camelToTitleCase(result.policy)}
 							</p>
 						</div>
 
 						{(hasError || hasData) && (
-							<CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-								View Details
-								<ChevronDown className="h-3 w-3" />
+							<CollapsibleTrigger className="p-2 hover:bg-muted rounded transition-colors">
+								<ChevronDown className="h-4 w-4 text-muted-foreground" />
 							</CollapsibleTrigger>
 						)}
 					</div>
@@ -119,7 +170,7 @@ function PolicyResultItem({ result }: { result: PolicyResult }) {
 						{hasData && (
 							<div className="p-3 bg-green-50 border border-green-200 rounded text-sm">
 								<p className="font-medium text-green-900 mb-2">
-									Extracted Attributes:
+									{camelToTitleCase(result.policy)} Result
 								</p>
 								<pre className="text-xs text-green-800 overflow-auto max-h-48">
 									{JSON.stringify(result.data, null, 2)}

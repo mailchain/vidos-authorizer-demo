@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import {
 	Accordion,
 	AccordionContent,
@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import {
 	getCredentialCase,
 	getFormatDefinitionById,
@@ -72,13 +73,7 @@ export function CredentialRequestList() {
 
 	return (
 		<div className="space-y-4">
-			<div className="flex items-center justify-between">
-				<Label>Credential Requests</Label>
-				<Button type="button" variant="outline" size="sm" onClick={handleAdd}>
-					<Plus className="h-4 w-4 mr-2" />
-					Add Credential Request
-				</Button>
-			</div>
+			<Label>Credential Requests</Label>
 
 			{requests.length === 0 ? (
 				<div className="p-6 border rounded-md border-dashed text-center">
@@ -91,21 +86,46 @@ export function CredentialRequestList() {
 					</Button>
 				</div>
 			) : (
-				<Accordion type="single" collapsible defaultValue={requests[0]?.id}>
-					{requests.map((request) => (
-						<AccordionItem key={request.id} value={request.id}>
-							<AccordionTrigger>{getRequestLabel(request)}</AccordionTrigger>
-							<AccordionContent>
-								<CredentialRequestBuilder
-									request={request}
-									onChange={(updated) => handleUpdate(request.id, updated)}
-									onRemove={() => handleRemove(request.id)}
-									canRemove={requests.length > 1}
-								/>
-							</AccordionContent>
-						</AccordionItem>
-					))}
-				</Accordion>
+				<>
+					<Accordion type="single" collapsible defaultValue={requests[0]?.id}>
+						{requests.map((request) => (
+							<AccordionItem key={request.id} value={request.id}>
+								<div className="flex items-center gap-2">
+									{requests.length > 1 && (
+										<Button
+											type="button"
+											variant="ghost"
+											size="icon"
+											className="h-8 w-8 shrink-0"
+											onClick={(e) => {
+												e.stopPropagation();
+												handleRemove(request.id);
+											}}
+										>
+											<Trash2 className="h-4 w-4 text-destructive" />
+										</Button>
+									)}
+									<AccordionTrigger className="flex-1">
+										{getRequestLabel(request)}
+									</AccordionTrigger>
+								</div>
+								<AccordionContent>
+									<CredentialRequestBuilder
+										request={request}
+										onChange={(updated) => handleUpdate(request.id, updated)}
+										onRemove={() => handleRemove(request.id)}
+										canRemove={requests.length > 1}
+									/>
+								</AccordionContent>
+							</AccordionItem>
+						))}
+					</Accordion>
+					<Separator className="my-4" />
+					<Button type="button" variant="outline" size="sm" onClick={handleAdd}>
+						<Plus className="h-4 w-4 mr-2" />
+						Add Credential Request
+					</Button>
+				</>
 			)}
 		</div>
 	);

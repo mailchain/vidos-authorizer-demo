@@ -101,7 +101,7 @@ export function ResultStage() {
 								{status === "error" && "!"}
 								{status === "expired" && "⏱"}
 							</div>
-							<div>
+							<div className="flex-1">
 								<AlertTitle className="mb-1">{config.title}</AlertTitle>
 								<AlertDescription>{config.description}</AlertDescription>
 							</div>

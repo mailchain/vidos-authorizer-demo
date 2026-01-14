@@ -1,5 +1,3 @@
-import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
 	Select,
@@ -70,19 +68,7 @@ export function CredentialRequestBuilder({
 	};
 
 	return (
-		<div className="space-y-4 p-4 border rounded-md relative">
-			{canRemove && (
-				<Button
-					type="button"
-					variant="ghost"
-					size="icon"
-					className="absolute top-2 right-2 h-6 w-6"
-					onClick={onRemove}
-				>
-					<X className="h-4 w-4" />
-				</Button>
-			)}
-
+		<div className="space-y-4 p-4 border rounded-md">
 			<div className="space-y-2">
 				<Label htmlFor={`document-type-${request.id}`}>Document Type</Label>
 				<Select
