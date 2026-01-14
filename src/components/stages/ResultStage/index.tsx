@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,9 +8,16 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { useAuthorization } from "@/context/AuthorizationContext";
+import { usePolicyResponse } from "@/hooks/usePolicyResponse";
 import { cn } from "@/lib/utils";
 import type { AuthorizationStatus } from "@/types/app";
+import { PolicyResults } from "./PolicyResults";
 
 const statusConfig: Record<
 	AuthorizationStatus,
@@ -50,12 +58,17 @@ const statusConfig: Record<
 export function ResultStage() {
 	const { state, dispatch } = useAuthorization();
 
+	// Fetch policy response if authorized
+	usePolicyResponse();
+
 	const handleStartOver = () => {
 		dispatch({ type: "START_OVER" });
 	};
 
 	const status = state.authorizationStatus;
 	const config = status ? statusConfig[status] : null;
+	const hasPolicyResults =
+		state.policyResponse && state.policyResponse.data.length > 0;
 
 	return (
 		<Card>
@@ -102,6 +115,24 @@ export function ResultStage() {
 							)}
 						</AlertDescription>
 					</Alert>
+				)}
+
+				{hasPolicyResults && state.policyResponse && (
+					<>
+						<PolicyResults results={state.policyResponse.data} />
+
+						<Collapsible>
+							<CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground w-full">
+								<ChevronDown className="h-4 w-4" />
+								Raw Policy Response Data
+							</CollapsibleTrigger>
+							<CollapsibleContent className="mt-2">
+								<pre className="p-4 bg-muted rounded-md text-xs overflow-auto max-h-96">
+									{JSON.stringify(state.policyResponse, null, 2)}
+								</pre>
+							</CollapsibleContent>
+						</Collapsible>
+					</>
 				)}
 
 				<Button onClick={handleStartOver} className="w-full">

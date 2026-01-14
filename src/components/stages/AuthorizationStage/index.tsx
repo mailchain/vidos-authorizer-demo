@@ -1,3 +1,4 @@
+import { JsonCollapsible } from "@/components/JsonCollapsible";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthorization } from "@/context/AuthorizationContext";
 import { useAuthorizationStatus } from "@/hooks/useAuthorizationStatus";
 import { AuthorizeLink } from "./AuthorizeLink";
+import { DCAPIButton } from "./DCAPIButton";
 import { QRCodeDisplay } from "./QRCodeDisplay";
 
 export function AuthorizationStage() {
@@ -26,16 +28,23 @@ export function AuthorizationStage() {
 		expired: "Request expired",
 	};
 
+	const isDCAPI = state.digitalCredentialGetRequest !== null;
+	const isDirectPost = state.authorizeUrl !== null;
+
 	return (
 		<Card>
 			<CardHeader>
 				<CardTitle>Authorize Request</CardTitle>
 				<CardDescription>
-					Scan the QR code with your wallet to authorize the credential request
+					{isDCAPI
+						? "Use your browser to authorize the credential request"
+						: "Scan the QR code with your wallet to authorize the credential request"}
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-6">
-				{state.authorizeUrl ? (
+				{isDCAPI ? (
+					<DCAPIButton />
+				) : isDirectPost && state.authorizeUrl ? (
 					<>
 						<QRCodeDisplay url={state.authorizeUrl} />
 						<AuthorizeLink url={state.authorizeUrl} />
@@ -44,6 +53,14 @@ export function AuthorizationStage() {
 					<div className="flex justify-center">
 						<Skeleton className="w-64 h-64" />
 					</div>
+				)}
+
+				{state.lastResponse && (
+					<JsonCollapsible
+						title="Authorization Response"
+						data={state.lastResponse}
+						defaultOpen={false}
+					/>
 				)}
 
 				<div className="flex items-center justify-center gap-2">

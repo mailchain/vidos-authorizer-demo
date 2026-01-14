@@ -1,4 +1,5 @@
-import { useCallback, useEffect } from "react";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
 	Select,
@@ -12,79 +13,83 @@ import {
 	getAvailableFormats,
 	getFormatDefinitionById,
 } from "@/config/credential-cases";
-import { useAuthorization } from "@/context/AuthorizationContext";
-import type { DocumentType } from "@/types/app";
+import type { CredentialRequestWithId, DocumentType } from "@/types/app";
+import { AttributeSelector } from "./AttributeSelector";
 
-export function CredentialRequestBuilder() {
-	const { state, dispatch } = useAuthorization();
+interface CredentialRequestBuilderProps {
+	request: CredentialRequestWithId;
+	onChange: (request: CredentialRequestWithId) => void;
+	onRemove: () => void;
+	canRemove: boolean; // Disable remove button if it's the last one
+}
 
-	const selectedDocType = state.credentialRequest?.documentType;
-	const selectedFormatId = state.credentialRequest?.formatId;
-	const availableFormats = selectedDocType
-		? getAvailableFormats(selectedDocType)
+export function CredentialRequestBuilder({
+	request,
+	onChange,
+	onRemove,
+	canRemove,
+}: CredentialRequestBuilderProps) {
+	const availableFormats = request.documentType
+		? getAvailableFormats(request.documentType)
 		: [];
 
-	const updateCredentialRequest = useCallback(
-		(documentType: DocumentType, formatId: string) => {
-			const formatDef = getFormatDefinitionById(formatId);
-			if (!formatDef) return;
-
-			dispatch({
-				type: "SET_CREDENTIAL_REQUEST",
-				payload: {
-					documentType,
-					formatId,
-					format: formatDef.format,
-					attributes: formatDef.attributes.map((attr) => attr.id),
-				},
-			});
-		},
-		[dispatch],
-	);
-
-	useEffect(() => {
-		if (selectedDocType && selectedFormatId) {
-			const isValidFormat = availableFormats.some(
-				(f) => f.id === selectedFormatId,
-			);
-			if (!isValidFormat) {
-				const newFormat = availableFormats[0];
-				if (newFormat) {
-					updateCredentialRequest(selectedDocType, newFormat.id);
-				}
-			}
-		}
-	}, [
-		selectedDocType,
-		selectedFormatId,
-		availableFormats,
-		updateCredentialRequest,
-	]);
-
-	const handleDocTypeChange = (value: string) => {
-		const docType = value as DocumentType;
-		const formats = getAvailableFormats(docType);
+	const handleDocTypeChange = (documentType: DocumentType) => {
+		const formats = getAvailableFormats(documentType);
 		const format = formats[0];
+
 		if (format) {
-			updateCredentialRequest(docType, format.id);
+			// Auto-select all attributes for new format
+			onChange({
+				...request,
+				documentType,
+				formatId: format.id,
+				format: format.format,
+				attributes: format.attributes.map((attr) => attr.id),
+			});
 		}
 	};
 
-	const handleFormatChange = (value: string) => {
-		if (selectedDocType) {
-			updateCredentialRequest(selectedDocType, value);
-		}
+	const handleFormatChange = (formatId: string) => {
+		const formatDef = getFormatDefinitionById(formatId);
+		if (!formatDef) return;
+
+		// Auto-select all attributes for new format
+		onChange({
+			...request,
+			formatId,
+			format: formatDef.format,
+			attributes: formatDef.attributes.map((attr) => attr.id),
+		});
+	};
+
+	const handleAttributesChange = (attributes: string[]) => {
+		onChange({
+			...request,
+			attributes,
+		});
 	};
 
 	return (
-		<div className="space-y-4">
+		<div className="space-y-4 p-4 border rounded-md relative">
+			{canRemove && (
+				<Button
+					type="button"
+					variant="ghost"
+					size="icon"
+					className="absolute top-2 right-2 h-6 w-6"
+					onClick={onRemove}
+				>
+					<X className="h-4 w-4" />
+				</Button>
+			)}
+
 			<div className="space-y-2">
-				<Label htmlFor="document-type">Document Type</Label>
+				<Label htmlFor={`document-type-${request.id}`}>Document Type</Label>
 				<Select
-					value={selectedDocType || ""}
+					value={request.documentType || ""}
 					onValueChange={handleDocTypeChange}
 				>
-					<SelectTrigger id="document-type">
+					<SelectTrigger id={`document-type-${request.id}`}>
 						<SelectValue placeholder="Select a document type" />
 					</SelectTrigger>
 					<SelectContent>
@@ -97,14 +102,14 @@ export function CredentialRequestBuilder() {
 				</Select>
 			</div>
 
-			{selectedDocType && (
+			{request.documentType && (
 				<div className="space-y-2">
-					<Label htmlFor="format">Format</Label>
+					<Label htmlFor={`format-${request.id}`}>Format</Label>
 					<Select
-						value={selectedFormatId || ""}
+						value={request.formatId || ""}
 						onValueChange={handleFormatChange}
 					>
-						<SelectTrigger id="format">
+						<SelectTrigger id={`format-${request.id}`}>
 							<SelectValue placeholder="Select a format" />
 						</SelectTrigger>
 						<SelectContent>
@@ -118,12 +123,12 @@ export function CredentialRequestBuilder() {
 				</div>
 			)}
 
-			{selectedDocType && selectedFormatId && (
-				<div className="p-3 bg-muted rounded-md">
-					<p className="text-sm text-muted-foreground">
-						All attributes will be requested (Select All)
-					</p>
-				</div>
+			{request.formatId && (
+				<AttributeSelector
+					formatId={request.formatId}
+					selectedAttributes={request.attributes}
+					onChange={handleAttributesChange}
+				/>
 			)}
 		</div>
 	);

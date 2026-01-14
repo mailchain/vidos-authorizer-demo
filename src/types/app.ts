@@ -12,6 +12,15 @@ export type DocumentType = "pid" | "mdl" | "photo_id";
 
 export type CredentialFormat = "dc+sd-jwt" | "mso_mdoc";
 
+// Response mode types
+export type ResponseMode =
+	| "direct_post"
+	| "direct_post.jwt"
+	| "dc_api"
+	| "dc_api.jwt";
+
+export type DCAPIProtocol = "openid4vp-v1-unsigned" | "openid4vp-v1-signed";
+
 export interface CredentialRequest {
 	documentType: DocumentType;
 	formatId: string;
@@ -19,30 +28,86 @@ export interface CredentialRequest {
 	attributes: string[];
 }
 
+// Credential request with ID for UI management
+export interface CredentialRequestWithId extends CredentialRequest {
+	id: string; // UUID for tracking
+}
+
+// Response mode configuration
+export interface ResponseModeConfig {
+	mode: ResponseMode;
+	dcApiProtocol?: DCAPIProtocol; // Required for dc_api modes
+	expectedOrigins?: string[]; // Required for signed protocol
+}
+
+// Policy response structures (from API)
+export interface PolicyError {
+	type: string;
+	title?: string;
+	detail?: string;
+	status?: number;
+	vidosType?: string;
+}
+
+export interface PolicyResult {
+	path: (string | number)[];
+	policy: string;
+	service: string;
+	error?: PolicyError;
+	data?: unknown; // Credential attributes when successful
+}
+
+export interface PolicyResponse {
+	data: PolicyResult[];
+	authorizationId: string;
+}
+
 export interface AppState {
 	stage: AppStage;
 	authorizerUrl: string;
-	credentialRequest: CredentialRequest | null;
+
+	// Multiple credential requests
+	credentialRequests: CredentialRequestWithId[];
+
+	// Response mode configuration
+	responseModeConfig: ResponseModeConfig;
+
 	authorizationId: string | null;
-	authorizeUrl: string | null;
+	authorizeUrl: string | null; // Can be null for dc_api modes
+
+	// DC API request object (alternative to authorizeUrl)
+	digitalCredentialGetRequest: unknown | null;
+
 	authorizationStatus: AuthorizationStatus | null;
 	expiresAt: string | null;
 	error: { message: string; details?: string } | null;
 	isLoading: boolean;
+
+	// Policy response data
+	policyResponse: PolicyResponse | null;
+
 	lastRequest: object | null;
 	lastResponse: object | null;
-	showDevTools: boolean;
+	showPreview: boolean;
 }
 
 export type AppAction =
 	| { type: "SET_AUTHORIZER_URL"; payload: string }
-	| { type: "SET_CREDENTIAL_REQUEST"; payload: CredentialRequest }
+	// Multiple credential management
+	| { type: "ADD_CREDENTIAL_REQUEST"; payload: CredentialRequestWithId }
+	| {
+			type: "UPDATE_CREDENTIAL_REQUEST";
+			payload: { id: string; request: Partial<CredentialRequestWithId> };
+	  }
+	| { type: "REMOVE_CREDENTIAL_REQUEST"; payload: string } // ID to remove
+	| { type: "SET_RESPONSE_MODE_CONFIG"; payload: ResponseModeConfig }
 	| { type: "CREATE_AUTHORIZATION_START" }
 	| {
 			type: "CREATE_AUTHORIZATION_SUCCESS";
 			payload: {
 				authorizationId: string;
-				authorizeUrl: string;
+				authorizeUrl?: string; // Optional for DC API modes
+				digitalCredentialGetRequest?: unknown; // For DC API modes
 				expiresAt: string;
 			};
 	  }
@@ -52,8 +117,11 @@ export type AppAction =
 	  }
 	| { type: "UPDATE_STATUS"; payload: AuthorizationStatus }
 	| { type: "SET_ERROR"; payload: { message: string; details?: string } | null }
+	// Policy response
+	| { type: "SET_POLICY_RESPONSE"; payload: PolicyResponse }
 	| { type: "START_OVER" }
 	| { type: "SET_LAST_REQUEST"; payload: object }
 	| { type: "SET_LAST_RESPONSE"; payload: object }
-	| { type: "TOGGLE_DEV_TOOLS" }
+	| { type: "SHOW_PREVIEW" }
+	| { type: "HIDE_PREVIEW" }
 	| { type: "GO_BACK" };

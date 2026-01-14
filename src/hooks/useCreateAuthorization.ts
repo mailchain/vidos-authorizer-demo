@@ -1,16 +1,17 @@
 import { useCallback } from "react";
 import { createAuthorizerClient } from "@/api/client";
 import { useAuthorization } from "@/context/AuthorizationContext";
-import { buildDCQLQuery } from "@/utils/queryBuilder";
+import { buildAuthorizationRequestBody } from "@/utils/requestBuilder";
 
 export function useCreateAuthorization() {
 	const { state, dispatch } = useAuthorization();
 
 	const createAuthorization = useCallback(async () => {
-		if (!state.credentialRequest) {
+		// Validate credential requests exist
+		if (state.credentialRequests.length === 0) {
 			dispatch({
 				type: "CREATE_AUTHORIZATION_ERROR",
-				payload: { message: "No credential request configured" },
+				payload: { message: "No credential requests configured" },
 			});
 			return;
 		}
@@ -27,19 +28,19 @@ export function useCreateAuthorization() {
 
 		try {
 			const client = createAuthorizerClient(state.authorizerUrl);
-			const query = buildDCQLQuery(state.credentialRequest);
 
-			const requestBody = {
-				responseMode: "direct_post.jwt" as const,
-				query,
-			};
+			// Build authorization request body with multiple requests and response mode config
+			const requestBody = buildAuthorizationRequestBody(
+				state.credentialRequests,
+				state.responseModeConfig,
+			);
 
 			dispatch({ type: "SET_LAST_REQUEST", payload: requestBody });
 
 			const { data, error } = await client.POST(
 				"/openid4/vp/v1_0/authorizations",
 				{
-					body: requestBody,
+					body: requestBody as any,
 				},
 			);
 
@@ -58,10 +59,35 @@ export function useCreateAuthorization() {
 				return;
 			}
 
-			if (!data || !("authorizeUrl" in data)) {
+			// Handle different response structures based on mode
+			if (!data) {
 				dispatch({
 					type: "CREATE_AUTHORIZATION_ERROR",
 					payload: { message: "Invalid response from authorizer" },
+				});
+				return;
+			}
+
+			// DC API modes return digitalCredentialGetRequest
+			const isDCAPI =
+				state.responseModeConfig.mode === "dc_api" ||
+				state.responseModeConfig.mode === "dc_api.jwt";
+
+			if (isDCAPI && !("digitalCredentialGetRequest" in data)) {
+				dispatch({
+					type: "CREATE_AUTHORIZATION_ERROR",
+					payload: {
+						message: "Expected digitalCredentialGetRequest in response",
+					},
+				});
+				return;
+			}
+
+			// Direct post modes return authorizeUrl
+			if (!isDCAPI && !("authorizeUrl" in data)) {
+				dispatch({
+					type: "CREATE_AUTHORIZATION_ERROR",
+					payload: { message: "Expected authorizeUrl in response" },
 				});
 				return;
 			}
@@ -70,7 +96,11 @@ export function useCreateAuthorization() {
 				type: "CREATE_AUTHORIZATION_SUCCESS",
 				payload: {
 					authorizationId: data.authorizationId,
-					authorizeUrl: data.authorizeUrl,
+					authorizeUrl: "authorizeUrl" in data ? data.authorizeUrl : undefined,
+					digitalCredentialGetRequest:
+						"digitalCredentialGetRequest" in data
+							? data.digitalCredentialGetRequest
+							: undefined,
 					expiresAt: data.expiresAt,
 				},
 			});
@@ -83,7 +113,12 @@ export function useCreateAuthorization() {
 				},
 			});
 		}
-	}, [state.authorizerUrl, state.credentialRequest, dispatch]);
+	}, [
+		state.authorizerUrl,
+		state.credentialRequests,
+		state.responseModeConfig,
+		dispatch,
+	]);
 
 	return { createAuthorization, isLoading: state.isLoading };
 }

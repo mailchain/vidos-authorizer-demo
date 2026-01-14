@@ -4,16 +4,19 @@ import type { AppAction, AppState } from "@/types/app";
 const initialState: AppState = {
 	stage: "create",
 	authorizerUrl: localStorage.getItem("authorizerUrl") || "",
-	credentialRequest: null,
+	credentialRequests: [],
+	responseModeConfig: { mode: "direct_post.jwt" }, // default mode
 	authorizationId: null,
 	authorizeUrl: null,
+	digitalCredentialGetRequest: null,
 	authorizationStatus: null,
 	expiresAt: null,
 	error: null,
 	isLoading: false,
+	policyResponse: null,
 	lastRequest: null,
 	lastResponse: null,
-	showDevTools: false,
+	showPreview: false,
 };
 
 function appReducer(state: AppState, action: AppAction): AppState {
@@ -22,8 +25,39 @@ function appReducer(state: AppState, action: AppAction): AppState {
 			localStorage.setItem("authorizerUrl", action.payload);
 			return { ...state, authorizerUrl: action.payload, error: null };
 
-		case "SET_CREDENTIAL_REQUEST":
-			return { ...state, credentialRequest: action.payload, error: null };
+		case "ADD_CREDENTIAL_REQUEST":
+			return {
+				...state,
+				credentialRequests: [...state.credentialRequests, action.payload],
+				error: null,
+			};
+
+		case "UPDATE_CREDENTIAL_REQUEST": {
+			const updated = state.credentialRequests.map((req) =>
+				req.id === action.payload.id
+					? { ...req, ...action.payload.request }
+					: req,
+			);
+			return {
+				...state,
+				credentialRequests: updated,
+				error: null,
+			};
+		}
+
+		case "REMOVE_CREDENTIAL_REQUEST": {
+			const filtered = state.credentialRequests.filter(
+				(req) => req.id !== action.payload,
+			);
+			return {
+				...state,
+				credentialRequests: filtered,
+				error: null,
+			};
+		}
+
+		case "SET_RESPONSE_MODE_CONFIG":
+			return { ...state, responseModeConfig: action.payload, error: null };
 
 		case "CREATE_AUTHORIZATION_START":
 			return { ...state, isLoading: true, error: null };
@@ -33,7 +67,9 @@ function appReducer(state: AppState, action: AppAction): AppState {
 				...state,
 				stage: "authorization",
 				authorizationId: action.payload.authorizationId,
-				authorizeUrl: action.payload.authorizeUrl,
+				authorizeUrl: action.payload.authorizeUrl || null, // May be undefined for DC API
+				digitalCredentialGetRequest:
+					action.payload.digitalCredentialGetRequest || null,
 				expiresAt: action.payload.expiresAt,
 				authorizationStatus: "created",
 				isLoading: false,
@@ -64,6 +100,9 @@ function appReducer(state: AppState, action: AppAction): AppState {
 		case "SET_ERROR":
 			return { ...state, error: action.payload };
 
+		case "SET_POLICY_RESPONSE":
+			return { ...state, policyResponse: action.payload };
+
 		case "START_OVER":
 			return {
 				...initialState,
@@ -76,8 +115,11 @@ function appReducer(state: AppState, action: AppAction): AppState {
 		case "SET_LAST_RESPONSE":
 			return { ...state, lastResponse: action.payload };
 
-		case "TOGGLE_DEV_TOOLS":
-			return { ...state, showDevTools: !state.showDevTools };
+		case "SHOW_PREVIEW":
+			return { ...state, showPreview: true };
+
+		case "HIDE_PREVIEW":
+			return { ...state, showPreview: false };
 
 		case "GO_BACK":
 			return {
@@ -85,9 +127,12 @@ function appReducer(state: AppState, action: AppAction): AppState {
 				stage: "create",
 				authorizationId: null,
 				authorizeUrl: null,
+				digitalCredentialGetRequest: null,
 				authorizationStatus: null,
 				expiresAt: null,
+				policyResponse: null,
 				error: null,
+				showPreview: false,
 			};
 
 		default:

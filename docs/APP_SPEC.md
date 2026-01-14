@@ -570,9 +570,9 @@ The application uses a reusable attribute mapping system that generates format-s
 
 ### Phase 2: Enhanced Features
 
-- [ ] Multiple credential requests
-- [ ] Individual attribute selection
-- [ ] Support for both Direct Post and DC API (https://www.w3.org/TR/digital-credentials/) response modes
+- [x] Multiple credential requests
+- [x] Individual attribute selection
+- [x] Support for both Direct Post and DC API (https://www.w3.org/TR/digital-credentials/) response modes
 - [ ] Detailed result display with policy breakdown
 - [ ] Better error handling and user feedback
 
