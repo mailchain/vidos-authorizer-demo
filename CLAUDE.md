@@ -13,6 +13,8 @@ Vidos Authorizer Example: React+TS+Vite app demonstrating OID4VP credential veri
 
 **Links:** https://vidos.id | https://dashboard.vidos.id | https://docs.vidos.id
 
+**For detailed architecture, data flows, and navigation:** See [docs/CODEBASE_MAP.md](docs/CODEBASE_MAP.md)
+
 ## Commands
 
 ```bash
