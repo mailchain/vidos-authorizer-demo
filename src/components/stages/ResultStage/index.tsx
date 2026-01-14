@@ -83,7 +83,7 @@ export function ResultStage() {
 					Review the result of your authorization request
 				</CardDescription>
 			</CardHeader>
-			<CardContent className="space-y-6">
+			<CardContent className="space-y-6 md:space-y-8">
 				{config && (
 					<Alert variant={config.variant}>
 						<div className="flex items-start gap-3">
@@ -132,7 +132,7 @@ export function ResultStage() {
 								Raw Policy Response Data
 							</CollapsibleTrigger>
 							<CollapsibleContent className="mt-2">
-								<pre className="p-4 bg-muted rounded-md text-xs overflow-auto max-h-96">
+								<pre className="p-4 bg-muted rounded-md text-xs md:text-sm overflow-auto max-h-96 md:max-h-[32rem] lg:max-h-[48rem]">
 									{JSON.stringify(policyResponse, null, 2)}
 								</pre>
 							</CollapsibleContent>
@@ -140,7 +140,7 @@ export function ResultStage() {
 					</>
 				)}
 
-				<Button onClick={handleStartOver} className="w-full">
+				<Button onClick={handleStartOver} className="w-full sm:w-auto sm:min-w-48 sm:mx-auto sm:block">
 					Start New Authorization
 				</Button>
 			</CardContent>

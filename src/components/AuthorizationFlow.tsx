@@ -10,7 +10,7 @@ export function AuthorizationFlow() {
 	useFlowTransitions(); // Enable automatic stage transitions
 
 	return (
-		<div className="w-full max-w-lg mx-auto">
+		<div className="w-full max-w-lg md:max-w-2xl lg:max-w-4xl mx-auto">
 			<ProgressIndicator currentStage={stage} />
 
 			{stage === "create" && <CreateStage />}

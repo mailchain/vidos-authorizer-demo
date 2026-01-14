@@ -69,45 +69,47 @@ export function CredentialRequestBuilder({
 
 	return (
 		<div className="space-y-4 p-4 border rounded-md">
-			<div className="space-y-2">
-				<Label htmlFor={`document-type-${request.id}`}>Document Type</Label>
-				<Select
-					value={request.documentType || ""}
-					onValueChange={handleDocTypeChange}
-				>
-					<SelectTrigger id={`document-type-${request.id}`}>
-						<SelectValue placeholder="Select a document type" />
-					</SelectTrigger>
-					<SelectContent>
-						{CREDENTIAL_CASES.map((credCase) => (
-							<SelectItem key={credCase.id} value={credCase.id}>
-								{credCase.displayName}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
-			</div>
-
-			{request.documentType && (
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 				<div className="space-y-2">
-					<Label htmlFor={`format-${request.id}`}>Format</Label>
+					<Label htmlFor={`document-type-${request.id}`}>Document Type</Label>
 					<Select
-						value={request.formatId || ""}
-						onValueChange={handleFormatChange}
+						value={request.documentType || ""}
+						onValueChange={handleDocTypeChange}
 					>
-						<SelectTrigger id={`format-${request.id}`}>
-							<SelectValue placeholder="Select a format" />
+						<SelectTrigger id={`document-type-${request.id}`}>
+							<SelectValue placeholder="Select a document type" />
 						</SelectTrigger>
 						<SelectContent>
-							{availableFormats.map((formatDef) => (
-								<SelectItem key={formatDef.id} value={formatDef.id}>
-									{formatDef.displayName}
+							{CREDENTIAL_CASES.map((credCase) => (
+								<SelectItem key={credCase.id} value={credCase.id}>
+									{credCase.displayName}
 								</SelectItem>
 							))}
 						</SelectContent>
 					</Select>
 				</div>
-			)}
+
+				{request.documentType && (
+					<div className="space-y-2">
+						<Label htmlFor={`format-${request.id}`}>Format</Label>
+						<Select
+							value={request.formatId || ""}
+							onValueChange={handleFormatChange}
+						>
+							<SelectTrigger id={`format-${request.id}`}>
+								<SelectValue placeholder="Select a format" />
+							</SelectTrigger>
+							<SelectContent>
+								{availableFormats.map((formatDef) => (
+									<SelectItem key={formatDef.id} value={formatDef.id}>
+										{formatDef.displayName}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+				)}
+			</div>
 
 			{request.formatId && (
 				<AttributeSelector

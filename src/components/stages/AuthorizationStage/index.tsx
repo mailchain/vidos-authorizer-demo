@@ -50,7 +50,7 @@ export function AuthorizationStage() {
 						: "Scan the QR code with your wallet to authorize the credential request"}
 				</CardDescription>
 			</CardHeader>
-			<CardContent className="space-y-6">
+			<CardContent className="space-y-6 md:space-y-8">
 				{isDCAPI ? (
 					<DCAPIButton />
 				) : isDirectPost && authorizeUrl ? (
@@ -95,7 +95,7 @@ export function AuthorizationStage() {
 					</p>
 				)}
 
-				<Button variant="outline" onClick={goBack} className="w-full">
+				<Button variant="outline" onClick={goBack} className="w-full sm:w-auto sm:min-w-40 sm:mx-auto sm:block">
 					Go Back
 				</Button>
 			</CardContent>

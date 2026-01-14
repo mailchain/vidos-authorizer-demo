@@ -41,7 +41,7 @@ export function JsonCollapsible({
 				</CardHeader>
 				<CollapsibleContent>
 					<CardContent>
-						<div className="bg-muted rounded-md p-3 overflow-auto max-h-80">
+						<div className="bg-muted rounded-md p-3 overflow-auto max-h-80 md:max-h-96 lg:max-h-[40rem]">
 							<pre className="text-xs font-mono whitespace-pre-wrap break-all">
 								{JSON.stringify(data, null, 2)}
 							</pre>

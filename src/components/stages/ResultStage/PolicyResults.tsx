@@ -45,8 +45,8 @@ export function PolicyResults({ results }: PolicyResultsProps) {
 
 			{/* Presentation-level results */}
 			{presentationResults.length > 0 && (
-				<div className="border rounded-md p-4 space-y-3">
-					<div className="flex items-center justify-between">
+				<div className="border rounded-md p-4 md:p-6 space-y-3">
+					<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 						<h4 className="font-medium">Authorization Results</h4>
 						<div className="flex gap-2">
 							{presentationResults.filter((r) => !r.error).length > 0 && (
@@ -79,8 +79,8 @@ export function PolicyResults({ results }: PolicyResultsProps) {
 				const failed = credResults.filter((r) => r.error).length;
 
 				return (
-					<div key={credId} className="border rounded-md p-4 space-y-3">
-						<div className="flex items-center justify-between">
+					<div key={credId} className="border rounded-md p-4 md:p-6 space-y-3">
+						<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 							<div>
 								<h4 className="font-medium">Credential {index + 1}</h4>
 								<p className="text-xs text-muted-foreground font-mono mt-1">
@@ -116,7 +116,7 @@ function PolicyResultItem({ result }: { result: PolicyResult }) {
 
 	return (
 		<Collapsible>
-			<div className="flex items-start gap-3 p-3 bg-muted/50 rounded-md">
+			<div className="flex items-start gap-3 p-3 md:p-4 bg-muted/50 rounded-md">
 				<div
 					className={`w-6 h-6 rounded-full flex items-center justify-center text-sm shrink-0 ${
 						hasError ? "bg-red-100 text-red-600" : "bg-green-100 text-green-600"
@@ -172,7 +172,7 @@ function PolicyResultItem({ result }: { result: PolicyResult }) {
 								<p className="font-medium text-green-900 mb-2">
 									{camelToTitleCase(result.policy)} Result
 								</p>
-								<pre className="text-xs text-green-800 overflow-auto max-h-48">
+								<pre className="text-xs md:text-sm text-green-800 overflow-auto max-h-48 md:max-h-64 lg:max-h-80">
 									{JSON.stringify(result.data, null, 2)}
 								</pre>
 							</div>

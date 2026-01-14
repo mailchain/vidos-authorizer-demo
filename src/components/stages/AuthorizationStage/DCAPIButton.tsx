@@ -90,7 +90,7 @@ export function DCAPIButton() {
 					Digital Credentials API. Your wallet application will be invoked to
 					fulfill the request.
 				</p>
-				<Button onClick={handleInvoke} disabled={isInvoking} className="w-full">
+				<Button onClick={handleInvoke} disabled={isInvoking} className="w-full sm:w-auto sm:min-w-48 sm:mx-auto sm:block">
 					{isInvoking ? (
 						<>
 							<Loader2 className="mr-2 h-4 w-4 animate-spin" />

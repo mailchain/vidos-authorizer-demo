@@ -72,7 +72,7 @@ export function CredentialRequestList() {
 	};
 
 	return (
-		<div className="space-y-4">
+		<div className="space-y-4 md:space-y-6">
 			<Label>Credential Requests</Label>
 
 			{requests.length === 0 ? (

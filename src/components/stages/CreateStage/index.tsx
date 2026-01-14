@@ -63,7 +63,7 @@ export function CreateStage() {
 						Review the request before sending it to the Vidos Authorizer
 					</CardDescription>
 				</CardHeader>
-				<CardContent className="space-y-6">
+				<CardContent className="space-y-6 md:space-y-8">
 					<JsonCollapsible
 						title="Authorization Request"
 						data={lastRequest}
@@ -83,7 +83,7 @@ export function CreateStage() {
 						</Alert>
 					)}
 
-					<div className="flex gap-3">
+					<div className="flex flex-col sm:flex-row gap-3">
 						<Button
 							variant="outline"
 							onClick={() => setShowPreview(false)}
@@ -113,7 +113,7 @@ export function CreateStage() {
 					Configure your credential authorization request
 				</CardDescription>
 			</CardHeader>
-			<CardContent className="space-y-6">
+			<CardContent className="space-y-6 md:space-y-8">
 				<AuthorizerConfig />
 
 				<Separator />
@@ -154,7 +154,7 @@ export function CreateStage() {
 					</Alert>
 				)}
 
-				<div className="flex gap-3">
+				<div className="flex flex-col sm:flex-row gap-3">
 					<Button
 						onClick={handleCreateDirect}
 						disabled={!validation.valid || mutation.isPending}

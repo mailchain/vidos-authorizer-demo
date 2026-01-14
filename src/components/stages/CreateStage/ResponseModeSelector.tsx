@@ -119,7 +119,7 @@ export function ResponseModeSelector() {
 			</div>
 
 			{isDCAPIMode && (
-				<div className="space-y-4 p-4 border rounded-md bg-muted/50">
+				<div className="space-y-4 p-4 md:p-6 border rounded-md bg-muted/50">
 					<div className="space-y-2">
 						<Label>DC API Protocol</Label>
 						<RadioGroup
