@@ -2,6 +2,7 @@ import "./App.css";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { AuthorizationFlow } from "./components/AuthorizationFlow";
+import { Github } from "lucide-react";
 
 function App() {
 	return (
@@ -17,6 +18,17 @@ function App() {
 					</div>
 					<p className="text-muted-foreground">
 						OID4VP Authorization Request Demo
+					</p>
+					<p className="text-sm text-muted-foreground mt-2">
+						<a
+							href="https://github.com/mailchain/vidos-authorizer-demo"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="inline-flex items-center gap-1.5 underline hover:text-foreground transition-colors"
+						>
+							<Github className="h-4 w-4" />
+							View setup guide and documentation on GitHub
+						</a>
 					</p>
 				</header>
 				<main>
