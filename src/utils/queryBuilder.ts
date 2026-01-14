@@ -1,5 +1,5 @@
 import { getFormatDefinitionById } from "@/config/credential-cases";
-import type { CredentialRequest } from "@/types/app";
+import type { CredentialRequest, CredentialRequestWithId } from "@/types/app";
 
 interface DCQLClaim {
 	path: (string | null)[];
@@ -53,7 +53,7 @@ export function buildDCQLQuery(request: CredentialRequest): DCQLQuery {
 }
 
 export function buildDCQLQueryMultiple(
-	requests: CredentialRequest[],
+	requests: CredentialRequestWithId[],
 ): DCQLQuery {
 	if (requests.length === 0) {
 		throw new Error("At least one credential request is required");

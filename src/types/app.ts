@@ -8,8 +8,6 @@ export type AuthorizationStatus =
 	| "error"
 	| "expired";
 
-export type DocumentType = "pid" | "mdl" | "photo_id";
-
 export type CredentialFormat = "dc+sd-jwt" | "mso_mdoc";
 
 // Response mode types
@@ -22,7 +20,7 @@ export type ResponseMode =
 export type DCAPIProtocol = "openid4vp-v1-unsigned" | "openid4vp-v1-signed";
 
 export interface CredentialRequest {
-	documentType: DocumentType;
+	documentType: string;
 	formatId: string;
 	format: CredentialFormat;
 	attributes: string[];

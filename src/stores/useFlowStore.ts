@@ -5,6 +5,7 @@ import type {
 	CredentialRequestWithId,
 	ResponseModeConfig,
 } from "@/types/app";
+import type { CredentialCaseDefinition } from "@/config/credential-cases";
 
 interface FlowState {
 	// Stage
@@ -26,6 +27,15 @@ interface FlowState {
 
 	responseModeConfig: ResponseModeConfig;
 	setResponseModeConfig: (config: ResponseModeConfig) => void;
+
+	// Custom credential cases
+	customCredentialCases: CredentialCaseDefinition[];
+	addCustomCredentialCase: (credCase: CredentialCaseDefinition) => void;
+	updateCustomCredentialCase: (
+		id: string,
+		credCase: CredentialCaseDefinition,
+	) => void;
+	deleteCustomCredentialCase: (id: string) => void;
 
 	// Authorization data
 	authorizationId: string | null;
@@ -66,6 +76,7 @@ const initialState = {
 	authorizerUrl: "",
 	credentialRequests: [],
 	responseModeConfig: { mode: "direct_post.jwt" } as ResponseModeConfig,
+	customCredentialCases: [],
 	authorizationId: null,
 	authorizeUrl: null,
 	digitalCredentialGetRequest: null,
@@ -110,6 +121,26 @@ export const useFlowStore = create<FlowState>()(
 			setResponseModeConfig: (responseModeConfig) =>
 				set({ responseModeConfig, error: null }),
 
+			addCustomCredentialCase: (credCase) =>
+				set((state) => ({
+					customCredentialCases: [...state.customCredentialCases, credCase],
+					error: null,
+				})),
+			updateCustomCredentialCase: (id, credCase) =>
+				set((state) => ({
+					customCredentialCases: state.customCredentialCases.map((c) =>
+						c.id === id ? credCase : c,
+					),
+					error: null,
+				})),
+			deleteCustomCredentialCase: (id) =>
+				set((state) => ({
+					customCredentialCases: state.customCredentialCases.filter(
+						(c) => c.id !== id,
+					),
+					error: null,
+				})),
+
 			setAuthorizationId: (authorizationId) => set({ authorizationId }),
 			setAuthorizeUrl: (authorizeUrl) => set({ authorizeUrl }),
 			setDigitalCredentialGetRequest: (digitalCredentialGetRequest) =>
@@ -129,6 +160,7 @@ export const useFlowStore = create<FlowState>()(
 				set((state) => ({
 					...initialState,
 					authorizerUrl: state.authorizerUrl, // Keep URL
+					customCredentialCases: state.customCredentialCases, // Keep custom cases
 				})),
 
 			goBack: () =>
@@ -144,7 +176,10 @@ export const useFlowStore = create<FlowState>()(
 		}),
 		{
 			name: "vidos-flow-storage",
-			partialize: (state) => ({ authorizerUrl: state.authorizerUrl }),
+			partialize: (state) => ({
+				authorizerUrl: state.authorizerUrl,
+				customCredentialCases: state.customCredentialCases,
+			}),
 		},
 	),
 );

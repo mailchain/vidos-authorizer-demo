@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import {
 	Select,
@@ -7,11 +8,13 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import {
-	CREDENTIAL_CASES,
+	getAllCredentialCases,
 	getAvailableFormats,
 	getFormatDefinitionById,
+	isCustomCase,
 } from "@/config/credential-cases";
-import type { CredentialRequestWithId, DocumentType } from "@/types/app";
+import { useFlowStore } from "@/stores/useFlowStore";
+import type { CredentialRequestWithId } from "@/types/app";
 import { AttributeSelector } from "./AttributeSelector";
 
 interface CredentialRequestBuilderProps {
@@ -24,14 +27,19 @@ interface CredentialRequestBuilderProps {
 export function CredentialRequestBuilder({
 	request,
 	onChange,
-	onRemove,
-	canRemove,
+	onRemove: _onRemove,
+	canRemove: _canRemove,
 }: CredentialRequestBuilderProps) {
+	const customCredentialCases = useFlowStore(
+		(state) => state.customCredentialCases,
+	);
+	const allCredentialCases = getAllCredentialCases(customCredentialCases);
+
 	const availableFormats = request.documentType
 		? getAvailableFormats(request.documentType)
 		: [];
 
-	const handleDocTypeChange = (documentType: DocumentType) => {
+	const handleDocTypeChange = (documentType: string) => {
 		const formats = getAvailableFormats(documentType);
 		const format = formats[0];
 
@@ -80,9 +88,16 @@ export function CredentialRequestBuilder({
 							<SelectValue placeholder="Select a document type" />
 						</SelectTrigger>
 						<SelectContent>
-							{CREDENTIAL_CASES.map((credCase) => (
+							{allCredentialCases.map((credCase) => (
 								<SelectItem key={credCase.id} value={credCase.id}>
-									{credCase.displayName}
+									<div className="flex items-center gap-2">
+										<span>{credCase.displayName}</span>
+										{isCustomCase(credCase.id) && (
+											<Badge variant="secondary" className="text-xs">
+												Custom
+											</Badge>
+										)}
+									</div>
 								</SelectItem>
 							))}
 						</SelectContent>

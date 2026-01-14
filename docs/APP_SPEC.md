@@ -573,13 +573,12 @@ The application uses a reusable attribute mapping system that generates format-s
 - [x] Multiple credential requests
 - [x] Individual attribute selection
 - [x] Support for both Direct Post and DC API (https://www.w3.org/TR/digital-credentials/) response modes
-- [ ] Detailed result display with policy breakdown
+- [x] Detailed result display with policy breakdown
 - [ ] Better error handling and user feedback
 
 ### Phase 3: Advanced Features
 
 - [ ] Custom attribute entry
 - [ ] Raw JSON request input
-- [ ] Result data expansion/details view
-- [ ] Persistent settings
-- [ ] Authorization history (optional)
+- [x] Result data expansion/details view
+- [x] Persistent settings

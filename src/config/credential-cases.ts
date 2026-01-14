@@ -1,4 +1,4 @@
-import type { CredentialFormat, DocumentType } from "@/types/app";
+import type { CredentialFormat } from "@/types/app";
 
 export interface AttributeDefinition {
 	id: string;
@@ -19,7 +19,7 @@ export interface FormatDefinition {
 }
 
 export interface CredentialCaseDefinition {
-	id: DocumentType;
+	id: string;
 	displayName: string;
 	formats: FormatDefinition[];
 }
@@ -587,13 +587,13 @@ export const CREDENTIAL_CASES: CredentialCaseDefinition[] = [
 ];
 
 export function getCredentialCase(
-	id: DocumentType,
+	documentType: string,
 ): CredentialCaseDefinition | undefined {
-	return CREDENTIAL_CASES.find((c) => c.id === id);
+	return CREDENTIAL_CASES.find((c) => c.id === documentType);
 }
 
 export function getFormatDefinition(
-	documentType: DocumentType,
+	documentType: string,
 	format: CredentialFormat,
 ): FormatDefinition | undefined {
 	const credCase = getCredentialCase(documentType);
@@ -610,9 +610,27 @@ export function getFormatDefinitionById(
 	return undefined;
 }
 
-export function getAvailableFormats(
-	documentType: DocumentType,
-): FormatDefinition[] {
+export function getAvailableFormats(documentType: string): FormatDefinition[] {
 	const credCase = getCredentialCase(documentType);
 	return credCase?.formats ?? [];
+}
+
+/**
+ * Get all credential cases including both app-defined and custom cases
+ * @param customCases Optional array of custom credential cases (from store)
+ * @returns Array of all credential cases
+ */
+export function getAllCredentialCases(
+	customCases: CredentialCaseDefinition[] = [],
+): CredentialCaseDefinition[] {
+	return [...CREDENTIAL_CASES, ...customCases];
+}
+
+/**
+ * Check if a credential case is a custom (user-defined) case
+ * @param id The credential case ID
+ * @returns True if the case is custom, false if it's app-defined
+ */
+export function isCustomCase(id: string): boolean {
+	return !CREDENTIAL_CASES.some((c) => c.id === id);
 }
