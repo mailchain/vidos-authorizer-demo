@@ -558,28 +558,28 @@ The application uses a reusable attribute mapping system that generates format-s
 
 ### Phase 1: Core Functionality
 
-[x] Basic three-stage flow navigation
-[x] Authorizer URL configuration via Vidos Gateway
-[x] Single credential request with document type and format selection
-[x] Basic attribute selection (select all only)
-[x] `direct_post` response mode only
-[x] QR code display
-[x] Status polling
-[x] Basic result display (status only)
-[x] Start over functionality
+- [x] Basic three-stage flow navigation
+- [x] Authorizer URL configuration via Vidos Gateway
+- [x] Single credential request with document type and format selection
+- [x] Basic attribute selection (select all only)
+- [x] `direct_post` response mode only
+- [x] QR code display
+- [x] Status polling
+- [x] Basic result display (status only)
+- [x] Start over functionality
 
 ### Phase 2: Enhanced Features
 
-[ ] Multiple credential requests
-[ ] Individual attribute selection
-[ ] Support for both Direct Post and DC API (https://www.w3.org/TR/digital-credentials/) response modes
-[ ] Detailed result display with policy breakdown
-[ ] Better error handling and user feedback
+- [ ] Multiple credential requests
+- [ ] Individual attribute selection
+- [ ] Support for both Direct Post and DC API (https://www.w3.org/TR/digital-credentials/) response modes
+- [ ] Detailed result display with policy breakdown
+- [ ] Better error handling and user feedback
 
 ### Phase 3: Advanced Features
 
-[ ] Custom attribute entry
-[ ] Raw JSON request input
-[ ] Result data expansion/details view
-[ ] Persistent settings
-[ ] Authorization history (optional)
+- [ ] Custom attribute entry
+- [ ] Raw JSON request input
+- [ ] Result data expansion/details view
+- [ ] Persistent settings
+- [ ] Authorization history (optional)
