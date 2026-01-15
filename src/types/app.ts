@@ -1,3 +1,5 @@
+import type { DigitalCredentialGetRequest, PolicyResponseData } from "./api";
+
 export type AppStage = "create" | "authorization" | "result";
 
 export type AuthorizationStatus =
@@ -74,13 +76,13 @@ export interface AppState {
 	authorizeUrl: string | null; // Can be null for dc_api modes
 
 	// DC API request object (alternative to authorizeUrl)
-	digitalCredentialGetRequest: unknown | null;
+	digitalCredentialGetRequest: DigitalCredentialGetRequest | null;
 
 	expiresAt: string | null;
 	error: { message: string; details?: string } | null;
 
 	// Policy response data
-	policyResponse: PolicyResponse | null;
+	policyResponse: PolicyResponseData | null;
 
 	lastRequest: object | null;
 	lastResponse: object | null;

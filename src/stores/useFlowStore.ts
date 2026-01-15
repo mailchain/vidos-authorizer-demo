@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CredentialCaseDefinition } from "@/config/credential-cases";
+import type { DigitalCredentialGetRequest } from "@/types/api";
 import type {
 	AppStage,
 	CredentialRequestWithId,
@@ -44,8 +45,10 @@ interface FlowState {
 	authorizeUrl: string | null;
 	setAuthorizeUrl: (url: string | null) => void;
 
-	digitalCredentialGetRequest: unknown | null;
-	setDigitalCredentialGetRequest: (request: unknown | null) => void;
+	digitalCredentialGetRequest: DigitalCredentialGetRequest | null;
+	setDigitalCredentialGetRequest: (
+		request: DigitalCredentialGetRequest | null,
+	) => void;
 
 	expiresAt: string | null;
 	setExpiresAt: (expiresAt: string | null) => void;

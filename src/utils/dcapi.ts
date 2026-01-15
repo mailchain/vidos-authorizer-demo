@@ -1,3 +1,9 @@
+import { z } from "zod";
+import type {
+	DigitalCredentialGetRequest,
+	DigitalCredentialGetResponse,
+} from "@/types/api";
+
 export interface DCAPISupport {
 	available: boolean;
 	reason?: string;
@@ -22,13 +28,56 @@ export function checkDCAPISupport(): DCAPISupport {
 	return { available: true };
 }
 
-export async function invokeDCAPI(request: unknown): Promise<unknown> {
+/**
+ * Zod schema for Digital Credential response validation
+ * Spec: https://www.w3.org/TR/digital-credentials/#the-digitalcredential-interface
+ * Spec: https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#appendix-A.4
+ */
+const digitalCredentialResponseSchema = z.union([
+	// Success response with VP token
+	z.object({
+		protocol: z.string().min(1),
+		data: z.object({
+			vp_token: z.record(z.string(), z.unknown()),
+		}),
+	}),
+	// Error response
+	z.object({
+		protocol: z.string().min(1),
+		data: z.object({
+			error: z.string(),
+		}),
+	}),
+]);
+
+export async function invokeDCAPI(
+	request: DigitalCredentialGetRequest,
+): Promise<DigitalCredentialGetResponse> {
 	const support = checkDCAPISupport();
 	if (!support.available) {
 		throw new Error(support.reason || "DC API not supported");
 	}
 
-	return await navigator.credentials.get({
+	const credential = await navigator.credentials.get({
 		digital: request,
 	} as CredentialRequestOptions);
+
+	if (!credential) {
+		throw new Error("Digital credential request returned null");
+	}
+
+	// Validate the response structure with Zod
+	const result = digitalCredentialResponseSchema.safeParse(credential);
+
+	if (!result.success) {
+		throw new Error(`Invalid credential response: ${result.error.message}`);
+	}
+
+	return result.data as DigitalCredentialGetResponse;
+}
+
+export function isDigitalCredentialError(
+	response: DigitalCredentialGetResponse,
+): response is { protocol: string; data: { error: string } } {
+	return "error" in response.data;
 }

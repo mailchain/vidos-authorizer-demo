@@ -21,7 +21,6 @@ export function AuthorizationStage() {
 	);
 	const authorizeUrl = useFlowStore((state) => state.authorizeUrl);
 	const lastResponse = useFlowStore((state) => state.lastResponse);
-	const error = useFlowStore((state) => state.error);
 	const expiresAt = useFlowStore((state) => state.expiresAt);
 	const goBack = useFlowStore((state) => state.goBack);
 
@@ -81,11 +80,9 @@ export function AuthorizationStage() {
 					</span>
 				</div>
 
-				{(error || statusError) && (
+				{statusError && (
 					<Alert variant="destructive">
-						<AlertDescription>
-							{error?.message || statusError?.message}
-						</AlertDescription>
+						<AlertDescription>{statusError.message}</AlertDescription>
 					</Alert>
 				)}
 
@@ -95,7 +92,11 @@ export function AuthorizationStage() {
 					</p>
 				)}
 
-				<Button variant="outline" onClick={goBack} className="w-full sm:w-auto sm:min-w-40 sm:mx-auto sm:block">
+				<Button
+					variant="outline"
+					onClick={goBack}
+					className="w-full sm:w-auto sm:min-w-40 sm:mx-auto sm:block"
+				>
 					Go Back
 				</Button>
 			</CardContent>

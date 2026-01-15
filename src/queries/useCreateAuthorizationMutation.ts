@@ -2,7 +2,10 @@ import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { createAuthorizerClient } from "@/api/client";
 import { useFlowStore } from "@/stores/useFlowStore";
-import type { CreateAuthorizationRequest } from "@/types/api";
+import type {
+	CreateAuthorizationRequest,
+	DigitalCredentialGetRequest,
+} from "@/types/api";
 import type { CredentialRequestWithId, ResponseModeConfig } from "@/types/app";
 import { buildAuthorizationRequestBody } from "@/utils/requestBuilder";
 
@@ -23,7 +26,7 @@ const standardResponseSchema = baseResponseSchema.extend({
 });
 
 const dcApiResponseSchema = baseResponseSchema.extend({
-	digitalCredentialGetRequest: z.unknown(), // Complex nested structure
+	digitalCredentialGetRequest: z.custom<DigitalCredentialGetRequest>(),
 });
 
 export function useCreateAuthorizationMutation() {

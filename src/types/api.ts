@@ -33,6 +33,38 @@ export type AuthorizationStatusResponse =
 export type PolicyResponseData =
 	operations["getPolicyResponse"]["responses"][200]["content"]["application/json"];
 
+// Extract digitalCredentialGetRequest type from DC API response
+type DcApiCreateResponse = Extract<
+	CreateAuthorizationResponse,
+	{ digitalCredentialGetRequest: unknown }
+>;
+export type DigitalCredentialGetRequest =
+	DcApiCreateResponse["digitalCredentialGetRequest"];
+
+// Digital Credential Get Response (from navigator.credentials.get())
+// Spec: https://www.w3.org/TR/digital-credentials/#the-digitalcredential-interface
+// Spec: https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#appendix-A.4
+export type DigitalCredentialGetResponse =
+	| {
+			// Success response with VP token
+			protocol: string; // e.g., "openid4vp-v1-unsigned" | "openid4vp-v1-signed" | "openid4vp-v1-multisigned"
+			data: {
+				vp_token: Record<
+					string,
+					// biome-ignore lint: API spec allows string or object
+					| ({ [key: string]: unknown } | string)[]
+					| ({ [key: string]: unknown } | string)
+				>;
+			};
+	  }
+	| {
+			// Error response
+			protocol: string;
+			data: {
+				error: string; // Error code as defined in OpenID4VP spec
+			};
+	  };
+
 // Type-safe endpoint paths for DC API
 export type DcApiEndpoint =
 	| "/openid4/vp/v1_0/{authorizationId}/dc_api"
