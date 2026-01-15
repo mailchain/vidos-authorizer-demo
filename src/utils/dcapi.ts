@@ -59,7 +59,7 @@ export async function invokeDCAPI(
 	}
 
 	const credential = await navigator.credentials.get({
-		digital: request,
+		digital: { requests: [request] },
 	} as CredentialRequestOptions);
 
 	if (!credential) {
