@@ -2,7 +2,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { createAuthorizerClient } from "@/api/client";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { authorizationKeys } from "@/queries/keys";
 import { useFlowStore } from "@/stores/useFlowStore";
@@ -17,27 +16,24 @@ export function DCAPIButton() {
 	const authorizerUrl = useFlowStore((state) => state.authorizerUrl);
 	const responseModeConfig = useFlowStore((state) => state.responseModeConfig);
 	const setError = useFlowStore((state) => state.setError);
-	const error = useFlowStore((state) => state.error);
 
 	const queryClient = useQueryClient();
 	const [isInvoking, setIsInvoking] = useState(false);
-	const [localError, setLocalError] = useState<string | null>(null);
 
 	const handleInvoke = async () => {
 		if (!digitalCredentialGetRequest || !authorizationId) {
-			setLocalError("Missing DC API request data");
+			setError({ message: "Missing DC API request data" });
 			return;
 		}
 
 		// Check browser support
 		const support = checkDCAPISupport();
 		if (!support.available) {
-			setLocalError(support.reason || "DC API not supported");
+			setError({ message: support.reason || "DC API not supported" });
 			return;
 		}
 
 		setIsInvoking(true);
-		setLocalError(null);
 		setError(null);
 
 		try {
@@ -63,9 +59,9 @@ export function DCAPIButton() {
 			});
 
 			if (submitError) {
-				setLocalError(
-					submitError.message || "Failed to submit DC API response",
-				);
+				setError({
+					message: submitError.message || "Failed to submit DC API response",
+				});
 				return;
 			}
 
@@ -79,7 +75,6 @@ export function DCAPIButton() {
 		} catch (err) {
 			const errorMessage =
 				err instanceof Error ? err.message : "Failed to invoke DC API";
-			setLocalError(errorMessage);
 			setError({ message: errorMessage });
 		} finally {
 			setIsInvoking(false);
@@ -109,12 +104,6 @@ export function DCAPIButton() {
 					)}
 				</Button>
 			</div>
-
-			{(localError || error) && (
-				<Alert variant="destructive">
-					<AlertDescription>{localError || error?.message}</AlertDescription>
-				</Alert>
-			)}
 		</div>
 	);
 }
