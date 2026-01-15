@@ -581,3 +581,9 @@ The application uses a reusable attribute mapping system that generates format-s
 - [x] Raw JSON request input
 - [x] Result data expansion/details view
 - [x] Persistent settings
+
+### Further TODO
+
+- [ ] DCQLs Credential Sets support in Create Stage
+- [ ] Update documentation based on final implementation
+- [ ] Improve README with more visual usage instructions
