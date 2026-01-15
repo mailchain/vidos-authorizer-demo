@@ -52,8 +52,8 @@ export function ProfileSelector() {
 			<p className="text-xs text-muted-foreground">
 				{config.profile === "haip" ? (
 					<>
-						HAIP (High Assurance Interoperability Profile) enforces signed
-						response modes only.{" "}
+						HAIP (High Assurance Interoperability Profile) enforces stricter
+						requirements over OID4VP.{" "}
 						<a
 							href="https://openid.net/specs/openid4vc-high-assurance-interoperability-profile-1_0.html"
 							target="_blank"
