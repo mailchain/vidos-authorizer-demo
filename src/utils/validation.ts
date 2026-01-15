@@ -1,9 +1,26 @@
+import { z } from "zod";
 import type { CredentialRequestWithId, ResponseModeConfig } from "@/types/app";
 
 export interface ValidationResult {
 	valid: boolean;
 	errors: string[];
 }
+
+// Zod schema for credential request validation
+const credentialRequestSchema = z.object({
+	id: z.string(),
+	documentType: z.string().min(1, "Document type is required"),
+	formatId: z.string().min(1, "Format is required"),
+	attributes: z
+		.array(z.string())
+		.min(1, "At least one attribute must be selected"),
+});
+
+// Zod schema for DC API response mode config
+const dcApiResponseModeSchema = z.union([
+	z.literal("dc_api"),
+	z.literal("dc_api.jwt"),
+]);
 
 export function validateAuthorizationRequest(
 	authorizerUrl: string,
@@ -24,29 +41,22 @@ export function validateAuthorizationRequest(
 		errors.push("At least one credential request is required");
 	}
 
-	// Validate each credential request
+	// Validate each credential request with Zod
 	for (const [index, request] of credentialRequests.entries()) {
-		if (!request.documentType || !request.formatId) {
-			errors.push(
-				`Credential ${index + 1}: Document type and format are required`,
-			);
-		}
-
-		if (request.attributes.length === 0) {
-			errors.push(
-				`Credential ${index + 1}: At least one attribute must be selected`,
-			);
+		const result = credentialRequestSchema.safeParse(request);
+		if (!result.success) {
+			for (const issue of result.error.issues) {
+				errors.push(`Credential ${index + 1}: ${issue.message}`);
+			}
 		}
 	}
 
 	// Validate DC API configuration
-	if (
-		responseModeConfig.mode === "dc_api" ||
-		responseModeConfig.mode === "dc_api.jwt"
-	) {
-		if (!responseModeConfig.dcApiProtocol) {
-			errors.push("DC API protocol must be selected");
-		}
+	const isDCAPIMode = dcApiResponseModeSchema.safeParse(
+		responseModeConfig.mode,
+	);
+	if (isDCAPIMode.success && !responseModeConfig.dcApiProtocol) {
+		errors.push("DC API protocol must be selected");
 	}
 
 	return {

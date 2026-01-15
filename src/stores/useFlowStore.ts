@@ -1,11 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { CredentialCaseDefinition } from "@/config/credential-cases";
 import type {
 	AppStage,
 	CredentialRequestWithId,
 	ResponseModeConfig,
 } from "@/types/app";
-import type { CredentialCaseDefinition } from "@/config/credential-cases";
 
 interface FlowState {
 	// Stage

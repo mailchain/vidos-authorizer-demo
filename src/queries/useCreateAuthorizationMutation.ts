@@ -1,8 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
+import { z } from "zod";
 import { createAuthorizerClient } from "@/api/client";
 import { useFlowStore } from "@/stores/useFlowStore";
-import type { CredentialRequestWithId, ResponseModeConfig } from "@/types/app";
 import type { CreateAuthorizationRequest } from "@/types/api";
+import type { CredentialRequestWithId, ResponseModeConfig } from "@/types/app";
 import { buildAuthorizationRequestBody } from "@/utils/requestBuilder";
 
 interface CreateAuthorizationParams {
@@ -10,6 +11,20 @@ interface CreateAuthorizationParams {
 	credentialRequests: CredentialRequestWithId[];
 	responseModeConfig: ResponseModeConfig;
 }
+
+// Zod schemas for API response validation
+const baseResponseSchema = z.object({
+	authorizationId: z.string(),
+	expiresAt: z.string(),
+});
+
+const standardResponseSchema = baseResponseSchema.extend({
+	authorizeUrl: z.string().url(),
+});
+
+const dcApiResponseSchema = baseResponseSchema.extend({
+	digitalCredentialGetRequest: z.unknown(), // Complex nested structure
+});
 
 export function useCreateAuthorizationMutation() {
 	return useMutation({
@@ -45,17 +60,17 @@ export function useCreateAuthorizationMutation() {
 				throw new Error("No data returned");
 			}
 
-			// Validate response structure based on mode
+			// Validate response structure with Zod based on mode
 			const isDCAPI =
 				params.responseModeConfig.mode === "dc_api" ||
 				params.responseModeConfig.mode === "dc_api.jwt";
 
-			if (isDCAPI && !("digitalCredentialGetRequest" in data)) {
-				throw new Error("Expected digitalCredentialGetRequest in response");
-			}
+			const schema = isDCAPI ? dcApiResponseSchema : standardResponseSchema;
+			const result = schema.safeParse(data);
 
-			if (!isDCAPI && !("authorizeUrl" in data)) {
-				throw new Error("Expected authorizeUrl in response");
+			if (!result.success) {
+				const errors = result.error.issues.map((i) => i.message).join(", ");
+				throw new Error(`Invalid response structure: ${errors}`);
 			}
 
 			return data;
