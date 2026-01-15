@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { CredentialCaseDefinition } from "@/config/credential-cases";
+import type { CredentialCaseDefinition } from "@/config/credential-cases/types";
 import { useFlowStore } from "@/stores/useFlowStore";
 import { validateCredentialCase } from "@/utils/credentialCaseValidation";
 
@@ -63,7 +63,8 @@ export function CustomCredentialCaseDialog({
 								id: "example_attr",
 								displayName: "Example Attribute",
 								path: ["example_attr"],
-								required: false,
+								requiredForIssuance: false,
+								nonSelectivelyDisclosable: false,
 							},
 						],
 					},

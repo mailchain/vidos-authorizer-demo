@@ -20,10 +20,8 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import {
-	CREDENTIAL_CASES,
-	type CredentialCaseDefinition,
-} from "@/config/credential-cases";
+import { CREDENTIAL_CASES } from "@/config/credential-cases/credential-cases";
+import type { CredentialCaseDefinition } from "@/config/credential-cases/types";
 import { useFlowStore } from "@/stores/useFlowStore";
 import { CustomCredentialCaseDialog } from "./CustomCredentialCaseDialog";
 

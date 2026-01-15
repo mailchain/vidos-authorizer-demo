@@ -17,7 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import {
 	getCredentialCase,
 	getFormatDefinitionById,
-} from "@/config/credential-cases";
+} from "@/config/credential-cases/utils";
 import { useFlowStore } from "@/stores/useFlowStore";
 import type { CredentialRequestWithId } from "@/types/app";
 import { CredentialRequestBuilder } from "./CredentialRequestBuilder";
@@ -74,7 +74,13 @@ export function CredentialRequestList() {
 			? getDocumentTypeAbbrev(credCase.displayName)
 			: request.documentType.toUpperCase();
 
-		return `${docTypeLabel} - ${formatDef.displayName} (${request.attributes.length} attributes)`;
+		// Count both selectively disclosable (from request.attributes) and non-selectively disclosable attributes
+		const nonDisclosableCount = formatDef.attributes.filter(
+			(attr) => attr.nonSelectivelyDisclosable,
+		).length;
+		const totalCount = request.attributes.length + nonDisclosableCount;
+
+		return `${docTypeLabel} - ${formatDef.displayName} (${totalCount} attributes)`;
 	};
 
 	return (

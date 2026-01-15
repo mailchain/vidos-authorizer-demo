@@ -1,0 +1,12 @@
+import { HEALTH_ID_CREDENTIAL_CASE_DEFINITION } from "./health-id";
+import { MDL_CREDENTIAL_CASE_DEFINITION } from "./mdl";
+import { PHOTO_ID_CREDENTIAL_CASE_DEFINITION } from "./photo-id";
+import { PID_CREDENTIAL_CASE_DEFINITION } from "./pid";
+import type { CredentialCaseDefinition } from "./types";
+
+export const CREDENTIAL_CASES: CredentialCaseDefinition[] = [
+	PID_CREDENTIAL_CASE_DEFINITION,
+	MDL_CREDENTIAL_CASE_DEFINITION,
+	PHOTO_ID_CREDENTIAL_CASE_DEFINITION,
+	HEALTH_ID_CREDENTIAL_CASE_DEFINITION,
+];

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { CredentialCaseDefinition } from "@/config/credential-cases";
+import type { CredentialCaseDefinition } from "@/config/credential-cases/types";
 import type { DigitalCredentialGetRequest } from "@/types/api";
 import type {
 	AppStage,

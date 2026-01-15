@@ -1,8 +1,6 @@
 import { z } from "zod";
-import {
-	CREDENTIAL_CASES,
-	type CredentialCaseDefinition,
-} from "@/config/credential-cases";
+import { CREDENTIAL_CASES } from "@/config/credential-cases/credential-cases";
+import type { CredentialCaseDefinition } from "@/config/credential-cases/types";
 
 export interface ValidationResult {
 	valid: boolean;

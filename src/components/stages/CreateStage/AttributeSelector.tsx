@@ -2,7 +2,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { getFormatDefinitionById } from "@/config/credential-cases";
+import type { AttributeDefinition } from "@/config/credential-cases/types";
+import {
+	getFormatDefinitionById,
+	hasSelectivelyDisclosableAttributes,
+} from "@/config/credential-cases/utils";
 
 interface AttributeSelectorProps {
 	formatId: string;
@@ -21,6 +25,21 @@ export function AttributeSelector({
 		return <p className="text-sm text-muted-foreground">Unknown format</p>;
 	}
 
+	const hasSelectiveDisclosure = hasSelectivelyDisclosableAttributes(formatDef);
+
+	// Split attributes into non-disclosable (always shown first) and disclosable
+	const [disclosableAttrs, nonDisclosableAttrs] = formatDef.attributes.reduce(
+		([accDisclosableAttrs, accNonDisclosableAttrs], attr) => {
+			if (attr.nonSelectivelyDisclosable) {
+				accNonDisclosableAttrs.push(attr);
+			} else {
+				accDisclosableAttrs.push(attr);
+			}
+			return [accDisclosableAttrs, accNonDisclosableAttrs];
+		},
+		[[], []] as [AttributeDefinition[], AttributeDefinition[]],
+	);
+
 	const handleToggle = (attrId: string, checked: boolean) => {
 		if (checked) {
 			onChange([...selectedAttributes, attrId]);
@@ -35,7 +54,9 @@ export function AttributeSelector({
 	};
 
 	const handleSelectNone = () => {
-		onChange([]);
+		// Keep non-disclosable attributes always selected
+		const nonDisclosableIds = nonDisclosableAttrs.map((attr) => attr.id);
+		onChange(nonDisclosableIds);
 	};
 
 	return (
@@ -44,32 +65,65 @@ export function AttributeSelector({
 				<div className="space-y-1">
 					<Label>Attributes</Label>
 					<p className="text-xs text-muted-foreground">
-						Select at least one attribute to request
+						{hasSelectiveDisclosure
+							? "Select attributes to request"
+							: "This credential has no selectively disclosable attributes"}
 					</p>
 				</div>
-				<div className="flex gap-2">
-					<Button
-						type="button"
-						variant="outline"
-						size="sm"
-						onClick={handleSelectAll}
-					>
-						Select All
-					</Button>
-					<Button
-						type="button"
-						variant="outline"
-						size="sm"
-						onClick={handleSelectNone}
-					>
-						Select None
-					</Button>
-				</div>
+				{hasSelectiveDisclosure && (
+					<div className="flex gap-2">
+						<Button
+							type="button"
+							variant="outline"
+							size="sm"
+							onClick={handleSelectAll}
+						>
+							Select All
+						</Button>
+						<Button
+							type="button"
+							variant="outline"
+							size="sm"
+							onClick={handleSelectNone}
+						>
+							{nonDisclosableAttrs.length > 0
+								? "Deselect Disclosable"
+								: "Select None"}
+						</Button>
+					</div>
+				)}
 			</div>
 
 			<div className="border rounded-md p-3 max-h-64 md:max-h-96 lg:max-h-[32rem] overflow-y-auto">
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-					{formatDef.attributes.map((attr) => {
+					{/* Non-disclosable attributes first (always selected, disabled) */}
+					{nonDisclosableAttrs.map((attr) => {
+						return (
+							<div
+								key={attr.id}
+								className="flex items-center justify-between space-x-2"
+							>
+								<div className="flex items-center space-x-2">
+									<Checkbox
+										id={`attr-${attr.id}`}
+										checked={true}
+										disabled={true}
+									/>
+									<Label
+										htmlFor={`attr-${attr.id}`}
+										className="font-normal text-muted-foreground"
+									>
+										{attr.displayName}
+									</Label>
+								</div>
+								<Badge variant="outline" className="text-xs shrink-0">
+									Always disclosed
+								</Badge>
+							</div>
+						);
+					})}
+					{/* Selectively disclosable attributes */}
+					{disclosableAttrs.map((attr) => {
 						const isChecked = selectedAttributes.includes(attr.id);
 						return (
 							<div
@@ -91,9 +145,9 @@ export function AttributeSelector({
 										{attr.displayName}
 									</Label>
 								</div>
-								{attr.required && (
+								{attr.requiredForIssuance && (
 									<Badge variant="secondary" className="text-xs shrink-0">
-										Required in credential
+										Required
 									</Badge>
 								)}
 							</div>

@@ -12,7 +12,7 @@ import {
 	getAvailableFormats,
 	getFormatDefinitionById,
 	isCustomCase,
-} from "@/config/credential-cases";
+} from "@/config/credential-cases/utils";
 import { useFlowStore } from "@/stores/useFlowStore";
 import type { CredentialRequestWithId } from "@/types/app";
 import { AttributeSelector } from "./AttributeSelector";
