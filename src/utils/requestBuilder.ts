@@ -15,6 +15,9 @@ export function buildAuthorizationRequestBody(
 		responseMode: responseModeConfig.mode,
 		responseType: "vp_token",
 		query,
+		...(responseModeConfig.profile && {
+			profile: responseModeConfig.profile,
+		}),
 		...(isDCAPI && {
 			protocol: responseModeConfig.dcApiProtocol,
 			...(responseModeConfig.dcApiProtocol === "openid4vp-v1-signed" && {

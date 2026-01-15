@@ -578,7 +578,6 @@ The application uses a reusable attribute mapping system that generates format-s
 
 ### Phase 3: Advanced Features
 
-- [ ] Custom attribute entry
-- [ ] Raw JSON request input
+- [x] Raw JSON request input
 - [x] Result data expansion/details view
 - [x] Persistent settings

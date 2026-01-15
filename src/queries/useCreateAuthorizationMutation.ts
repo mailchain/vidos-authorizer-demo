@@ -11,8 +11,11 @@ import { buildAuthorizationRequestBody } from "@/utils/requestBuilder";
 
 interface CreateAuthorizationParams {
 	authorizerUrl: string;
-	credentialRequests: CredentialRequestWithId[];
-	responseModeConfig: ResponseModeConfig;
+
+	// Either builder params OR raw JSON
+	credentialRequests?: CredentialRequestWithId[];
+	responseModeConfig?: ResponseModeConfig;
+	rawRequestBody?: unknown; // For JSON mode
 }
 
 // Zod schemas for API response validation
@@ -33,19 +36,43 @@ export function useCreateAuthorizationMutation() {
 	return useMutation({
 		mutationKey: ["authorization", "create"],
 		mutationFn: async (params: CreateAuthorizationParams) => {
-			// Validate inputs
-			if (params.credentialRequests.length === 0) {
-				throw new Error("No credential requests configured");
-			}
-
 			if (!params.authorizerUrl) {
 				throw new Error("Authorizer URL is required");
 			}
 
-			const body = buildAuthorizationRequestBody(
-				params.credentialRequests,
-				params.responseModeConfig,
-			);
+			let body: unknown;
+			let responseMode: string | undefined;
+
+			if (params.rawRequestBody) {
+				// Raw JSON mode - use directly
+				body = params.rawRequestBody;
+
+				// Extract responseMode from raw body for response validation
+				if (
+					typeof body === "object" &&
+					body !== null &&
+					"responseMode" in body
+				) {
+					responseMode = (body as { responseMode: string }).responseMode;
+				}
+			} else {
+				// Builder mode - build from config
+				if (
+					!params.credentialRequests ||
+					params.credentialRequests.length === 0
+				) {
+					throw new Error("No credential requests configured");
+				}
+				if (!params.responseModeConfig) {
+					throw new Error("Response mode configuration is required");
+				}
+
+				body = buildAuthorizationRequestBody(
+					params.credentialRequests,
+					params.responseModeConfig,
+				);
+				responseMode = params.responseModeConfig.mode;
+			}
 
 			const client = createAuthorizerClient(params.authorizerUrl);
 			const { data, error } = await client.POST(
@@ -65,8 +92,7 @@ export function useCreateAuthorizationMutation() {
 
 			// Validate response structure with Zod based on mode
 			const isDCAPI =
-				params.responseModeConfig.mode === "dc_api" ||
-				params.responseModeConfig.mode === "dc_api.jwt";
+				responseMode === "dc_api" || responseMode === "dc_api.jwt";
 
 			const schema = isDCAPI ? dcApiResponseSchema : standardResponseSchema;
 			const result = schema.safeParse(data);
@@ -80,11 +106,20 @@ export function useCreateAuthorizationMutation() {
 		},
 		onMutate: (variables) => {
 			// Debug: save request body
-			const body = buildAuthorizationRequestBody(
-				variables.credentialRequests,
-				variables.responseModeConfig,
-			);
-			useFlowStore.getState().setLastRequest(body);
+			let body: unknown;
+
+			if (variables.rawRequestBody) {
+				body = variables.rawRequestBody;
+			} else if (variables.credentialRequests && variables.responseModeConfig) {
+				body = buildAuthorizationRequestBody(
+					variables.credentialRequests,
+					variables.responseModeConfig,
+				);
+			}
+
+			if (body) {
+				useFlowStore.getState().setLastRequest(body);
+			}
 		},
 		onSuccess: (data) => {
 			const store = useFlowStore.getState();

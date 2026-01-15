@@ -59,6 +59,16 @@ export function validateAuthorizationRequest(
 		errors.push("DC API protocol must be selected");
 	}
 
+	// Validate HAIP profile constraints
+	if (responseModeConfig.profile === "haip") {
+		const haipAllowedModes: string[] = ["direct_post.jwt", "dc_api.jwt"];
+		if (!haipAllowedModes.includes(responseModeConfig.mode)) {
+			errors.push(
+				"HAIP profile requires signed response mode (direct_post.jwt or dc_api.jwt)",
+			);
+		}
+	}
+
 	return {
 		valid: errors.length === 0,
 		errors,

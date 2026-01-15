@@ -6,6 +6,7 @@ import type {
 	AppStage,
 	CredentialRequestWithId,
 	ResponseModeConfig,
+	SavedJsonRequest,
 } from "@/types/app";
 
 interface FlowState {
@@ -37,6 +38,18 @@ interface FlowState {
 		credCase: CredentialCaseDefinition,
 	) => void;
 	deleteCustomCredentialCase: (id: string) => void;
+
+	// Raw JSON mode
+	useRawJsonMode: boolean;
+	setUseRawJsonMode: (use: boolean) => void;
+
+	rawJsonContent: string;
+	setRawJsonContent: (content: string) => void;
+
+	customJsonRequests: SavedJsonRequest[];
+	addCustomJsonRequest: (request: SavedJsonRequest) => void;
+	updateCustomJsonRequest: (id: string, request: SavedJsonRequest) => void;
+	deleteCustomJsonRequest: (id: string) => void;
 
 	// Authorization data
 	authorizationId: string | null;
@@ -80,6 +93,9 @@ const initialState = {
 	credentialRequests: [],
 	responseModeConfig: { mode: "direct_post.jwt" } as ResponseModeConfig,
 	customCredentialCases: [],
+	useRawJsonMode: false,
+	rawJsonContent: "",
+	customJsonRequests: [],
 	authorizationId: null,
 	authorizeUrl: null,
 	digitalCredentialGetRequest: null,
@@ -144,6 +160,29 @@ export const useFlowStore = create<FlowState>()(
 					error: null,
 				})),
 
+			setUseRawJsonMode: (useRawJsonMode) => set({ useRawJsonMode }),
+			setRawJsonContent: (rawJsonContent) => set({ rawJsonContent }),
+
+			addCustomJsonRequest: (request) =>
+				set((state) => ({
+					customJsonRequests: [...state.customJsonRequests, request],
+					error: null,
+				})),
+			updateCustomJsonRequest: (id, request) =>
+				set((state) => ({
+					customJsonRequests: state.customJsonRequests.map((req) =>
+						req.id === id ? request : req,
+					),
+					error: null,
+				})),
+			deleteCustomJsonRequest: (id) =>
+				set((state) => ({
+					customJsonRequests: state.customJsonRequests.filter(
+						(req) => req.id !== id,
+					),
+					error: null,
+				})),
+
 			setAuthorizationId: (authorizationId) => set({ authorizationId }),
 			setAuthorizeUrl: (authorizeUrl) => set({ authorizeUrl }),
 			setDigitalCredentialGetRequest: (digitalCredentialGetRequest) =>
@@ -164,6 +203,7 @@ export const useFlowStore = create<FlowState>()(
 					...initialState,
 					authorizerUrl: state.authorizerUrl, // Keep URL
 					customCredentialCases: state.customCredentialCases, // Keep custom cases
+					customJsonRequests: state.customJsonRequests, // Keep custom JSON requests
 				})),
 
 			backToCreateStage: () =>
@@ -182,6 +222,7 @@ export const useFlowStore = create<FlowState>()(
 			partialize: (state) => ({
 				authorizerUrl: state.authorizerUrl,
 				customCredentialCases: state.customCredentialCases,
+				customJsonRequests: state.customJsonRequests,
 			}),
 		},
 	),

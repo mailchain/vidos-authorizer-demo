@@ -93,7 +93,7 @@ export function CustomCredentialCaseDialog({
 					excludeId,
 				);
 				setErrors(result.errors);
-			} catch (e) {
+			} catch (_e) {
 				// JSON parse error will be caught by validation
 			} finally {
 				setIsValidating(false);
@@ -112,7 +112,7 @@ export function CustomCredentialCaseDialog({
 				parsed.id = newId;
 				setJsonInput(JSON.stringify(parsed, null, 2));
 			}
-		} catch (e) {
+		} catch (_e) {
 			// Ignore if JSON is invalid
 		}
 	};
@@ -218,8 +218,8 @@ export function CustomCredentialCaseDialog({
 								<div className="space-y-1">
 									<p className="font-medium">Validation Errors:</p>
 									<ul className="list-disc list-inside space-y-1">
-										{errors.map((error, i) => (
-											<li key={i} className="text-sm">
+										{errors.map((error) => (
+											<li key={error} className="text-sm">
 												{error}
 											</li>
 										))}

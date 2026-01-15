@@ -74,38 +74,45 @@ export function PolicyResults({ results }: PolicyResultsProps) {
 			)}
 
 			{/* Credential-level results */}
-			{Object.entries(groupedByCredential).map(([credId, credResults], index) => {
-				const passed = credResults.filter((r) => !r.error).length;
-				const failed = credResults.filter((r) => r.error).length;
+			{Object.entries(groupedByCredential).map(
+				([credId, credResults], index) => {
+					const passed = credResults.filter((r) => !r.error).length;
+					const failed = credResults.filter((r) => r.error).length;
 
-				return (
-					<div key={credId} className="border rounded-md p-4 md:p-6 space-y-3">
-						<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-							<div>
-								<h4 className="font-medium">Credential {index + 1}</h4>
-								<p className="text-xs text-muted-foreground font-mono mt-1">
-									{credId}
-								</p>
+					return (
+						<div
+							key={credId}
+							className="border rounded-md p-4 md:p-6 space-y-3"
+						>
+							<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+								<div>
+									<h4 className="font-medium">Credential {index + 1}</h4>
+									<p className="text-xs text-muted-foreground font-mono mt-1">
+										{credId}
+									</p>
+								</div>
+								<div className="flex gap-2">
+									{passed > 0 && (
+										<Badge variant="default">{passed} passed</Badge>
+									)}
+									{failed > 0 && (
+										<Badge variant="destructive">{failed} failed</Badge>
+									)}
+								</div>
 							</div>
-							<div className="flex gap-2">
-								{passed > 0 && <Badge variant="default">{passed} passed</Badge>}
-								{failed > 0 && (
-									<Badge variant="destructive">{failed} failed</Badge>
-								)}
+
+							<div className="space-y-2">
+								{credResults.map((result) => (
+									<PolicyResultItem
+										key={`${result.path.join("-")}-${result.policy}-${result.service}`}
+										result={result}
+									/>
+								))}
 							</div>
 						</div>
-
-						<div className="space-y-2">
-							{credResults.map((result) => (
-								<PolicyResultItem
-									key={`${result.path.join("-")}-${result.policy}-${result.service}`}
-									result={result}
-								/>
-							))}
-						</div>
-					</div>
-				);
-			})}
+					);
+				},
+			)}
 		</div>
 	);
 }
@@ -129,7 +136,8 @@ function PolicyResultItem({ result }: { result: PolicyResult }) {
 					<div className="flex items-center justify-between gap-2">
 						<div className="space-y-1">
 							<p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-								{result.service.charAt(0).toUpperCase() + result.service.slice(1)}
+								{result.service.charAt(0).toUpperCase() +
+									result.service.slice(1)}
 							</p>
 							<p className="font-medium text-sm">
 								{camelToTitleCase(result.policy)}

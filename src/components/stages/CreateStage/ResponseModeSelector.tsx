@@ -32,6 +32,7 @@ export function ResponseModeSelector() {
 
 	const isDCAPIMode = config.mode === "dc_api" || config.mode === "dc_api.jwt";
 	const isSigned = config.dcApiProtocol === "openid4vp-v1-signed";
+	const isHAIP = config.profile === "haip";
 
 	return (
 		<div className="space-y-4">
@@ -40,10 +41,18 @@ export function ResponseModeSelector() {
 				<RadioGroup value={config.mode} onValueChange={handleModeChange}>
 					<div className="space-y-1">
 						<div className="flex items-center space-x-2">
-							<RadioGroupItem value="direct_post" id="mode-direct-post" />
+							<RadioGroupItem
+								value="direct_post"
+								id="mode-direct-post"
+								disabled={isHAIP}
+							/>
 							<Label
 								htmlFor="mode-direct-post"
-								className="font-normal cursor-pointer"
+								className={
+									isHAIP
+										? "font-normal cursor-not-allowed opacity-50"
+										: "font-normal cursor-pointer"
+								}
 							>
 								direct_post
 							</Label>
@@ -51,6 +60,11 @@ export function ResponseModeSelector() {
 						<p className="text-xs text-muted-foreground ml-6">
 							QR code with plain response
 						</p>
+						{isHAIP && (
+							<p className="text-xs text-amber-600 ml-6">
+								Not available in HAIP profile (requires signed mode)
+							</p>
+						)}
 					</div>
 					<div className="space-y-1">
 						<div className="flex items-center space-x-2">
@@ -74,14 +88,14 @@ export function ResponseModeSelector() {
 							<RadioGroupItem
 								value="dc_api"
 								id="mode-dc-api"
-								disabled={!dcApiSupported}
+								disabled={isHAIP || !dcApiSupported}
 							/>
 							<Label
 								htmlFor="mode-dc-api"
 								className={
-									dcApiSupported
-										? "font-normal cursor-pointer"
-										: "font-normal cursor-not-allowed opacity-50"
+									isHAIP || !dcApiSupported
+										? "font-normal cursor-not-allowed opacity-50"
+										: "font-normal cursor-pointer"
 								}
 							>
 								dc_api {!dcApiSupported && <DcApiBrowserNotSupported />}
@@ -90,6 +104,11 @@ export function ResponseModeSelector() {
 						<p className="text-xs text-muted-foreground ml-6">
 							Browser API with plain response
 						</p>
+						{isHAIP && (
+							<p className="text-xs text-amber-600 ml-6">
+								Not available in HAIP profile (requires signed mode)
+							</p>
+						)}
 					</div>
 					<div className="space-y-1">
 						<div className="flex items-center space-x-2">

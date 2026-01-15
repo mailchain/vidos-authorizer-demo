@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { JsonCollapsible } from "@/components/JsonCollapsible";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -11,11 +12,20 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useCreateAuthorizationMutation } from "@/queries/useCreateAuthorizationMutation";
 import { useFlowStore } from "@/stores/useFlowStore";
+import {
+	type JsonValidationResult,
+	validateJsonRequest,
+} from "@/utils/jsonRequestValidation";
 import { buildAuthorizationRequestBody } from "@/utils/requestBuilder";
 import { validateAuthorizationRequest } from "@/utils/validation";
 import { AuthorizerConfig } from "./AuthorizerConfig";
 import { CredentialRequestList } from "./CredentialRequestList";
+import { JsonEditor } from "./JsonEditor";
+import { JsonModeToggle } from "./JsonModeToggle";
+import { ProfileSelector } from "./ProfileSelector";
 import { ResponseModeSelector } from "./ResponseModeSelector";
+import { SavedJsonRequestsManager } from "./SavedJsonRequestsManager";
+import { TransferToJsonButton } from "./TransferToJsonButton";
 
 export function CreateStage() {
 	const authorizerUrl = useFlowStore((state) => state.authorizerUrl);
@@ -27,13 +37,41 @@ export function CreateStage() {
 	const setShowPreview = useFlowStore((state) => state.setShowPreview);
 	const setLastRequest = useFlowStore((state) => state.setLastRequest);
 
+	// JSON mode state
+	const useRawJsonMode = useFlowStore((state) => state.useRawJsonMode);
+	const setUseRawJsonMode = useFlowStore((state) => state.setUseRawJsonMode);
+	const rawJsonContent = useFlowStore((state) => state.rawJsonContent);
+
+	const [jsonValidation, setJsonValidation] = useState<JsonValidationResult>({
+		valid: false,
+		errors: [],
+	});
+
 	const mutation = useCreateAuthorizationMutation();
 
-	const validation = validateAuthorizationRequest(
+	// Builder mode validation
+	const builderValidation = validateAuthorizationRequest(
 		authorizerUrl,
 		credentialRequests,
 		responseModeConfig,
 	);
+
+	// JSON mode validation (debounced)
+	useEffect(() => {
+		if (!useRawJsonMode) return;
+
+		const timer = setTimeout(() => {
+			const result = validateJsonRequest(rawJsonContent);
+			setJsonValidation(result);
+		}, 500);
+
+		return () => clearTimeout(timer);
+	}, [rawJsonContent, useRawJsonMode]);
+
+	// Determine which validation to use
+	const isValid = useRawJsonMode
+		? jsonValidation.valid
+		: builderValidation.valid;
 
 	const handleShowPreview = () => {
 		if (credentialRequests.length === 0) return;
@@ -46,12 +84,34 @@ export function CreateStage() {
 	};
 
 	const handleConfirmAndSend = () => {
-		mutation.mutate({ authorizerUrl, credentialRequests, responseModeConfig });
+		if (useRawJsonMode) {
+			// Raw JSON mode - send parsed JSON directly
+			const parsed = JSON.parse(rawJsonContent);
+			mutation.mutate({ authorizerUrl, rawRequestBody: parsed });
+		} else {
+			// Builder mode
+			mutation.mutate({
+				authorizerUrl,
+				credentialRequests,
+				responseModeConfig,
+			});
+		}
 		setShowPreview(false);
 	};
 
 	const handleCreateDirect = () => {
-		mutation.mutate({ authorizerUrl, credentialRequests, responseModeConfig });
+		if (useRawJsonMode) {
+			// Raw JSON mode - send parsed JSON directly
+			const parsed = JSON.parse(rawJsonContent);
+			mutation.mutate({ authorizerUrl, rawRequestBody: parsed });
+		} else {
+			// Builder mode
+			mutation.mutate({
+				authorizerUrl,
+				credentialRequests,
+				responseModeConfig,
+			});
+		}
 	};
 
 	if (showPreview) {
@@ -118,24 +178,62 @@ export function CreateStage() {
 
 				<Separator />
 
-				<ResponseModeSelector />
+				{/* Mode Toggle */}
+				<JsonModeToggle
+					value={useRawJsonMode}
+					onChange={setUseRawJsonMode}
+					hasUnsavedChanges={rawJsonContent !== "" && useRawJsonMode}
+				/>
 
 				<Separator />
 
-				<CredentialRequestList />
+				{useRawJsonMode ? (
+					<>
+						{/* Raw JSON Mode */}
+						<JsonEditor
+							value={rawJsonContent}
+							onChange={useFlowStore.getState().setRawJsonContent}
+							validation={jsonValidation}
+						/>
 
-				{!validation.valid && (
+						<SavedJsonRequestsManager />
+					</>
+				) : (
+					<>
+						{/* Builder Mode */}
+						<ProfileSelector />
+
+						<Separator />
+
+						<ResponseModeSelector />
+
+						<Separator />
+
+						<CredentialRequestList />
+
+						{/* Transfer Button */}
+						<TransferToJsonButton disabled={!builderValidation.valid} />
+					</>
+				)}
+
+				{!isValid && (
 					<Alert variant="destructive">
 						<AlertDescription>
 							<p className="font-medium mb-2">
 								Please fix the following errors:
 							</p>
 							<ul className="list-disc list-inside space-y-1">
-								{validation.errors.map((error) => (
-									<li key={error} className="text-sm">
-										{error}
-									</li>
-								))}
+								{useRawJsonMode
+									? jsonValidation.errors.map((error) => (
+											<li key={error} className="text-sm">
+												{error}
+											</li>
+										))
+									: builderValidation.errors.map((error) => (
+											<li key={error} className="text-sm">
+												{error}
+											</li>
+										))}
 							</ul>
 						</AlertDescription>
 					</Alert>
@@ -157,19 +255,21 @@ export function CreateStage() {
 				<div className="flex flex-col sm:flex-row gap-3">
 					<Button
 						onClick={handleCreateDirect}
-						disabled={!validation.valid || mutation.isPending}
+						disabled={!isValid || mutation.isPending}
 						className="flex-1"
 					>
 						{mutation.isPending ? "Creating..." : "Create Authorization"}
 					</Button>
-					<Button
-						variant="outline"
-						onClick={handleShowPreview}
-						disabled={!validation.valid || mutation.isPending}
-						className="flex-1"
-					>
-						Preview Request
-					</Button>
+					{!useRawJsonMode && (
+						<Button
+							variant="outline"
+							onClick={handleShowPreview}
+							disabled={!isValid || mutation.isPending}
+							className="flex-1"
+						>
+							Preview Request
+						</Button>
+					)}
 				</div>
 			</CardContent>
 		</Card>

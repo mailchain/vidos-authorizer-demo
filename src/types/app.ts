@@ -21,6 +21,8 @@ export type ResponseMode =
 
 export type DCAPIProtocol = "openid4vp-v1-unsigned" | "openid4vp-v1-signed";
 
+export type Profile = "haip" | undefined;
+
 export interface CredentialRequest {
 	documentType: string;
 	formatId: string;
@@ -36,6 +38,7 @@ export interface CredentialRequestWithId extends CredentialRequest {
 // Response mode configuration
 export interface ResponseModeConfig {
 	mode: ResponseMode;
+	profile?: Profile; // Authorization profile (e.g., HAIP)
 	dcApiProtocol?: DCAPIProtocol; // Required for dc_api modes
 	expectedOrigins?: string[]; // Required for signed protocol
 }
@@ -60,6 +63,15 @@ export interface PolicyResult {
 export interface PolicyResponse {
 	data: PolicyResult[];
 	authorizationId: string;
+}
+
+// Saved JSON request for custom authorization requests
+export interface SavedJsonRequest {
+	id: string; // UUID
+	name: string; // User-provided name
+	content: string; // JSON string of request body
+	createdAt: string; // ISO timestamp
+	updatedAt: string; // ISO timestamp
 }
 
 export interface AppState {

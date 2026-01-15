@@ -1,4 +1,5 @@
 import { ChevronRight, Plus, Trash2 } from "lucide-react";
+import { CustomCredentialCaseManager } from "@/components/CustomCredentialCaseManager";
 import {
 	Accordion,
 	AccordionContent,
@@ -13,7 +14,6 @@ import {
 } from "@/components/ui/collapsible";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { CustomCredentialCaseManager } from "@/components/CustomCredentialCaseManager";
 import {
 	getCredentialCase,
 	getFormatDefinitionById,
@@ -141,8 +141,8 @@ export function CredentialRequestList() {
 				</CollapsibleTrigger>
 				<CollapsibleContent className="pt-4 space-y-3">
 					<p className="text-sm text-muted-foreground">
-						Define custom credential types beyond the built-in options (PID, MDL,
-						Photo ID).
+						Define custom credential types beyond the built-in options (PID,
+						MDL, Photo ID).
 					</p>
 					<CustomCredentialCaseManager />
 				</CollapsibleContent>

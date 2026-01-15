@@ -40,9 +40,7 @@ export function CustomCredentialCaseManager() {
 	const deleteCustomCase = useFlowStore(
 		(state) => state.deleteCustomCredentialCase,
 	);
-	const credentialRequests = useFlowStore(
-		(state) => state.credentialRequests,
-	);
+	const credentialRequests = useFlowStore((state) => state.credentialRequests);
 
 	const handleAddNew = () => {
 		setDialogMode("create");
@@ -101,17 +99,15 @@ export function CustomCredentialCaseManager() {
 					<DialogHeader>
 						<DialogTitle>Custom Credential Cases</DialogTitle>
 						<DialogDescription>
-							Manage your custom credential case definitions. These are
-							stored locally in your browser.
+							Manage your custom credential case definitions. These are stored
+							locally in your browser.
 						</DialogDescription>
 					</DialogHeader>
 
 					<div className="space-y-4">
 						{/* Built-in Cases Section */}
 						<div className="space-y-2">
-							<h3 className="text-sm font-medium">
-								Built-in Credential Cases
-							</h3>
+							<h3 className="text-sm font-medium">Built-in Credential Cases</h3>
 							<p className="text-sm text-muted-foreground">
 								Clone a built-in case to create a custom variant.
 							</p>
@@ -160,43 +156,45 @@ export function CustomCredentialCaseManager() {
 							) : (
 								<div className="space-y-2">
 									{customCases.map((credCase) => (
-									<div
-										key={credCase.id}
-										className="flex items-center justify-between p-4 border rounded-lg"
-									>
-										<div className="flex-1">
-											<div className="flex items-center gap-2">
-												<h4 className="font-medium">{credCase.displayName}</h4>
-												<Badge variant="secondary">Custom</Badge>
+										<div
+											key={credCase.id}
+											className="flex items-center justify-between p-4 border rounded-lg"
+										>
+											<div className="flex-1">
+												<div className="flex items-center gap-2">
+													<h4 className="font-medium">
+														{credCase.displayName}
+													</h4>
+													<Badge variant="secondary">Custom</Badge>
+												</div>
+												<p className="text-sm text-muted-foreground mt-1">
+													ID: {credCase.id} · {credCase.formats.length} format
+													{credCase.formats.length === 1 ? "" : "s"}
+												</p>
+												{isCaseInUse(credCase.id) && (
+													<Badge variant="outline" className="mt-2">
+														In use
+													</Badge>
+												)}
 											</div>
-											<p className="text-sm text-muted-foreground mt-1">
-												ID: {credCase.id} · {credCase.formats.length} format
-												{credCase.formats.length === 1 ? "" : "s"}
-											</p>
-											{isCaseInUse(credCase.id) && (
-												<Badge variant="outline" className="mt-2">
-													In use
-												</Badge>
-											)}
+											<div className="flex gap-2">
+												<Button
+													variant="ghost"
+													size="sm"
+													onClick={() => handleEdit(credCase)}
+												>
+													<Edit className="w-4 h-4" />
+												</Button>
+												<Button
+													variant="ghost"
+													size="sm"
+													onClick={() => handleDeleteClick(credCase.id)}
+												>
+													<Trash2 className="w-4 h-4" />
+												</Button>
+											</div>
 										</div>
-										<div className="flex gap-2">
-											<Button
-												variant="ghost"
-												size="sm"
-												onClick={() => handleEdit(credCase)}
-											>
-												<Edit className="w-4 h-4" />
-											</Button>
-											<Button
-												variant="ghost"
-												size="sm"
-												onClick={() => handleDeleteClick(credCase.id)}
-											>
-												<Trash2 className="w-4 h-4" />
-											</Button>
-										</div>
-									</div>
-								))}
+									))}
 								</div>
 							)}
 						</div>
