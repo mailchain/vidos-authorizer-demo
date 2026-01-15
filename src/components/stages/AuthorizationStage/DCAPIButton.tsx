@@ -1,4 +1,4 @@
-import { Loader2 } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useDCAPIMutation } from "@/queries/useDCAPIMutation";
@@ -9,10 +9,11 @@ export function DCAPIButton() {
 		(state) => state.digitalCredentialGetRequest,
 	);
 
-	const { mutate, isPending, error } = useDCAPIMutation();
+	const { mutate, isPending, error, reset } = useDCAPIMutation();
 
 	const handleInvoke = () => {
 		if (!digitalCredentialGetRequest) return;
+		reset(); // Clear previous error
 		mutate(digitalCredentialGetRequest);
 	};
 
@@ -30,10 +31,12 @@ export function DCAPIButton() {
 					className="w-full sm:w-auto sm:min-w-48 sm:mx-auto sm:block"
 				>
 					{isPending ? (
-						<>
+						<span className="flex items-center">
 							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 							Waiting for wallet...
-						</>
+						</span>
+					) : error ? (
+						"Retry"
 					) : (
 						"Request Credentials"
 					)}
@@ -42,6 +45,7 @@ export function DCAPIButton() {
 
 			{error && (
 				<Alert variant="destructive">
+					<AlertCircle className="h-4 w-4" />
 					<AlertDescription>{error.message}</AlertDescription>
 				</Alert>
 			)}

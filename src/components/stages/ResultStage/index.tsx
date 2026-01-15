@@ -58,7 +58,8 @@ const statusConfig: Record<
 };
 
 export function ResultStage() {
-	const startOver = useFlowStore((state) => state.startOver);
+	const backToCreateStage = useFlowStore((state) => state.backToCreateStage);
+	const startFresh = useFlowStore((state) => state.startFresh);
 	const error = useFlowStore((state) => state.error);
 	const queryClient = useQueryClient();
 
@@ -66,8 +67,13 @@ export function ResultStage() {
 	const { data: statusData } = useAuthorizationStatusQuery();
 	const { data: policyResponse, error: policyError } = usePolicyResponseQuery();
 
-	const handleStartOver = () => {
-		startOver();
+	const handleGoBack = () => {
+		backToCreateStage();
+		queryClient.clear(); // Clear all React Query cache
+	};
+
+	const handleStartFresh = () => {
+		startFresh();
 		queryClient.clear(); // Clear all React Query cache
 	};
 
@@ -140,9 +146,22 @@ export function ResultStage() {
 					</>
 				)}
 
-				<Button onClick={handleStartOver} className="w-full sm:w-auto sm:min-w-48 sm:mx-auto sm:block">
-					Start New Authorization
-				</Button>
+				<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:justify-center">
+					<Button
+						onClick={handleGoBack}
+						variant="default"
+						className="w-full sm:w-auto sm:min-w-48"
+					>
+						Try Again
+					</Button>
+					<Button
+						onClick={handleStartFresh}
+						variant="outline"
+						className="w-full sm:w-auto sm:min-w-48"
+					>
+						New Request
+					</Button>
+				</div>
 			</CardContent>
 		</Card>
 	);

@@ -70,8 +70,8 @@ interface FlowState {
 	resetError: () => void;
 
 	// Helper methods
-	startOver: () => void;
-	goBack: () => void;
+	startFresh: () => void;
+	backToCreateStage: () => void;
 }
 
 const initialState = {
@@ -159,14 +159,14 @@ export const useFlowStore = create<FlowState>()(
 			resetError: () => set({ error: null }),
 
 			// Helper methods
-			startOver: () =>
+			startFresh: () =>
 				set((state) => ({
 					...initialState,
 					authorizerUrl: state.authorizerUrl, // Keep URL
 					customCredentialCases: state.customCredentialCases, // Keep custom cases
 				})),
 
-			goBack: () =>
+			backToCreateStage: () =>
 				set({
 					stage: "create",
 					authorizationId: null,

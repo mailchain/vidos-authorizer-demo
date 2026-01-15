@@ -16,25 +16,36 @@ export function useDCAPIMutation() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
+		retry: false,
 		mutationFn: async (
 			digitalCredentialGetRequest: DigitalCredentialGetRequest,
 		) => {
 			if (!authorizationId) {
-				throw new Error("Missing authorization ID");
+				throw new Error("Configuration error: Missing authorization ID");
 			}
 
 			// Check browser support
-			const support = checkDCAPISupport();
+			const support = checkDCAPISupport(digitalCredentialGetRequest.protocol);
 			if (!support.available) {
-				throw new Error(support.reason || "DC API not supported");
+				throw new Error(
+					`Browser compatibility: ${support.reason || "DC API not supported"}`,
+				);
 			}
 
 			// Invoke DC API
-			const credential = await invokeDCAPI(digitalCredentialGetRequest);
+			let credential: Awaited<ReturnType<typeof invokeDCAPI>>;
+			try {
+				credential = await invokeDCAPI(digitalCredentialGetRequest);
+			} catch (error) {
+				throw new Error(
+					`DC API: ${error instanceof Error ? error.message : "Unknown error"}`,
+					{ cause: error },
+				);
+			}
 
 			// Check for errors in the response
 			if (isDigitalCredentialError(credential)) {
-				throw new Error(`Digital credential error: ${credential.data.error}`);
+				throw new Error(`DC API: Credential error - ${credential.data.error}`);
 			}
 
 			// Submit response to appropriate endpoint
@@ -56,9 +67,9 @@ export function useDCAPIMutation() {
 			});
 
 			if (submitError) {
-				throw new Error(
-					submitError.message || "Failed to submit DC API response",
-				);
+				// Handle Authorizer API errors
+				const errorMessage = submitError.message || "Unknown error occurred";
+				throw new Error(`Authorizer API: ${errorMessage}`);
 			}
 
 			return data as DcApiResponse;

@@ -78,14 +78,13 @@ export function ResponseModeSelector() {
 							/>
 							<Label
 								htmlFor="mode-dc-api"
-								className="font-normal cursor-pointer"
+								className={
+									dcApiSupported
+										? "font-normal cursor-pointer"
+										: "font-normal cursor-not-allowed opacity-50"
+								}
 							>
-								dc_api{" "}
-								{!dcApiSupported && (
-									<span className="text-xs text-muted-foreground ml-2">
-										(Browser not supported)
-									</span>
-								)}
+								dc_api {!dcApiSupported && <DcApiBrowserNotSupported />}
 							</Label>
 						</div>
 						<p className="text-xs text-muted-foreground ml-6">
@@ -101,14 +100,13 @@ export function ResponseModeSelector() {
 							/>
 							<Label
 								htmlFor="mode-dc-api-jwt"
-								className="font-normal cursor-pointer"
+								className={
+									dcApiSupported
+										? "font-normal cursor-pointer"
+										: "font-normal cursor-not-allowed opacity-50"
+								}
 							>
-								dc_api.jwt{" "}
-								{!dcApiSupported && (
-									<span className="text-xs text-muted-foreground ml-2">
-										(Browser not supported)
-									</span>
-								)}
+								dc_api.jwt {!dcApiSupported && <DcApiBrowserNotSupported />}
 							</Label>
 						</div>
 						<p className="text-xs text-muted-foreground ml-6">
@@ -165,5 +163,18 @@ export function ResponseModeSelector() {
 				</div>
 			)}
 		</div>
+	);
+}
+
+export function DcApiBrowserNotSupported() {
+	return (
+		<a
+			href="https://caniuse.com/mdn-api_digitalcredential"
+			target="_blank"
+			rel="noopener noreferrer"
+			className="underline hover:text-foreground text-xs text-muted-foreground ml-2"
+		>
+			Browser not supported.
+		</a>
 	);
 }

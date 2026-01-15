@@ -9,9 +9,25 @@ export interface DCAPISupport {
 	reason?: string;
 }
 
-export function checkDCAPISupport(): DCAPISupport {
+export function checkDCAPISupport(protocol?: string): DCAPISupport {
 	if (typeof navigator === "undefined") {
 		return { available: false, reason: "Not in browser environment" };
+	}
+
+	// https://www.w3.org/TR/digital-credentials/#feature-detection
+	if (typeof DigitalCredential === "undefined") {
+		return {
+			available: false,
+			reason: "DigitalCredential interface not available",
+		};
+	}
+
+	// https://www.w3.org/TR/digital-credentials/#checking-if-protocol-is-allowed
+	if (protocol && !DigitalCredential.userAgentAllowsProtocol(protocol)) {
+		return {
+			available: false,
+			reason: `Protocol "${protocol}" not supported by user agent`,
+		};
 	}
 
 	if (!navigator.credentials) {

@@ -22,7 +22,7 @@ export function AuthorizationStage() {
 	const authorizeUrl = useFlowStore((state) => state.authorizeUrl);
 	const lastResponse = useFlowStore((state) => state.lastResponse);
 	const expiresAt = useFlowStore((state) => state.expiresAt);
-	const goBack = useFlowStore((state) => state.goBack);
+	const backToCreateStage = useFlowStore((state) => state.backToCreateStage);
 
 	const { data: statusData, error: statusError } =
 		useAuthorizationStatusQuery();
@@ -94,10 +94,10 @@ export function AuthorizationStage() {
 
 				<Button
 					variant="outline"
-					onClick={goBack}
+					onClick={backToCreateStage}
 					className="w-full sm:w-auto sm:min-w-40 sm:mx-auto sm:block"
 				>
-					Go Back
+					Cancel
 				</Button>
 			</CardContent>
 		</Card>
