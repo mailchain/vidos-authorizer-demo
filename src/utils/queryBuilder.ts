@@ -34,7 +34,7 @@ export function buildDCQLQuery(request: CredentialRequest): DCQLQuery {
 	const claims: DCQLClaim[] = formatDef.attributes
 		.filter((attr) => request.attributes.includes(attr.id))
 		.map((attr) => ({
-			path: attr.path,
+			path: attr.path.filter((p): p is string => p !== null),
 		}));
 
 	return {

@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createAuthorizerClient } from "@/api/client";
 import { useFlowStore } from "@/stores/useFlowStore";
-import type { AuthorizationStatus } from "@/types/app";
+import type { AuthorizationStatusResponse } from "@/types/api";
 import { authorizationKeys } from "./keys";
 
 export function usePolicyResponseQuery() {
@@ -11,9 +11,9 @@ export function usePolicyResponseQuery() {
 
 	// Get current status from React Query cache
 	const queryClient = useQueryClient();
-	const statusData = queryClient.getQueryData(
+	const statusData = queryClient.getQueryData<AuthorizationStatusResponse>(
 		authorizationKeys.status(authorizationId!),
-	) as { status: AuthorizationStatus } | undefined;
+	);
 
 	return useQuery({
 		queryKey: authorizationKeys.policy(authorizationId!),

@@ -13,6 +13,7 @@ export function buildAuthorizationRequestBody(
 
 	return {
 		responseMode: responseModeConfig.mode,
+		responseType: "vp_token",
 		query,
 		...(isDCAPI && {
 			protocol: responseModeConfig.dcApiProtocol,

@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createAuthorizerClient } from "@/api/client";
 import { useFlowStore } from "@/stores/useFlowStore";
 import type { CredentialRequestWithId, ResponseModeConfig } from "@/types/app";
+import type { CreateAuthorizationRequest } from "@/types/api";
 import { buildAuthorizationRequestBody } from "@/utils/requestBuilder";
 
 interface CreateAuthorizationParams {
@@ -32,7 +33,7 @@ export function useCreateAuthorizationMutation() {
 			const { data, error } = await client.POST(
 				"/openid4/vp/v1_0/authorizations",
 				{
-					body: body as any,
+					body: body as CreateAuthorizationRequest,
 				},
 			);
 
