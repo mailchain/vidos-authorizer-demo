@@ -134,14 +134,13 @@ const PID_ATTRIBUTE_MAPPINGS: PIDAttributeMapping[] = [
 		mdocPath: ["sex"],
 		sdJwtPath: ["sex"],
 	},
-	// TODO: re-add when fixed: https://github.com/mailchain/verified-os/pull/2966
-	// {
-	// 	id: "nationality",
-	// 	displayName: "Nationality",
-	//
-	// 	mdocPath: ["nationality"],
-	// 	sdJwtPath: ["nationalities", null],
-	// },
+	{
+		id: "nationality",
+		displayName: "Nationality",
+
+		mdocPath: ["nationality"],
+		sdJwtPath: ["nationalities", null],
+	},
 	{
 		id: "issuance_date",
 		displayName: "Issuance Date",
