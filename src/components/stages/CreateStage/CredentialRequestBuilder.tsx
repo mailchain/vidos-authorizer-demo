@@ -56,15 +56,19 @@ export function CredentialRequestBuilder({
 	};
 
 	const handleFormatChange = (formatId: string) => {
-		const formatDef = getFormatDefinitionById(formatId);
-		if (!formatDef) return;
+		const newFormatDef = getFormatDefinitionById(formatId);
+		if (!newFormatDef) return;
 
-		// Start with no attributes selected
+		// Try to transfer attributes from previous format to new format on best effort basis
+		const transferredAttributes: string[] = request.attributes.filter(
+			(oldAttrId) => newFormatDef.attributes.some((a) => a.id === oldAttrId),
+		);
+
 		onChange({
 			...request,
 			formatId,
-			format: formatDef.format,
-			attributes: [],
+			format: newFormatDef.format,
+			attributes: transferredAttributes,
 		});
 	};
 
