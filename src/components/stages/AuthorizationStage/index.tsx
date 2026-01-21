@@ -65,7 +65,7 @@ export function AuthorizationStage() {
 
 				{lastResponse && (
 					<JsonCollapsible
-						title="Authorization Response"
+						title={`Created "Authorization Request" Response`}
 						data={lastResponse}
 						defaultOpen={false}
 					/>
