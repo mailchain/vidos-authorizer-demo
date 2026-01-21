@@ -36,7 +36,9 @@ export function usePolicyResponseQuery() {
 		},
 		enabled:
 			stage === "result" &&
-			statusData?.status === "authorized" &&
+			(statusData?.status === "authorized" ||
+				statusData?.status === "rejected" ||
+				statusData?.status === "error") &&
 			!!authorizationId,
 		staleTime: Number.POSITIVE_INFINITY, // Never refetch, it's final
 	});
