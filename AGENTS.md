@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI agents when working with code in this repository.
 
 ## Plan Mode
 
@@ -42,14 +42,12 @@ bun run generate-api:prod # regen src/api/authorizer.ts from OpenAPI (NEVER edit
 Wizard-style React Context + useReducer managing:
 
 1. **Create Stage** (`stage: "create"`)
-
    - Configure authorizer URL (localStorage persisted)
    - Build credential requests array (multiple allowed)
    - Select response mode: `direct_post`, `direct_post.jwt`, `dc_api`, `dc_api.jwt`
    - Generate DCQL query via `queryBuilder.ts`
 
 2. **Authorization Stage** (`stage: "authorization"`)
-
    - Standard flows: QR code with `openid4vp://` URI
    - DC API flows: "Get Credentials" button invoking `navigator.credentials.get()`
    - Polls status every 2s via `useAuthorizationStatus`
