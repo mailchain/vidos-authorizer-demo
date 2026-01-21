@@ -92,10 +92,10 @@ export function ResultStage() {
 			<CardContent className="space-y-6 md:space-y-8">
 				{config && (
 					<Alert variant={config.variant}>
-						<div className="flex items-start gap-3">
-							<div
+						<AlertTitle className="mb-1">
+							<span
 								className={cn(
-									"w-8 h-8 rounded-full flex items-center justify-center text-lg shrink-0",
+									"w-8 h-8 rounded-full inline-flex items-center justify-center text-lg shrink-0 mr-2",
 									status === "authorized" && "bg-green-100 text-green-600",
 									status === "rejected" && "bg-red-100 text-red-600",
 									status === "error" && "bg-red-100 text-red-600",
@@ -106,12 +106,10 @@ export function ResultStage() {
 								{status === "rejected" && "✗"}
 								{status === "error" && "!"}
 								{status === "expired" && "⏱"}
-							</div>
-							<div className="flex-1">
-								<AlertTitle className="mb-1">{config.title}</AlertTitle>
-								<AlertDescription>{config.description}</AlertDescription>
-							</div>
-						</div>
+							</span>
+							{config.title}
+						</AlertTitle>
+						<AlertDescription>{config.description}</AlertDescription>
 					</Alert>
 				)}
 
