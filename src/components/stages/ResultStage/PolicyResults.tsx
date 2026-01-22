@@ -1,4 +1,4 @@
-import { ChevronDown, ExternalLink } from "lucide-react";
+import { BookText, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
 	Collapsible,
@@ -122,7 +122,7 @@ function PolicyResultItem({ result }: { result: PolicyResult }) {
 	const hasError = !!result.error;
 	const hasData = !!result.data;
 	const policyDef = getPolicyDefinition(result.policy, result.service);
-	console.log(`Policy Definition for ${result.service}.${result.policy}:`, policyDef);
+	const policyPrettyName = camelToTitleCase(result.policy);
 
 	return (
 		<Collapsible>
@@ -143,9 +143,7 @@ function PolicyResultItem({ result }: { result: PolicyResult }) {
 									result.service.slice(1)}
 							</p>
 							<div className="flex items-center gap-2">
-								<p className="font-medium text-sm">
-									{camelToTitleCase(result.policy)}
-								</p>
+								<p className="font-medium text-sm">{policyPrettyName}</p>
 								{policyDef && (
 									<a
 										href={policyDef.docsUrl}
@@ -153,8 +151,9 @@ function PolicyResultItem({ result }: { result: PolicyResult }) {
 										rel="noopener noreferrer"
 										className="text-muted-foreground hover:text-foreground transition-colors"
 										aria-label="View documentation"
+										title={`View documentation for "${policyPrettyName}" policy`}
 									>
-										<ExternalLink className="h-3.5 w-3.5" />
+										<BookText className="h-3.5 w-3.5" />
 									</a>
 								)}
 							</div>
@@ -199,7 +198,7 @@ function PolicyResultItem({ result }: { result: PolicyResult }) {
 						{hasData && (
 							<div className="p-3 bg-green-50 border border-green-200 rounded text-sm">
 								<p className="font-medium text-green-900 mb-2">
-									{camelToTitleCase(result.policy)} Result
+									{policyPrettyName} Result
 								</p>
 								<pre className="text-xs md:text-sm text-green-800 overflow-auto max-h-48 md:max-h-64 lg:max-h-80">
 									{JSON.stringify(result.data, null, 2)}

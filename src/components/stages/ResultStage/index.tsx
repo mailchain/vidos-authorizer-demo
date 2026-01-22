@@ -1,5 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { ChevronDown } from "lucide-react";
+import {
+	ChevronDown,
+	Download,
+	ExternalLink,
+	MessageCircle,
+} from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,11 +19,14 @@ import {
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Separator } from "@/components/ui/separator";
+import { SUPPORT_CONFIG } from "@/config/support";
 import { cn } from "@/lib/utils";
 import { useAuthorizationStatusQuery } from "@/queries/useAuthorizationStatusQuery";
 import { usePolicyResponseQuery } from "@/queries/usePolicyResponseQuery";
 import { useFlowStore } from "@/stores/useFlowStore";
 import type { AuthorizationStatus, PolicyResult } from "@/types/app";
+import { downloadDebugInfo, generateDebugInfo } from "@/utils/debugExport";
 import { PolicyResults } from "./PolicyResults";
 
 const statusConfig: Record<
@@ -60,7 +68,7 @@ const statusConfig: Record<
 export function ResultStage() {
 	const backToCreateStage = useFlowStore((state) => state.backToCreateStage);
 	const startFresh = useFlowStore((state) => state.startFresh);
-	const error = useFlowStore((state) => state.error);
+	const flowStore = useFlowStore();
 	const queryClient = useQueryClient();
 
 	// Get status and policy from React Query
@@ -76,6 +84,35 @@ export function ResultStage() {
 		startFresh();
 		queryClient.clear(); // Clear all React Query cache
 	};
+
+	const handleDownloadDebugInfo = () => {
+		const debugInfo = generateDebugInfo({
+			authorizationId: flowStore.authorizationId,
+			authorizationRequest: flowStore.lastRequest,
+			authorizationResponse: flowStore.lastResponse,
+			statusData: statusData || null,
+			policyResponse: policyResponse || null,
+			flowState: {
+				stage: flowStore.stage,
+				instanceType: flowStore.instanceType,
+				ownAuthorizerUrl: flowStore.ownAuthorizerUrl,
+				credentialRequests: flowStore.credentialRequests,
+				responseModeConfig: flowStore.responseModeConfig,
+				customCredentialCases: flowStore.customCredentialCases,
+				useRawJsonMode: flowStore.useRawJsonMode,
+				rawJsonContent: flowStore.rawJsonContent,
+				customJsonRequests: flowStore.customJsonRequests,
+				authorizeUrl: flowStore.authorizeUrl,
+				digitalCredentialGetRequest: flowStore.digitalCredentialGetRequest,
+				expiresAt: flowStore.expiresAt,
+				showPreview: flowStore.showPreview,
+				error: flowStore.error,
+			},
+		});
+		downloadDebugInfo(debugInfo);
+	};
+
+	const error = flowStore.error;
 
 	const status = statusData?.status;
 	const config = status ? statusConfig[status] : null;
@@ -125,6 +162,60 @@ export function ResultStage() {
 						</AlertDescription>
 					</Alert>
 				)}
+
+				{/* Support contact and debug export section */}
+				<div className="rounded-lg border bg-muted/50 p-4 space-y-3">
+					<div className="text-sm font-medium">Need Help?</div>
+					<p className="text-xs text-muted-foreground">
+						Contact us via the support options below. Download debugging
+						information to help diagnose issues.
+					</p>
+					<div className="flex flex-col sm:flex-row gap-2">
+						<Button
+							variant="outline"
+							size="sm"
+							className="w-full sm:w-auto"
+							asChild
+						>
+							<a
+								href={SUPPORT_CONFIG.contactFormUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								<MessageCircle className="h-4 w-4 mr-2" />
+								Vidos Contact Form
+								<ExternalLink className="h-3 w-3 ml-1" />
+							</a>
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							className="w-full sm:w-auto"
+							asChild
+						>
+							<a
+								href={SUPPORT_CONFIG.githubIssuesUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								<MessageCircle className="h-4 w-4 mr-2" />
+								GitHub Issues
+								<ExternalLink className="h-3 w-3 ml-1" />
+							</a>
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							className="w-full sm:w-auto"
+							onClick={handleDownloadDebugInfo}
+						>
+							<Download className="h-4 w-4 mr-2" />
+							Download Debug Info
+						</Button>
+					</div>
+				</div>
+
+				<Separator />
 
 				{hasPolicyResults && policyResponse && (
 					<>
