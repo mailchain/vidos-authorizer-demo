@@ -37,6 +37,8 @@ jobs:
       - name: Generate API
         run: bun run generate-api:local # TODO: replace with prod/dev version when ready
       - name: Build
+        env:
+          VITE_MANAGED_AUTHORIZER_URL: ${{ vars.VITE_MANAGED_AUTHORIZER_URL }}
         run: bun run build
       - name: Setup Pages
         uses: actions/configure-pages@v5
