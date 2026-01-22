@@ -7,4 +7,36 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
 	base: "/vidos-authorizer-demo/",
 	plugins: [react(), tailwindcss(), tsconfigPaths()],
+	build: {
+		rollupOptions: {
+			output: {
+				manualChunks: {
+					"vendor-react": ["react", "react-dom"],
+					"vendor-query": ["@tanstack/react-query"],
+					"vendor-ui": [
+						"@radix-ui/react-accordion",
+						"@radix-ui/react-alert-dialog",
+						"@radix-ui/react-checkbox",
+						"@radix-ui/react-collapsible",
+						"@radix-ui/react-dialog",
+						"@radix-ui/react-label",
+						"@radix-ui/react-radio-group",
+						"@radix-ui/react-select",
+						"@radix-ui/react-separator",
+						"@radix-ui/react-slot",
+						"@radix-ui/react-tabs",
+					],
+					"vendor-icons": ["lucide-react"],
+					"vendor-qr": ["qrcode.react"],
+					"vendor-validation": ["zod"],
+					"vendor-state": ["zustand"],
+					"vendor-utils": [
+						"class-variance-authority",
+						"clsx",
+						"tailwind-merge",
+					],
+				},
+			},
+		},
+	},
 });
