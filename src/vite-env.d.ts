@@ -1,5 +1,6 @@
-// biome-ignore lint/suspicious/noEmptyInterface: For future env variables
-interface ImportMetaEnv {}
+interface ImportMetaEnv {
+	VITE_MANAGED_AUTHORIZER_URL: string;
+}
 
 interface ImportMeta {
 	readonly env: ImportMetaEnv;

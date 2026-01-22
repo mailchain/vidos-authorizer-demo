@@ -5,9 +5,11 @@ import type { DigitalCredentialGetRequest } from "@/types/api";
 import type {
 	AppStage,
 	CredentialRequestWithId,
+	InstanceType,
 	ResponseModeConfig,
 	SavedJsonRequest,
 } from "@/types/app";
+import { getManagedAuthorizerUrl } from "@/utils/env";
 
 interface FlowState {
 	// Stage
@@ -15,8 +17,12 @@ interface FlowState {
 	setStage: (stage: AppStage) => void;
 
 	// Configuration
+	ownAuthorizerUrl: string;
+	setOwnAuthorizerUrl: (url: string) => void;
 	authorizerUrl: string;
-	setAuthorizerUrl: (url: string) => void;
+
+	instanceType: InstanceType;
+	setInstanceType: (type: InstanceType) => void;
 
 	credentialRequests: CredentialRequestWithId[];
 	setCredentialRequests: (requests: CredentialRequestWithId[]) => void;
@@ -89,7 +95,8 @@ interface FlowState {
 
 const initialState = {
 	stage: "create" as AppStage,
-	authorizerUrl: "",
+	ownAuthorizerUrl: "",
+	instanceType: "managed" as InstanceType,
 	credentialRequests: [],
 	responseModeConfig: { mode: "direct_post.jwt" } as ResponseModeConfig,
 	customCredentialCases: [],
@@ -104,16 +111,24 @@ const initialState = {
 	lastRequest: null,
 	lastResponse: null,
 	error: null,
-};
+} satisfies Partial<FlowState>;
 
 export const useFlowStore = create<FlowState>()(
 	persist(
 		(set) => ({
 			...initialState,
+			get authorizerUrl() {
+				return this.instanceType === "managed"
+					? getManagedAuthorizerUrl()
+					: this.ownAuthorizerUrl;
+			},
 
 			// Setters
 			setStage: (stage) => set({ stage }),
-			setAuthorizerUrl: (authorizerUrl) => set({ authorizerUrl, error: null }),
+			setOwnAuthorizerUrl: (ownAuthorizerUrl) =>
+				set({ ownAuthorizerUrl, error: null }),
+
+			setInstanceType: (instanceType) => set({ instanceType, error: null }),
 
 			setCredentialRequests: (credentialRequests) =>
 				set({ credentialRequests }),
@@ -202,6 +217,7 @@ export const useFlowStore = create<FlowState>()(
 				set((state) => ({
 					...initialState,
 					authorizerUrl: state.authorizerUrl, // Keep URL
+					instanceType: state.instanceType, // Keep instance type
 					customCredentialCases: state.customCredentialCases, // Keep custom cases
 					customJsonRequests: state.customJsonRequests, // Keep custom JSON requests
 				})),
@@ -221,6 +237,7 @@ export const useFlowStore = create<FlowState>()(
 			name: "vidos-flow-storage",
 			partialize: (state) => ({
 				authorizerUrl: state.authorizerUrl,
+				instanceType: state.instanceType,
 				customCredentialCases: state.customCredentialCases,
 				customJsonRequests: state.customJsonRequests,
 			}),

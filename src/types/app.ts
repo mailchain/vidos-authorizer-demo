@@ -23,6 +23,8 @@ export type DCAPIProtocol = "openid4vp-v1-unsigned" | "openid4vp-v1-signed";
 
 export type Profile = "haip" | undefined;
 
+export type InstanceType = "managed" | "own";
+
 export interface CredentialRequest {
 	documentType: string;
 	formatId: string;

@@ -12,7 +12,7 @@ const credentialRequestSchema = z.object({
 	documentType: z.string().min(1, "Document type is required"),
 	formatId: z.string().min(1, "Format is required"),
 	attributes: z.array(z.string()),
-});;
+});
 
 // Zod schema for DC API response mode config
 const dcApiResponseModeSchema = z.union([
