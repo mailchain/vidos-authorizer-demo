@@ -21,5 +21,5 @@
 ## 4. Testing & Polish
 
 - [x] 4.1 Run type-check and lint
-- [ ] 4.2 Manual test: export config, import on fresh browser, verify all settings restored
-- [ ] 4.3 Manual test: import invalid JSON, verify error handling
+- [x] 4.2 Manual test: export config, import on fresh browser, verify all settings restored
+- [x] 4.3 Manual test: import invalid JSON, verify error handling
