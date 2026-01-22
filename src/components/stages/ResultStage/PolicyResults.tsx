@@ -5,6 +5,7 @@ import {
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { PrettyJson } from "@/components/ui/PrettyJson";
 import { getPolicyDefinition } from "@/config/policyDefinitions";
 import type { PolicyResult } from "@/types/app";
 
@@ -173,22 +174,24 @@ function PolicyResultItem({ result }: { result: PolicyResult }) {
 
 					<CollapsibleContent className="mt-3">
 						{hasError && result.error && (
-							<div className="p-3 bg-red-50 border border-red-200 rounded text-sm space-y-1">
+							<div className="p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded text-sm space-y-1">
 								{result.error.title && (
-									<p className="font-medium text-red-900">
+									<p className="font-medium text-red-900 dark:text-red-100">
 										{result.error.title}
 									</p>
 								)}
 								{result.error.detail && (
-									<p className="text-red-800">{result.error.detail}</p>
+									<p className="text-red-800 dark:text-red-200">
+										{result.error.detail}
+									</p>
 								)}
 								{result.error.status && (
-									<p className="text-xs text-red-600">
+									<p className="text-xs text-red-600 dark:text-red-400">
 										Status: {result.error.status}
 									</p>
 								)}
 								{result.error.vidosType && (
-									<p className="text-xs text-red-600 font-mono">
+									<p className="text-xs text-red-600 dark:text-red-400 font-mono">
 										Type: {result.error.vidosType}
 									</p>
 								)}
@@ -196,13 +199,13 @@ function PolicyResultItem({ result }: { result: PolicyResult }) {
 						)}
 
 						{hasData && (
-							<div className="p-3 bg-green-50 border border-green-200 rounded text-sm">
-								<p className="font-medium text-green-900 mb-2">
+							<div className="p-3 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded text-sm">
+								<p className="font-medium text-green-900 dark:text-green-100 mb-2">
 									{policyPrettyName} Result
 								</p>
-								<pre className="text-xs md:text-sm text-green-800 overflow-auto max-h-48 md:max-h-64 lg:max-h-80">
-									{JSON.stringify(result.data, null, 2)}
-								</pre>
+								<div className="text-xs md:text-sm text-green-800 dark:text-green-200 overflow-auto max-h-48 md:max-h-64 lg:max-h-80">
+									<PrettyJson data={result.data} maxStringLength={50} />
+								</div>
 							</div>
 						)}
 					</CollapsibleContent>

@@ -19,6 +19,7 @@ import {
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { PrettyJson } from "@/components/ui/PrettyJson";
 import { Separator } from "@/components/ui/separator";
 import { SUPPORT_CONFIG } from "@/config/support";
 import { cn } from "@/lib/utils";
@@ -227,9 +228,9 @@ export function ResultStage() {
 								Raw Policy Response Data
 							</CollapsibleTrigger>
 							<CollapsibleContent className="mt-2">
-								<pre className="p-4 bg-muted rounded-md text-xs md:text-sm overflow-auto max-h-96 md:max-h-[32rem] lg:max-h-[48rem]">
-									{JSON.stringify(policyResponse, null, 2)}
-								</pre>
+								<div className="p-4 bg-muted rounded-md text-xs md:text-sm overflow-auto max-h-96 md:max-h-[32rem] lg:max-h-[48rem]">
+									<PrettyJson data={policyResponse} />
+								</div>
 							</CollapsibleContent>
 						</Collapsible>
 					</>

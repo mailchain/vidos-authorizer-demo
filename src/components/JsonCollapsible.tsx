@@ -6,6 +6,7 @@ import {
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { PrettyJson } from "@/components/ui/PrettyJson";
 import { cn } from "@/lib/utils";
 
 interface JsonCollapsibleProps {
@@ -42,9 +43,7 @@ export function JsonCollapsible({
 				<CollapsibleContent>
 					<CardContent>
 						<div className="bg-muted rounded-md p-3 overflow-auto max-h-80 md:max-h-96 lg:max-h-[40rem]">
-							<pre className="text-xs font-mono whitespace-pre-wrap break-all">
-								{JSON.stringify(data, null, 2)}
-							</pre>
+							<PrettyJson data={data} />
 						</div>
 					</CardContent>
 				</CollapsibleContent>

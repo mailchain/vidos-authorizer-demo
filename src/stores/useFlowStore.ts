@@ -9,8 +9,8 @@ import type {
 	ResponseModeConfig,
 	SavedJsonRequest,
 } from "@/types/app";
-import { getManagedAuthorizerUrl } from "@/utils/env";
 import type { ConfigExport } from "@/utils/configExport";
+import { getManagedAuthorizerUrl } from "@/utils/env";
 
 interface FlowState {
 	// Stage
