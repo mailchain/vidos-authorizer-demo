@@ -87,11 +87,10 @@ export function CreateStage() {
 		if (useRawJsonMode) {
 			// Raw JSON mode - send parsed JSON directly
 			const parsed = JSON.parse(rawJsonContent);
-			mutation.mutate({ authorizerUrl, rawRequestBody: parsed });
+			mutation.mutate({ rawRequestBody: parsed });
 		} else {
 			// Builder mode
 			mutation.mutate({
-				authorizerUrl,
 				credentialRequests,
 				responseModeConfig,
 			});
@@ -103,11 +102,10 @@ export function CreateStage() {
 		if (useRawJsonMode) {
 			// Raw JSON mode - send parsed JSON directly
 			const parsed = JSON.parse(rawJsonContent);
-			mutation.mutate({ authorizerUrl, rawRequestBody: parsed });
+			mutation.mutate({ rawRequestBody: parsed });
 		} else {
 			// Builder mode
 			mutation.mutate({
-				authorizerUrl,
 				credentialRequests,
 				responseModeConfig,
 			});

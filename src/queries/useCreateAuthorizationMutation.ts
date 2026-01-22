@@ -10,8 +10,6 @@ import type { CredentialRequestWithId, ResponseModeConfig } from "@/types/app";
 import { buildAuthorizationRequestBody } from "@/utils/requestBuilder";
 
 interface CreateAuthorizationParams {
-	authorizerUrl: string;
-
 	// Either builder params OR raw JSON
 	credentialRequests?: CredentialRequestWithId[];
 	responseModeConfig?: ResponseModeConfig;
@@ -33,10 +31,11 @@ const dcApiResponseSchema = baseResponseSchema.extend({
 });
 
 export function useCreateAuthorizationMutation() {
+	const authorizationUrl = useFlowStore((state) => state.authorizerUrl);
 	return useMutation({
-		mutationKey: ["authorization", "create"],
+		mutationKey: ["authorization", "create", authorizationUrl],
 		mutationFn: async (params: CreateAuthorizationParams) => {
-			if (!params.authorizerUrl) {
+			if (!authorizationUrl) {
 				throw new Error("Authorizer URL is required");
 			}
 
@@ -74,7 +73,7 @@ export function useCreateAuthorizationMutation() {
 				responseMode = params.responseModeConfig.mode;
 			}
 
-			const client = createAuthorizerClient(params.authorizerUrl);
+			const client = createAuthorizerClient(authorizationUrl);
 			const { data, error } = await client.POST(
 				"/openid4/vp/v1_0/authorizations",
 				{
