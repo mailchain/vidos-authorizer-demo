@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useFlowStore } from "@/stores/useFlowStore";
+import { getManagedAuthorizerUrl } from "@/utils/env";
 
 export function AuthorizerConfig() {
 	const ownAuthorizerUrl = useFlowStore((state) => state.ownAuthorizerUrl);
@@ -10,6 +11,9 @@ export function AuthorizerConfig() {
 	);
 	const instanceType = useFlowStore((state) => state.instanceType);
 	const setInstanceType = useFlowStore((state) => state.setInstanceType);
+
+	// Check if managed instance is available
+	const isManagedInstanceAvailable = getManagedAuthorizerUrl() !== undefined;
 
 	const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setOwnAuthorizerUrl(e.target.value);
@@ -35,12 +39,21 @@ export function AuthorizerConfig() {
 				<RadioGroup value={instanceType} onValueChange={setInstanceType}>
 					<div className="space-y-3">
 						<div className="flex items-center space-x-2">
-							<RadioGroupItem value="managed" id="instance-managed" />
+							<RadioGroupItem
+								value="managed"
+								id="instance-managed"
+								disabled={!isManagedInstanceAvailable}
+							/>
 							<Label
 								htmlFor="instance-managed"
-								className="font-normal cursor-pointer"
+								className={`font-normal ${
+									isManagedInstanceAvailable
+										? "cursor-pointer"
+										: "cursor-not-allowed opacity-50"
+								}`}
 							>
 								Vidos Managed instance
+								{!isManagedInstanceAvailable && " (not configured)"}
 							</Label>
 						</div>
 						<div className="flex items-center space-x-2">

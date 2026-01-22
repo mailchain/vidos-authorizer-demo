@@ -1,7 +1,13 @@
 # authorizer-config Specification
 
 ## Purpose
-TBD - created by archiving change add-managed-instance-option. Update Purpose after archive.
+This specification defines the authorizer configuration feature that allows users to select and configure the authorizer URL used throughout the OID4VP credential verification flow. The authorizer handles:
+- Creating authorization requests (from the verifier application)
+- Serving authorization requests to the wallet
+- Receiving and processing authorization responses from the wallet
+- Providing policy evaluation results back to the verifier application
+
+The configuration supports two modes: a pre-configured Vidos Managed instance for quick demos/testing, or a custom authorizer URL for production use with user-owned Vidos Gateway instances.
 ## Requirements
 ### Requirement: Instance Type Selection
 The application SHALL provide users with a choice between a Vidos Managed instance and their own custom instance for the authorizer URL.
@@ -75,11 +81,32 @@ The application SHALL validate custom authorizer URLs when "Own instance" is sel
 
 #### Scenario: Invalid custom URL
 - **WHEN** a user enters an invalid URL in "Own instance" mode
-- **THEN** an error message SHALL be displayed
+- **THEN** an error message SHALL be displayed ("Please enter a valid URL")
 - **AND** the user SHALL be prevented from proceeding until a valid URL is entered
 
 #### Scenario: Empty URL in own instance mode
 - **WHEN** "Own instance" is selected and the URL field is empty
 - **THEN** the user SHALL be able to type in the field
-- **AND** no error SHALL be shown until the user attempts to proceed
+- **AND** no inline error SHALL be shown
+- **AND** the "Create Authorization" button SHALL be disabled
+- **AND** a validation error SHALL indicate "Authorizer URL is required"
+
+### Requirement: Derived Authorizer URL
+The application SHALL derive the active authorizer URL based on the selected instance type.
+
+#### Scenario: Managed instance selected
+- **WHEN** "Vidos Managed instance" is selected
+- **THEN** the active authorizer URL SHALL be the value from `VITE_MANAGED_AUTHORIZER_URL`
+- **AND** this URL SHALL be used for all API requests
+
+#### Scenario: Own instance selected
+- **WHEN** "Own instance" is selected
+- **THEN** the active authorizer URL SHALL be the value entered in the URL input field
+- **AND** this URL SHALL be used for all API requests
+
+#### Scenario: Managed instance not configured
+- **WHEN** `VITE_MANAGED_AUTHORIZER_URL` is not set or invalid
+- **AND** "Vidos Managed instance" is selected
+- **THEN** the active authorizer URL SHALL be an empty string
+- **AND** validation SHALL prevent creating an authorization
 
