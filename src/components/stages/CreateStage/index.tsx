@@ -50,6 +50,7 @@ export function CreateStage() {
 	const mutation = useCreateAuthorizationMutation();
 
 	// Builder mode validation
+	console.log('authorizerUrl', authorizerUrl)
 	const builderValidation = validateAuthorizationRequest(
 		authorizerUrl,
 		credentialRequests,

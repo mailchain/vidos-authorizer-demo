@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import { Asterisk, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,7 @@ import {
 	getFormatDefinitionById,
 	hasSelectivelyDisclosableAttributes,
 } from "@/config/credential-cases/utils";
+import { AttributeLegend } from "./AttributeLegend";
 
 interface AttributeSelectorProps {
 	formatId: string;
@@ -58,6 +59,14 @@ export function AttributeSelector({
 		const nonDisclosableIds = nonDisclosableAttrs.map((attr) => attr.id);
 		onChange(nonDisclosableIds);
 	};
+
+	// Calculate legend flags
+	const hasRequiredAttrs = formatDef.attributes.some(
+		(attr) => attr.requiredForIssuance,
+	);
+	const hasAlwaysDisclosedAttrs = formatDef.attributes.some(
+		(attr) => attr.nonSelectivelyDisclosable,
+	);
 
 	return (
 		<div className="space-y-4">
@@ -116,9 +125,10 @@ export function AttributeSelector({
 										{attr.displayName}
 									</Label>
 								</div>
-								<Badge variant="outline" className="text-xs shrink-0">
-									Always disclosed
-								</Badge>
+								<Lock
+									className="size-4 text-muted-foreground shrink-0"
+									aria-label="Always disclosed"
+								/>
 							</div>
 						);
 					})}
@@ -146,15 +156,21 @@ export function AttributeSelector({
 									</Label>
 								</div>
 								{attr.requiredForIssuance && (
-									<Badge variant="secondary" className="text-xs shrink-0">
-										Required
-									</Badge>
+									<Asterisk
+										className="size-4 text-orange-600 shrink-0"
+										aria-label="Required for issuance"
+									/>
 								)}
 							</div>
 						);
 					})}
 				</div>
 			</div>
+
+			<AttributeLegend
+				showRequired={hasRequiredAttrs}
+				showAlwaysDisclosed={hasAlwaysDisclosedAttrs}
+			/>
 		</div>
 	);
 }
