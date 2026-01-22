@@ -54,6 +54,11 @@ export interface PolicyError {
 	vidosType?: string;
 }
 
+export interface PolicyDefinition {
+	description: string;
+	docsUrl: string;
+}
+
 export interface PolicyResult {
 	path: (string | number)[];
 	policy: string;
