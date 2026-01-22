@@ -28,10 +28,8 @@ export function validateAuthorizationRequest(
 	const errors: string[] = [];
 
 	// Validate authorizer URL
-	try {
-		new URL(authorizerUrl);
-	} catch {
-		errors.push("Invalid authorizer URL");
+	if (z.url().safeParse(authorizerUrl).success) {
+		errors.push("Authorizer URL is required to be valid URL");
 	}
 
 	// Validate at least one credential request

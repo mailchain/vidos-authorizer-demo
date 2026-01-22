@@ -1,10 +1,11 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { getPolicyDefinition } from "@/config/policyDefinitions";
 import type { PolicyResult } from "@/types/app";
 
 interface PolicyResultsProps {
@@ -120,6 +121,8 @@ export function PolicyResults({ results }: PolicyResultsProps) {
 function PolicyResultItem({ result }: { result: PolicyResult }) {
 	const hasError = !!result.error;
 	const hasData = !!result.data;
+	const policyDef = getPolicyDefinition(result.policy, result.service);
+	console.log(`Policy Definition for ${result.service}.${result.policy}:`, policyDef);
 
 	return (
 		<Collapsible>
@@ -134,18 +137,36 @@ function PolicyResultItem({ result }: { result: PolicyResult }) {
 
 				<div className="flex-1 min-w-0">
 					<div className="flex items-center justify-between gap-2">
-						<div className="space-y-1">
+						<div className="space-y-1 flex-1">
 							<p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
 								{result.service.charAt(0).toUpperCase() +
 									result.service.slice(1)}
 							</p>
-							<p className="font-medium text-sm">
-								{camelToTitleCase(result.policy)}
-							</p>
+							<div className="flex items-center gap-2">
+								<p className="font-medium text-sm">
+									{camelToTitleCase(result.policy)}
+								</p>
+								{policyDef && (
+									<a
+										href={policyDef.docsUrl}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="text-muted-foreground hover:text-foreground transition-colors"
+										aria-label="View documentation"
+									>
+										<ExternalLink className="h-3.5 w-3.5" />
+									</a>
+								)}
+							</div>
+							{policyDef && (
+								<p className="text-xs text-muted-foreground">
+									{policyDef.description}
+								</p>
+							)}
 						</div>
 
 						{(hasError || hasData) && (
-							<CollapsibleTrigger className="p-2 hover:bg-muted rounded transition-colors">
+							<CollapsibleTrigger className="p-2 hover:bg-muted rounded transition-colors shrink-0">
 								<ChevronDown className="h-4 w-4 text-muted-foreground" />
 							</CollapsibleTrigger>
 						)}

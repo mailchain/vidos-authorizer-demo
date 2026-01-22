@@ -19,7 +19,6 @@ interface FlowState {
 	// Configuration
 	ownAuthorizerUrl: string;
 	setOwnAuthorizerUrl: (url: string) => void;
-	authorizerUrl: string;
 
 	instanceType: InstanceType;
 	setInstanceType: (type: InstanceType) => void;
@@ -96,7 +95,7 @@ interface FlowState {
 const initialState = {
 	stage: "create" as AppStage,
 	ownAuthorizerUrl: "",
-	instanceType: "managed" as InstanceType,
+	instanceType: getManagedAuthorizerUrl() ? "managed" : "own",
 	credentialRequests: [],
 	responseModeConfig: { mode: "direct_post.jwt" } as ResponseModeConfig,
 	customCredentialCases: [],
@@ -117,11 +116,6 @@ export const useFlowStore = create<FlowState>()(
 	persist(
 		(set) => ({
 			...initialState,
-			get authorizerUrl() {
-				return this.instanceType === "managed"
-					? getManagedAuthorizerUrl()
-					: this.ownAuthorizerUrl;
-			},
 
 			// Setters
 			setStage: (stage) => set({ stage }),
@@ -216,7 +210,7 @@ export const useFlowStore = create<FlowState>()(
 			startFresh: () =>
 				set((state) => ({
 					...initialState,
-					authorizerUrl: state.authorizerUrl, // Keep URL
+					ownAuthorizerUrl: state.ownAuthorizerUrl, // Keep own URL
 					instanceType: state.instanceType, // Keep instance type
 					customCredentialCases: state.customCredentialCases, // Keep custom cases
 					customJsonRequests: state.customJsonRequests, // Keep custom JSON requests
@@ -236,11 +230,33 @@ export const useFlowStore = create<FlowState>()(
 		{
 			name: "vidos-flow-storage",
 			partialize: (state) => ({
-				authorizerUrl: state.authorizerUrl,
+				ownAuthorizerUrl: state.ownAuthorizerUrl,
 				instanceType: state.instanceType,
 				customCredentialCases: state.customCredentialCases,
 				customJsonRequests: state.customJsonRequests,
 			}),
+			merge: (persistedState, currentState) => {
+				console.log("Merging persisted state:", persistedState, currentState);
+				const persistedFlowState = persistedState as Partial<FlowState>;
+				return {
+					...currentState,
+					...persistedFlowState,
+					instanceType: getManagedAuthorizerUrl() ? persistedFlowState.instanceType ?? currentState.instanceType : 'own'
+				} satisfies FlowState;
+			}
 		},
 	),
 );
+
+/**
+ * Selector to get the current authorizer URL based on instance type
+ * Returns empty string if managed instance is not configured or own URL is empty
+ */
+export const selectAuthorizerUrl = (state: FlowState): string => {
+	if (state.instanceType === "managed") {
+		const managedAuthorizerUrl = getManagedAuthorizerUrl();
+		if (managedAuthorizerUrl) return managedAuthorizerUrl;
+		return "";
+	}
+	return state.ownAuthorizerUrl;
+};

@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useCreateAuthorizationMutation } from "@/queries/useCreateAuthorizationMutation";
-import { useFlowStore } from "@/stores/useFlowStore";
+import { selectAuthorizerUrl, useFlowStore } from "@/stores/useFlowStore";
 import {
 	type JsonValidationResult,
 	validateJsonRequest,
@@ -28,7 +28,7 @@ import { SavedJsonRequestsManager } from "./SavedJsonRequestsManager";
 import { TransferToJsonButton } from "./TransferToJsonButton";
 
 export function CreateStage() {
-	const authorizerUrl = useFlowStore((state) => state.authorizerUrl);
+	const authorizerUrl = useFlowStore(selectAuthorizerUrl);
 	const credentialRequests = useFlowStore((state) => state.credentialRequests);
 	const responseModeConfig = useFlowStore((state) => state.responseModeConfig);
 	const showPreview = useFlowStore((state) => state.showPreview);

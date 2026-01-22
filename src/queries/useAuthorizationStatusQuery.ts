@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createAuthorizerClient } from "@/api/client";
-import { useFlowStore } from "@/stores/useFlowStore";
+import { selectAuthorizerUrl, useFlowStore } from "@/stores/useFlowStore";
 import type { AuthorizationStatus } from "@/types/app";
 import { authorizationKeys } from "./keys";
 
@@ -13,7 +13,7 @@ const TERMINAL_STATES: AuthorizationStatus[] = [
 
 export function useAuthorizationStatusQuery() {
 	const authorizationId = useFlowStore((state) => state.authorizationId);
-	const authorizerUrl = useFlowStore((state) => state.authorizerUrl);
+	const authorizerUrl = useFlowStore(selectAuthorizerUrl);
 	const stage = useFlowStore((state) => state.stage);
 
 	return useQuery({
