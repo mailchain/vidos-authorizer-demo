@@ -30,7 +30,9 @@ export function validateAuthorizationRequest(
 	// Validate authorizer URL
 	const validUrl = z.url().safeParse(authorizerUrl);
 	if (!validUrl.success) {
-		errors.push(`Authorizer URL is required to be valid URL. ${validUrl.error.message}`);
+		errors.push(
+			`Authorizer URL is required to be valid URL. ${validUrl.error.message}`,
+		);
 	}
 
 	// Validate at least one credential request

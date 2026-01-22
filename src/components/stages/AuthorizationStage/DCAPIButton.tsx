@@ -23,8 +23,8 @@ export function DCAPIButton() {
 				<div className="text-sm text-muted-foreground space-y-2">
 					<p>
 						Click the button below to request credentials using your browser's
-						Digital Credentials API. This will make the browser prompt the wallet
-						to share the requested credentials.
+						Digital Credentials API. This will make the browser prompt the
+						wallet to share the requested credentials.
 					</p>
 					<p>
 						After clicking, your browser will display a native confirmation

@@ -40,7 +40,7 @@ export const policyDefinitions: Record<string, PolicyDefinition> = {
 	},
 
 	// Default policies (no service specified)
-	"format": {
+	format: {
 		description: "Verifies the credential format matches expected type",
 		docsUrl: "https://docs.vidos.id/policies/verifier/format",
 	},

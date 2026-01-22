@@ -14,7 +14,7 @@ The user has requested to implement the following change proposal. Find the chan
 **Steps**
 Track these steps as TODOs and complete them one by one.
 1. Read `changes/<id>/proposal.md`, `design.md` (if present), and `tasks.md` to confirm scope and acceptance criteria. If needed, perform additional exploration with subagent @explore.
-2. Work through tasks sequentially by delegating to subagent @general, keeping edits minimal and focused on the requested change.
+2. Work through tasks sequentially (individually or in small batches) ONLY by delegating to @general subagent (never by yourself), keeping edits minimal and focused on the requested change.
 3. Confirm completion before updating statuses—make sure every item in `tasks.md` is finished.
 4. Update the checklist after all work is done so each task is marked `- [x]` and reflects reality.
 5. Reference `openspec list` or `openspec show <item>` when additional context is required.

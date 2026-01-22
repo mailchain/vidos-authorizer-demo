@@ -10,6 +10,7 @@ import type {
 	SavedJsonRequest,
 } from "@/types/app";
 import { getManagedAuthorizerUrl } from "@/utils/env";
+import type { ConfigExport } from "@/utils/configExport";
 
 interface FlowState {
 	// Stage
@@ -90,6 +91,7 @@ interface FlowState {
 	// Helper methods
 	startFresh: () => void;
 	backToCreateStage: () => void;
+	importConfig: (config: ConfigExport) => void;
 }
 
 const initialState = {
@@ -226,6 +228,17 @@ export const useFlowStore = create<FlowState>()(
 					showPreview: false,
 					error: null,
 				}),
+
+			importConfig: (config) =>
+				set((state) => ({
+					instanceType: config.instanceType,
+					ownAuthorizerUrl:
+						config.instanceType === "own"
+							? (config.ownAuthorizerUrl ?? "")
+							: state.ownAuthorizerUrl,
+					customCredentialCases: config.customCredentialCases,
+					error: null,
+				})),
 		}),
 		{
 			name: "vidos-flow-storage",
@@ -241,9 +254,11 @@ export const useFlowStore = create<FlowState>()(
 				return {
 					...currentState,
 					...persistedFlowState,
-					instanceType: getManagedAuthorizerUrl() ? persistedFlowState.instanceType ?? currentState.instanceType : 'own'
+					instanceType: getManagedAuthorizerUrl()
+						? (persistedFlowState.instanceType ?? currentState.instanceType)
+						: "own",
 				} satisfies FlowState;
-			}
+			},
 		},
 	),
 );
