@@ -26,6 +26,7 @@ export type Profile = "haip" | undefined;
 export type InstanceType = "managed" | "own";
 
 export interface CredentialRequest {
+	id: string;
 	documentType: string;
 	formatId: string;
 	format: CredentialFormat;
@@ -34,7 +35,16 @@ export interface CredentialRequest {
 
 // Credential request with ID for UI management
 export interface CredentialRequestWithId extends CredentialRequest {
-	id: string; // UUID for tracking
+	reactKey: string; // UUID for tracking
+}
+
+// Credential set types for DCQL
+export type CredentialSetOption = string[]; // Array of credential IDs for AND logic
+
+export interface CredentialSet {
+	id: string; // User-editable ID, pre-filled with UUID
+	options: CredentialSetOption[]; // Array of alternatives (OR), each option is AND of credential IDs
+	required: boolean; // Maps to spec's 'required' field (default: true)
 }
 
 // Response mode configuration
@@ -87,6 +97,9 @@ export interface AppState {
 
 	// Multiple credential requests
 	credentialRequests: CredentialRequestWithId[];
+
+	// Credential sets for DCQL
+	credentialSets: CredentialSet[];
 
 	// Response mode configuration
 	responseModeConfig: ResponseModeConfig;

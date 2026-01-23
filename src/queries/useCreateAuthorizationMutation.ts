@@ -6,13 +6,18 @@ import type {
 	CreateAuthorizationRequest,
 	DigitalCredentialGetRequest,
 } from "@/types/api";
-import type { CredentialRequestWithId, ResponseModeConfig } from "@/types/app";
+import type {
+	CredentialRequestWithId,
+	CredentialSet,
+	ResponseModeConfig,
+} from "@/types/app";
 import { buildAuthorizationRequestBody } from "@/utils/requestBuilder";
 
 interface CreateAuthorizationParams {
 	// Either builder params OR raw JSON
 	credentialRequests?: CredentialRequestWithId[];
 	responseModeConfig?: ResponseModeConfig;
+	credentialSets?: CredentialSet[];
 	rawRequestBody?: unknown; // For JSON mode
 }
 
@@ -69,6 +74,7 @@ export function useCreateAuthorizationMutation() {
 				body = buildAuthorizationRequestBody(
 					params.credentialRequests,
 					params.responseModeConfig,
+					params.credentialSets,
 				);
 				responseMode = params.responseModeConfig.mode;
 			}
@@ -113,6 +119,7 @@ export function useCreateAuthorizationMutation() {
 				body = buildAuthorizationRequestBody(
 					variables.credentialRequests,
 					variables.responseModeConfig,
+					variables.credentialSets,
 				);
 			}
 

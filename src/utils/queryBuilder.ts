@@ -2,7 +2,7 @@ import {
 	getFormatDefinitionById,
 	hasSelectivelyDisclosableAttributes,
 } from "@/config/credential-cases/utils";
-import type { CredentialRequestWithId } from "@/types/app";
+import type { CredentialRequestWithId, CredentialSet } from "@/types/app";
 
 interface DCQLClaim {
 	path: (string | null)[];
@@ -15,15 +15,22 @@ interface DCQLCredential {
 	claims?: DCQLClaim[]; // Optional: undefined when no selectively disclosable attributes
 }
 
+interface DCQLCredentialSet {
+	options: string[][]; // Each option is array of credential IDs
+	required?: boolean; // Only include if false (true is default per spec)
+}
+
 interface DCQLQuery {
 	type: "DCQL";
 	dcql: {
 		credentials: DCQLCredential[];
+		credential_sets?: DCQLCredentialSet[]; // Optional credential sets
 	};
 }
 
 export function buildDCQLQueryMultiple(
 	requests: CredentialRequestWithId[],
+	credentialSets?: CredentialSet[],
 ): DCQLQuery {
 	if (requests.length === 0) {
 		throw new Error("At least one credential request is required");
@@ -59,7 +66,7 @@ export function buildDCQLQueryMultiple(
 			.map((attr) => ({ path: attr.path }));
 
 		const credential: DCQLCredential = {
-			id: crypto.randomUUID(),
+			id: request.id, // Use user-provided UUID from CredentialRequestWithId
 			format: request.format,
 			meta,
 			claims: claims.length > 0 ? claims : undefined,
@@ -68,5 +75,26 @@ export function buildDCQLQueryMultiple(
 		return credential;
 	});
 
-	return { type: "DCQL", dcql: { credentials } };
+	// Build credential_sets array if sets are configured
+	const credential_sets: DCQLCredentialSet[] | undefined =
+		credentialSets && credentialSets.length > 0
+			? credentialSets.map((set) => {
+					const dcqlSet: DCQLCredentialSet = {
+						options: set.options,
+					};
+					// Only include required if false (true is default per spec)
+					if (!set.required) {
+						dcqlSet.required = false;
+					}
+					return dcqlSet;
+				})
+			: undefined;
+
+	return {
+		type: "DCQL",
+		dcql: {
+			credentials,
+			...(credential_sets && { credential_sets }),
+		},
+	};
 }

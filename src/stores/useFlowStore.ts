@@ -5,6 +5,7 @@ import type { DigitalCredentialGetRequest } from "@/types/api";
 import type {
 	AppStage,
 	CredentialRequestWithId,
+	CredentialSet,
 	InstanceType,
 	ResponseModeConfig,
 	SavedJsonRequest,
@@ -32,6 +33,12 @@ interface FlowState {
 		request: Partial<CredentialRequestWithId>,
 	) => void;
 	removeCredentialRequest: (id: string) => void;
+
+	credentialSets: CredentialSet[];
+	addCredentialSet: () => void;
+	updateCredentialSet: (id: string, updates: Partial<CredentialSet>) => void;
+	removeCredentialSet: (id: string) => void;
+	updateCredentialId: (oldId: string, newId: string) => void;
 
 	responseModeConfig: ResponseModeConfig;
 	setResponseModeConfig: (config: ResponseModeConfig) => void;
@@ -99,6 +106,7 @@ const initialState = {
 	ownAuthorizerUrl: "",
 	instanceType: getManagedAuthorizerUrl() ? "managed" : "own",
 	credentialRequests: [],
+	credentialSets: [],
 	responseModeConfig: { mode: "direct_post.jwt" } as ResponseModeConfig,
 	customCredentialCases: [],
 	useRawJsonMode: false,
@@ -141,10 +149,68 @@ export const useFlowStore = create<FlowState>()(
 					error: null,
 				})),
 			removeCredentialRequest: (id) =>
-				set((state) => ({
-					credentialRequests: state.credentialRequests.filter(
+				set((state) => {
+					// Remove credential request
+					const credentialRequests = state.credentialRequests.filter(
 						(req) => req.id !== id,
+					);
+
+					// Remove orphan references from credential sets
+					const credentialSets = state.credentialSets.map((set) => ({
+						...set,
+						// Remove credential ID from all options
+						options: set.options
+							.map((option) => option.filter((credId) => credId !== id))
+							// Remove empty options
+							.filter((option) => option.length > 0),
+					}));
+					// Note: Don't auto-delete empty credential sets (per spec 5.5)
+
+					return {
+						credentialRequests,
+						credentialSets,
+						error: null,
+					};
+				}),
+
+			addCredentialSet: () =>
+				set((state) => ({
+					credentialSets: [
+						...state.credentialSets,
+						{
+							id: crypto.randomUUID(),
+							options: [],
+							required: true,
+						},
+					],
+					error: null,
+				})),
+
+			updateCredentialSet: (id, updates) =>
+				set((state) => ({
+					credentialSets: state.credentialSets.map((set) =>
+						set.id === id ? { ...set, ...updates } : set,
 					),
+					error: null,
+				})),
+
+			removeCredentialSet: (id) =>
+				set((state) => ({
+					credentialSets: state.credentialSets.filter((set) => set.id !== id),
+					error: null,
+				})),
+
+			updateCredentialId: (oldId, newId) =>
+				set((state) => ({
+					credentialRequests: state.credentialRequests.map((req) =>
+						req.id === oldId ? { ...req, id: newId } : req,
+					),
+					credentialSets: state.credentialSets.map((set) => ({
+						...set,
+						options: set.options.map((option) =>
+							option.map((credId) => (credId === oldId ? newId : credId)),
+						),
+					})),
 					error: null,
 				})),
 
@@ -216,6 +282,7 @@ export const useFlowStore = create<FlowState>()(
 					instanceType: state.instanceType, // Keep instance type
 					customCredentialCases: state.customCredentialCases, // Keep custom cases
 					customJsonRequests: state.customJsonRequests, // Keep custom JSON requests
+					credentialSets: [], // Reset credential sets
 				})),
 
 			backToCreateStage: () =>

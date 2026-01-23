@@ -1,11 +1,5 @@
 import { ChevronRight, Plus, Trash2 } from "lucide-react";
-import { CustomCredentialCaseManager } from "@/components/CustomCredentialCaseManager";
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from "@/components/ui/accordion";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Collapsible,
@@ -20,7 +14,6 @@ import {
 } from "@/config/credential-cases/utils";
 import { useFlowStore } from "@/stores/useFlowStore";
 import type { CredentialRequestWithId } from "@/types/app";
-import { ConfigExportImport } from "./ConfigExportImport";
 import { CredentialRequestBuilder } from "./CredentialRequestBuilder";
 
 export function CredentialRequestList() {
@@ -36,8 +29,10 @@ export function CredentialRequestList() {
 	);
 
 	const handleAdd = () => {
+		const uniqueId = crypto.randomUUID();
 		const newRequest: CredentialRequestWithId = {
-			id: crypto.randomUUID(),
+			reactKey: uniqueId,
+			id: uniqueId,
 			documentType: "pid",
 			formatId: "pid_sd_jwt",
 			format: "dc+sd-jwt",
@@ -53,35 +48,6 @@ export function CredentialRequestList() {
 
 	const handleRemove = (id: string) => {
 		removeCredentialRequest(id);
-	};
-
-	const getDocumentTypeAbbrev = (displayName: string): string => {
-		const match = displayName.match(/\(([^)]+)\)$/);
-		return match ? match[1] : displayName;
-	};
-
-	const getRequestLabel = (request: CredentialRequestWithId): string => {
-		if (!request.documentType || !request.formatId) {
-			return "New Credential Request";
-		}
-
-		const formatDef = getFormatDefinitionById(request.formatId);
-		if (!formatDef) {
-			return "Credential Request";
-		}
-
-		const credCase = getCredentialCase(request.documentType);
-		const docTypeLabel = credCase
-			? getDocumentTypeAbbrev(credCase.displayName)
-			: request.documentType.toUpperCase();
-
-		// Count both selectively disclosable (from request.attributes) and non-selectively disclosable attributes
-		const nonDisclosableCount = formatDef.attributes.filter(
-			(attr) => attr.nonSelectivelyDisclosable,
-		).length;
-		const totalCount = request.attributes.length + nonDisclosableCount;
-
-		return `${docTypeLabel} - ${formatDef.displayName} (${totalCount} attributes)`;
 	};
 
 	return (
@@ -100,39 +66,18 @@ export function CredentialRequestList() {
 				</div>
 			) : (
 				<>
-					<Accordion type="single" collapsible defaultValue={requests[0]?.id}>
-						{requests.map((request) => (
-							<AccordionItem key={request.id} value={request.id}>
-								<div className="flex items-center gap-2">
-									{requests.length > 1 && (
-										<Button
-											type="button"
-											variant="ghost"
-											size="icon"
-											className="h-8 w-8 shrink-0"
-											onClick={(e) => {
-												e.stopPropagation();
-												handleRemove(request.id);
-											}}
-										>
-											<Trash2 className="h-4 w-4 text-destructive" />
-										</Button>
-									)}
-									<AccordionTrigger className="flex-1">
-										{getRequestLabel(request)}
-									</AccordionTrigger>
-								</div>
-								<AccordionContent>
-									<CredentialRequestBuilder
-										request={request}
-										onChange={(updated) => handleUpdate(request.id, updated)}
-										onRemove={() => handleRemove(request.id)}
-										canRemove={requests.length > 1}
-									/>
-								</AccordionContent>
-							</AccordionItem>
+					<div className="space-y-2">
+						{requests.map((request, index) => (
+							<CredentialRequestItem
+								key={request.reactKey}
+								request={request}
+								canRemove={requests.length > 1}
+								defaultOpen={index === 0}
+								onUpdate={handleUpdate}
+								onRemove={handleRemove}
+							/>
 						))}
-					</Accordion>
+					</div>
 					<Separator className="my-4" />
 					<Button type="button" variant="outline" size="sm" onClick={handleAdd}>
 						<Plus className="h-4 w-4 mr-2" />
@@ -140,39 +85,107 @@ export function CredentialRequestList() {
 					</Button>
 				</>
 			)}
+		</div>
+	);
+}
 
-			<div className="mt-6 pt-6 border-t border-dashed">
-				<Collapsible>
-					<CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-						<ChevronRight className="h-4 w-4 transition-transform [[data-state=open]>&]:rotate-90" />
-						<div className="flex flex-col items-start gap-0.5">
-							<span className="font-medium">Advanced Options</span>
-							<span className="text-xs">
-								Custom credentials, config backup & transfer
+// Individual credential request item with its own open state
+interface CredentialRequestItemProps {
+	request: CredentialRequestWithId;
+	canRemove: boolean;
+	defaultOpen: boolean;
+	onUpdate: (id: string, request: CredentialRequestWithId) => void;
+	onRemove: (id: string) => void;
+}
+
+function CredentialRequestItem({
+	request,
+	canRemove,
+	defaultOpen,
+	onUpdate,
+	onRemove,
+}: CredentialRequestItemProps) {
+	const [isOpen, setIsOpen] = useState(defaultOpen);
+	useEffect(() => {
+		console.log("CredentialRequestItem isOpen changed:", isOpen);
+	}, [isOpen]);
+
+	const getDocumentTypeAbbrev = (displayName: string): string => {
+		const match = displayName.match(/\(([^)]+)\)$/);
+		return match ? match[1] : displayName;
+	};
+
+	const getRequestLabel = (
+		req: CredentialRequestWithId,
+	): { mainLabel: string; id: string } => {
+		if (!req.documentType || !req.formatId) {
+			return { mainLabel: "New Credential Request", id: req.id };
+		}
+
+		const formatDef = getFormatDefinitionById(req.formatId);
+		if (!formatDef) {
+			return { mainLabel: "Credential Request", id: req.id };
+		}
+
+		const credCase = getCredentialCase(req.documentType);
+		const docTypeLabel = credCase
+			? getDocumentTypeAbbrev(credCase.displayName)
+			: req.documentType.toUpperCase();
+
+		const nonDisclosableCount = formatDef.attributes.filter(
+			(attr) => attr.nonSelectivelyDisclosable,
+		).length;
+		const totalCount = req.attributes.length + nonDisclosableCount;
+
+		return {
+			mainLabel: `${docTypeLabel} - ${formatDef.displayName} (${totalCount} attributes)`,
+			id: req.id,
+		};
+	};
+
+	const label = getRequestLabel(request);
+
+	return (
+		<Collapsible open={isOpen} onOpenChange={setIsOpen}>
+			<div className="border rounded-md">
+				<div className="flex items-center gap-2 p-2">
+					{canRemove && (
+						<Button
+							type="button"
+							variant="ghost"
+							size="icon"
+							className="h-8 w-8 shrink-0"
+							onClick={(e) => {
+								e.stopPropagation();
+								onRemove(request.id);
+							}}
+						>
+							<Trash2 className="h-4 w-4 text-destructive" />
+						</Button>
+					)}
+					<CollapsibleTrigger className="flex items-center gap-2 flex-1 text-left hover:bg-accent/50 rounded px-2 py-2 transition-colors">
+						<ChevronRight
+							className={`h-4 w-4 transition-transform ${isOpen ? "rotate-90" : ""}`}
+						/>
+						<div className="flex flex-col items-start gap-0.5 flex-1">
+							<span className="text-sm font-medium">{label.mainLabel}</span>
+							<span className="text-xs font-mono text-muted-foreground">
+								{label.id}
 							</span>
 						</div>
 					</CollapsibleTrigger>
-					<CollapsibleContent className="pt-4 space-y-4">
-						<div className="space-y-2">
-							<p className="text-sm text-muted-foreground">
-								Define custom credential types beyond the built-in options (PID,
-								MDL, Photo ID).
-							</p>
-							<CustomCredentialCaseManager />
-						</div>
-
-						<Separator />
-
-						<div className="space-y-2">
-							<p className="text-sm text-muted-foreground">
-								Export/import configuration for easy transfer to mobile devices
-								or sharing with team members.
-							</p>
-							<ConfigExportImport />
-						</div>
-					</CollapsibleContent>
-				</Collapsible>
+				</div>
+				<CollapsibleContent>
+					<div className="px-4 pb-4 pt-2 border-t">
+						<CredentialRequestBuilder
+							request={request}
+							onChange={(updated) => onUpdate(request.id, updated)}
+							onRemove={() => onRemove(request.id)}
+							canRemove={canRemove}
+						/>
+					</div>
+				</CollapsibleContent>
 			</div>
-		</div>
+		</Collapsible>
 	);
 }

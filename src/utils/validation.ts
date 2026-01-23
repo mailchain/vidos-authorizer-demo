@@ -1,9 +1,14 @@
 import { z } from "zod";
-import type { CredentialRequestWithId, ResponseModeConfig } from "@/types/app";
+import type {
+	CredentialRequestWithId,
+	CredentialSet,
+	ResponseModeConfig,
+} from "@/types/app";
 
 export interface ValidationResult {
 	valid: boolean;
 	errors: string[];
+	warnings?: string[];
 }
 
 // Zod schema for credential request validation
@@ -20,12 +25,76 @@ const dcApiResponseModeSchema = z.union([
 	z.literal("dc_api.jwt"),
 ]);
 
+/**
+ * Validate credential sets according to DCQL requirements
+ * Task 5: Validation for credential set DCQL feature
+ */
+export function validateCredentialSets(
+	credentialRequests: CredentialRequestWithId[],
+	credentialSets: CredentialSet[],
+): ValidationResult {
+	const errors: string[] = [];
+	const warnings: string[] = [];
+
+	// Task 5.1: Validate credential ID uniqueness (warn on duplicate, don't block)
+	const idCounts = new Map<string, number>();
+	for (const req of credentialRequests) {
+		idCounts.set(req.id, (idCounts.get(req.id) || 0) + 1);
+	}
+	for (const [id, count] of idCounts.entries()) {
+		if (count > 1) {
+			warnings.push(`Duplicate credential ID "${id}" found ${count} times`);
+		}
+	}
+
+	// Get set of all valid credential IDs for reference checking
+	const validCredentialIds = new Set(credentialRequests.map((req) => req.id));
+
+	// Validate each credential set
+	for (const set of credentialSets) {
+		// Task 5.3 & 5.5: Validate at least one option per credential set (if sets defined)
+		if (set.options.length === 0) {
+			errors.push(
+				`Credential set "${set.id}" has no options. Add at least one option or remove the set.`,
+			);
+			continue; // Skip further validation for this set
+		}
+
+		// Validate each option
+		for (const [optionIndex, option] of set.options.entries()) {
+			// Task 5.4: Validate each option has at least one credential selected
+			if (option.length === 0) {
+				errors.push(
+					`Credential set "${set.id}", option ${optionIndex + 1} is empty. Select at least one credential or remove the option.`,
+				);
+			}
+
+			// Task 5.2: Validate all option references in credential sets exist in credential requests
+			for (const credId of option) {
+				if (!validCredentialIds.has(credId)) {
+					errors.push(
+						`Credential set "${set.id}", option ${optionIndex + 1} references non-existent credential ID "${credId}"`,
+					);
+				}
+			}
+		}
+	}
+
+	return {
+		valid: errors.length === 0,
+		errors,
+		warnings,
+	};
+}
+
 export function validateAuthorizationRequest(
 	authorizerUrl: string,
 	credentialRequests: CredentialRequestWithId[],
 	responseModeConfig: ResponseModeConfig,
+	credentialSets?: CredentialSet[],
 ): ValidationResult {
 	const errors: string[] = [];
+	const warnings: string[] = [];
 
 	// Validate authorizer URL
 	const validUrl = z.url().safeParse(authorizerUrl);
@@ -68,8 +137,21 @@ export function validateAuthorizationRequest(
 		}
 	}
 
+	// Validate credential sets if provided
+	if (credentialSets && credentialSets.length > 0) {
+		const setsValidation = validateCredentialSets(
+			credentialRequests,
+			credentialSets,
+		);
+		errors.push(...setsValidation.errors);
+		if (setsValidation.warnings) {
+			warnings.push(...setsValidation.warnings);
+		}
+	}
+
 	return {
 		valid: errors.length === 0,
 		errors,
+		warnings,
 	};
 }

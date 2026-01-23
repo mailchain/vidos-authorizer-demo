@@ -9,6 +9,7 @@ interface TransferToJsonButtonProps {
 
 export function TransferToJsonButton({ disabled }: TransferToJsonButtonProps) {
 	const credentialRequests = useFlowStore((state) => state.credentialRequests);
+	const credentialSets = useFlowStore((state) => state.credentialSets);
 	const responseModeConfig = useFlowStore((state) => state.responseModeConfig);
 	const setRawJsonContent = useFlowStore((state) => state.setRawJsonContent);
 	const setUseRawJsonMode = useFlowStore((state) => state.setUseRawJsonMode);
@@ -18,6 +19,7 @@ export function TransferToJsonButton({ disabled }: TransferToJsonButtonProps) {
 			const requestBody = buildAuthorizationRequestBody(
 				credentialRequests,
 				responseModeConfig,
+				credentialSets,
 			);
 
 			const prettyJson = JSON.stringify(requestBody, null, 2);

@@ -1,3 +1,4 @@
+import { ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { JsonCollapsible } from "@/components/JsonCollapsible";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -9,6 +10,11 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
 import { useCreateAuthorizationMutation } from "@/queries/useCreateAuthorizationMutation";
 import { selectAuthorizerUrl, useFlowStore } from "@/stores/useFlowStore";
@@ -18,8 +24,10 @@ import {
 } from "@/utils/jsonRequestValidation";
 import { buildAuthorizationRequestBody } from "@/utils/requestBuilder";
 import { validateAuthorizationRequest } from "@/utils/validation";
+import { AdvancedOptions } from "./AdvancedOptions";
 import { AuthorizerConfig } from "./AuthorizerConfig";
 import { CredentialRequestList } from "./CredentialRequestList";
+import { CredentialSetList } from "./CredentialSetList";
 import { JsonEditor } from "./JsonEditor";
 import { JsonModeToggle } from "./JsonModeToggle";
 import { ProfileSelector } from "./ProfileSelector";
@@ -30,6 +38,7 @@ import { TransferToJsonButton } from "./TransferToJsonButton";
 export function CreateStage() {
 	const authorizerUrl = useFlowStore(selectAuthorizerUrl);
 	const credentialRequests = useFlowStore((state) => state.credentialRequests);
+	const credentialSets = useFlowStore((state) => state.credentialSets);
 	const responseModeConfig = useFlowStore((state) => state.responseModeConfig);
 	const showPreview = useFlowStore((state) => state.showPreview);
 	const lastRequest = useFlowStore((state) => state.lastRequest);
@@ -41,6 +50,9 @@ export function CreateStage() {
 	const useRawJsonMode = useFlowStore((state) => state.useRawJsonMode);
 	const setUseRawJsonMode = useFlowStore((state) => state.setUseRawJsonMode);
 	const rawJsonContent = useFlowStore((state) => state.rawJsonContent);
+
+	// Credential sets section collapsed state
+	const [credentialSetsExpanded, setCredentialSetsExpanded] = useState(false);
 
 	const [jsonValidation, setJsonValidation] = useState<JsonValidationResult>({
 		valid: false,
@@ -54,6 +66,7 @@ export function CreateStage() {
 		authorizerUrl,
 		credentialRequests,
 		responseModeConfig,
+		credentialSets, // Task 5: Include credential sets in validation
 	);
 
 	// JSON mode validation (debounced)
@@ -78,6 +91,7 @@ export function CreateStage() {
 		const requestBody = buildAuthorizationRequestBody(
 			credentialRequests,
 			responseModeConfig,
+			credentialSets,
 		);
 		setLastRequest(requestBody);
 		setShowPreview(true);
@@ -93,6 +107,7 @@ export function CreateStage() {
 			mutation.mutate({
 				credentialRequests,
 				responseModeConfig,
+				credentialSets,
 			});
 		}
 		setShowPreview(false);
@@ -108,6 +123,7 @@ export function CreateStage() {
 			mutation.mutate({
 				credentialRequests,
 				responseModeConfig,
+				credentialSets,
 			});
 		}
 	};
@@ -209,6 +225,35 @@ export function CreateStage() {
 
 						<CredentialRequestList />
 
+						<Separator />
+
+						{/* Credential Sets Section - Collapsible */}
+						<Collapsible
+							open={credentialSetsExpanded}
+							onOpenChange={setCredentialSetsExpanded}
+						>
+							<div className="space-y-4">
+								<CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+									<ChevronRight className="h-4 w-4 transition-transform [[data-state=open]>&]:rotate-90" />
+									<div className="flex flex-col items-start gap-0.5">
+										<span className="font-medium">Credential Sets (DCQL)</span>
+										<span className="text-xs">
+											Options within a set are alternatives (OR). Multiple
+											credentials in one option are combined (AND).
+										</span>
+									</div>
+								</CollapsibleTrigger>
+
+								<CollapsibleContent className="pt-4">
+									<CredentialSetList />
+								</CollapsibleContent>
+							</div>
+						</Collapsible>
+
+						<Separator />
+
+						<AdvancedOptions />
+
 						{/* Transfer Button */}
 						<TransferToJsonButton disabled={!builderValidation.valid} />
 					</>
@@ -236,6 +281,24 @@ export function CreateStage() {
 						</AlertDescription>
 					</Alert>
 				)}
+
+				{/* Task 5.6: Display warnings (e.g., duplicate credential IDs) */}
+				{!useRawJsonMode &&
+					builderValidation.warnings &&
+					builderValidation.warnings.length > 0 && (
+						<Alert variant="default" className="border-yellow-500 bg-yellow-50">
+							<AlertDescription>
+								<p className="font-medium mb-2 text-yellow-800">Warnings:</p>
+								<ul className="list-disc list-inside space-y-1">
+									{builderValidation.warnings.map((warning) => (
+										<li key={warning} className="text-sm text-yellow-700">
+											{warning}
+										</li>
+									))}
+								</ul>
+							</AlertDescription>
+						</Alert>
+					)}
 
 				{(error || mutation.error) && (
 					<Alert variant="destructive">

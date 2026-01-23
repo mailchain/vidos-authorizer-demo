@@ -14,19 +14,26 @@ The application SHALL allow users to customize the credential ID for each creden
 
 - **WHEN** a user edits the credential ID to a custom value (e.g., "mdl-id")
 - **THEN** that custom ID SHALL be used in the DCQL output
-- **AND** the custom ID SHALL be displayed in the credential request header
+- **AND** the custom ID SHALL be displayed in the credential request header as a subtitle
 
-#### Scenario: Copy credential ID
+#### Scenario: Credential ID in header
 
-- **WHEN** a user clicks the copy button next to the credential ID field
-- **THEN** the credential ID SHALL be copied to the clipboard
-- **AND** feedback SHALL indicate the copy succeeded
+- **WHEN** a credential request is displayed (collapsed or expanded)
+- **THEN** the credential ID SHALL be visible in the header as a subtitle
+- **AND** the ID SHALL be displayed in monospace font
+- **AND** the ID SHALL be styled with muted color to differentiate from main title
 
 #### Scenario: Credential ID uniqueness warning
 
 - **WHEN** a user enters a credential ID that matches an existing credential request
 - **THEN** the application SHALL display a warning
 - **AND** the application SHALL allow the duplicate ID (not block submission)
+
+#### Scenario: Credential ID change keeps item open
+
+- **WHEN** a user changes a credential ID
+- **THEN** the credential request item SHALL remain expanded
+- **AND** no unexpected collapse SHALL occur
 
 ### Requirement: Credential Set Membership Indicator
 
@@ -76,7 +83,7 @@ The application SHALL allow users to define credential sets that specify alterna
 
 #### Scenario: Create credential set
 
-- **WHEN** a user clicks "Add Credential Set"
+- **WHEN** a user clicks "New Credential Set"
 - **THEN** a new credential set builder SHALL be displayed
 - **AND** the set SHALL have an editable ID field pre-filled with a UUID
 - **AND** the set SHALL default to required (required: true)
@@ -148,8 +155,9 @@ The application SHALL allow users to quickly add credentials to sets from the cr
 #### Scenario: Add to set button visibility
 
 - **WHEN** at least one credential set exists
-- **THEN** each credential request SHALL display an "Add to set" button with icon
+- **THEN** each credential request SHALL display an "Add to set" button with text and icon
 - **AND** the button SHALL NOT be visible when no credential sets exist
+- **AND** the button height SHALL match the adjacent input field height
 
 #### Scenario: Add to existing option
 
@@ -257,3 +265,44 @@ The application SHALL generate valid DCQL queries including credential_sets when
 - **WHEN** credential sets are configured
 - **THEN** the JSON preview panel SHALL display the complete DCQL including credential_sets
 - **AND** the preview SHALL update as credential sets are modified
+
+### Requirement: UI Section Ordering
+
+The application SHALL display builder sections in a logical order that reflects the workflow.
+
+#### Scenario: Section order in builder mode
+
+- **WHEN** the builder mode is displayed
+- **THEN** sections SHALL appear in this order: Profile → Response Mode → Credential Requests → Credential Sets → Advanced Options
+- **AND** this order SHALL reflect the logical flow of defining credentials first, then combining them
+
+### Requirement: Visual Consistency
+
+The application SHALL use consistent visual patterns across credential requests and credential sets.
+
+#### Scenario: Delete button positioning
+
+- **WHEN** a credential request or credential set item is displayed
+- **THEN** the delete button SHALL be positioned in the top-left corner
+- **AND** the delete button SHALL be next to the item title
+- **AND** this pattern SHALL be consistent across all deletable items (requests, sets, options)
+
+#### Scenario: Two-line title format
+
+- **WHEN** a credential request or credential set item is displayed
+- **THEN** the header SHALL display a two-line title
+- **AND** the main title SHALL describe the item type and configuration
+- **AND** the subtitle SHALL display the item ID in monospace font with muted color
+
+#### Scenario: Collapsible item behavior
+
+- **WHEN** credential request and credential set items are displayed
+- **THEN** each item SHALL manage its own open/closed state independently
+- **AND** the first item in each list SHALL default to open
+- **AND** changing an item's ID SHALL NOT cause it to collapse
+
+#### Scenario: Consistent card styling
+
+- **WHEN** credential request and credential set items are displayed
+- **THEN** they SHALL share identical border and padding styling
+- **AND** the content area SHALL have consistent padding and border-top separator
