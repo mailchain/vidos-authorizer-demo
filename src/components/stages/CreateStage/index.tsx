@@ -222,6 +222,15 @@ export function CreateStage() {
 
 					{/* Builder Tab Content */}
 					<TabsContent value="builder" className="space-y-6 md:space-y-8">
+						{/* Header */}
+						<div>
+							<h2 className="text-2xl font-bold">Request Builder</h2>
+							<p className="text-muted-foreground">
+								Manually configure your authorization request with granular
+								control
+							</p>
+						</div>
+
 						<ProfileSelector />
 
 						<Separator />
@@ -267,6 +276,15 @@ export function CreateStage() {
 
 					{/* JSON Tab Content */}
 					<TabsContent value="json" className="space-y-6 md:space-y-8">
+						{/* Header */}
+						<div>
+							<h2 className="text-2xl font-bold">Raw JSON</h2>
+							<p className="text-muted-foreground">
+								Edit the authorization request as JSON or load a previously
+								saved request
+							</p>
+						</div>
+
 						<JsonEditor
 							value={rawJsonContent}
 							onChange={useAppStore.getState().setRawJsonContent}
