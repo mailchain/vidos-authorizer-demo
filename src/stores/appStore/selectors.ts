@@ -1,3 +1,4 @@
+import { BUILT_IN_TEMPLATES } from "@/config/request-templates/request-templates";
 import { getManagedAuthorizerUrl } from "@/utils/env";
 import type { AppState } from "./types";
 
@@ -50,6 +51,29 @@ export const uiSelectors = {
 export const debugSelectors = {
 	lastRequest: (state: AppState) => state.lastRequest,
 	lastResponse: (state: AppState) => state.lastResponse,
+};
+
+// Template selectors
+export const templateSelectors = {
+	customRequestTemplates: (state: AppState) => state.customRequestTemplates,
+	selectedTemplateId: (state: AppState) => state.selectedTemplateId,
+};
+
+/**
+ * Selector to get all templates (built-in + custom)
+ */
+export const selectAllTemplates = (state: AppState) => [
+	...BUILT_IN_TEMPLATES,
+	...state.customRequestTemplates,
+];
+
+/**
+ * Selector to get the currently selected template
+ */
+export const selectSelectedTemplate = (state: AppState) => {
+	if (!state.selectedTemplateId) return null;
+	const allTemplates = selectAllTemplates(state);
+	return allTemplates.find((t) => t.id === state.selectedTemplateId) ?? null;
 };
 
 /**

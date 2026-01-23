@@ -121,3 +121,21 @@ export interface AppState {
 	lastResponse: object | null;
 	showPreview: boolean;
 }
+
+export type TemplateCategory =
+	| "age-verification"
+	| "identity"
+	| "address"
+	| "kyc"
+	| "driving"
+	| "flexible";
+
+export interface RequestTemplate {
+	id: string;
+	name: string;
+	description: string;
+	category: TemplateCategory;
+	credentialRequests: CredentialRequestWithId[];
+	credentialSets: CredentialSet[];
+	isBuiltIn: boolean;
+}

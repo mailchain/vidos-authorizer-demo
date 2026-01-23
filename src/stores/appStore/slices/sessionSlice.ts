@@ -41,6 +41,7 @@ export const createSessionSlice: SliceCreator<SessionSlice> = (set) => ({
 			ownAuthorizerUrl: state.ownAuthorizerUrl,
 			instanceType: state.instanceType,
 			customCredentialCases: state.customCredentialCases,
+			customRequestTemplates: state.customRequestTemplates,
 			customJsonRequests: state.customJsonRequests,
 		})),
 
@@ -63,6 +64,7 @@ export const createSessionSlice: SliceCreator<SessionSlice> = (set) => ({
 					? (config.ownAuthorizerUrl ?? "")
 					: state.ownAuthorizerUrl,
 			customCredentialCases: config.customCredentialCases,
+			customRequestTemplates: config.customRequestTemplates || [],
 			error: null,
 		})),
 });

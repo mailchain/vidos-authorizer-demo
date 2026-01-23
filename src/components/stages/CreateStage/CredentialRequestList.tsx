@@ -1,5 +1,5 @@
 import { ChevronRight, Plus, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Collapsible,
@@ -106,9 +106,6 @@ function CredentialRequestItem({
 	onRemove,
 }: CredentialRequestItemProps) {
 	const [isOpen, setIsOpen] = useState(defaultOpen);
-	useEffect(() => {
-		console.log("CredentialRequestItem isOpen changed:", isOpen);
-	}, [isOpen]);
 
 	const getDocumentTypeAbbrev = (displayName: string): string => {
 		const match = displayName.match(/\(([^)]+)\)$/);

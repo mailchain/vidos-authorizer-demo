@@ -4,10 +4,12 @@ import { getManagedAuthorizerUrl } from "@/utils/env";
 import { createConfigSlice } from "./slices/configSlice";
 import { createCredentialRequestsSlice } from "./slices/credentialRequestsSlice";
 import { createCustomCasesSlice } from "./slices/customCasesSlice";
+import { createCustomTemplatesSlice } from "./slices/customTemplatesSlice";
 import { createDebugSlice } from "./slices/debugSlice";
 import { createJsonModeSlice } from "./slices/jsonModeSlice";
 import { createResponseModeSlice } from "./slices/responseModeSlice";
 import { createSessionSlice } from "./slices/sessionSlice";
+import { createTemplateSelectionSlice } from "./slices/templateSelectionSlice";
 import { createUiSlice } from "./slices/uiSlice";
 import type { AppState } from "./types";
 
@@ -18,6 +20,8 @@ export const useAppStore = create<AppState>()(
 			...createCredentialRequestsSlice(...a),
 			...createResponseModeSlice(...a),
 			...createCustomCasesSlice(...a),
+			...createCustomTemplatesSlice(...a),
+			...createTemplateSelectionSlice(...a),
 			...createJsonModeSlice(...a),
 			...createSessionSlice(...a),
 			...createUiSlice(...a),
@@ -30,9 +34,9 @@ export const useAppStore = create<AppState>()(
 				instanceType: state.instanceType,
 				customCredentialCases: state.customCredentialCases,
 				customJsonRequests: state.customJsonRequests,
+				customRequestTemplates: state.customRequestTemplates,
 			}),
 			merge: (persistedState, currentState) => {
-				console.log("Merging persisted state:", persistedState, currentState);
 				const persisted = persistedState as Partial<AppState>;
 				return {
 					...currentState,

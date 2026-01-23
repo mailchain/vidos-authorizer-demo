@@ -1,28 +1,32 @@
 import type { CredentialCaseDefinition } from "@/config/credential-cases/types";
-import type { InstanceType } from "@/types/app";
+import type { InstanceType, RequestTemplate } from "@/types/app";
 
 export interface ConfigExport {
-	schemaVersion: string; // e.g., "1.0"
+	schemaVersion: string; // e.g., "1.1"
 	instanceType: InstanceType; // "managed" | "own"
 	ownAuthorizerUrl?: string; // Only present if instanceType is "own"
 	customCredentialCases: CredentialCaseDefinition[];
+	customRequestTemplates: RequestTemplate[];
 }
 
 interface ExportConfigParams {
 	instanceType: InstanceType;
 	ownAuthorizerUrl: string;
 	customCredentialCases: CredentialCaseDefinition[];
+	customRequestTemplates: RequestTemplate[];
 }
 
 export function exportConfig({
 	instanceType,
 	ownAuthorizerUrl,
 	customCredentialCases,
+	customRequestTemplates,
 }: ExportConfigParams): ConfigExport {
 	const config: ConfigExport = {
-		schemaVersion: "1.0",
+		schemaVersion: "1.1",
 		instanceType,
 		customCredentialCases,
+		customRequestTemplates,
 	};
 
 	if (instanceType === "own") {
@@ -77,8 +81,8 @@ export function validateImportedConfig(data: unknown): ValidationResult {
 		return { success: false, error: "Missing or invalid schemaVersion" };
 	}
 
-	// Check version compatibility
-	if (obj.schemaVersion !== "1.0") {
+	// Check version compatibility (support both 1.0 and 1.1)
+	if (obj.schemaVersion !== "1.0" && obj.schemaVersion !== "1.1") {
 		return {
 			success: false,
 			error: `Unsupported schema version: ${obj.schemaVersion}`,
@@ -94,6 +98,22 @@ export function validateImportedConfig(data: unknown): ValidationResult {
 			success: false,
 			error: "Missing or invalid customCredentialCases",
 		};
+	}
+
+	// Backward compatibility: customRequestTemplates is optional (defaults to empty array)
+	if (
+		obj.customRequestTemplates !== undefined &&
+		!Array.isArray(obj.customRequestTemplates)
+	) {
+		return {
+			success: false,
+			error: "Invalid customRequestTemplates: must be an array",
+		};
+	}
+
+	// Ensure customRequestTemplates exists (backward compatibility)
+	if (obj.customRequestTemplates === undefined) {
+		obj.customRequestTemplates = [];
 	}
 
 	// Validate ownAuthorizerUrl if instanceType is "own"

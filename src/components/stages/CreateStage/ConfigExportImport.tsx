@@ -36,6 +36,9 @@ export function ConfigExportImport() {
 	const customCredentialCases = useAppStore(
 		(state) => state.customCredentialCases,
 	);
+	const customRequestTemplates = useAppStore(
+		(state) => state.customRequestTemplates,
+	);
 	const importConfig = useAppStore((state) => state.importConfig);
 
 	const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -55,6 +58,7 @@ export function ConfigExportImport() {
 			instanceType,
 			ownAuthorizerUrl,
 			customCredentialCases,
+			customRequestTemplates,
 		});
 		downloadConfigAsJson(config);
 	};
@@ -132,7 +136,7 @@ export function ConfigExportImport() {
 						<AlertDialogTitle>Import Configuration</AlertDialogTitle>
 						<AlertDialogDescription>
 							This will replace your current custom configuration (authorizer
-							URL and credential cases). Continue?
+							URL, credential cases, and request templates). Continue?
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

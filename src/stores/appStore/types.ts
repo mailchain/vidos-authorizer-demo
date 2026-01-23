@@ -6,6 +6,7 @@ import type {
 	CredentialRequestWithId,
 	CredentialSet,
 	InstanceType,
+	RequestTemplate,
 	ResponseModeConfig,
 	SavedJsonRequest,
 } from "@/types/app";
@@ -51,6 +52,21 @@ export interface CustomCasesSlice {
 		credCase: CredentialCaseDefinition,
 	) => void;
 	deleteCustomCredentialCase: (id: string) => void;
+}
+
+export interface CustomTemplatesSlice {
+	customRequestTemplates: RequestTemplate[];
+	addCustomTemplate: (template: RequestTemplate) => void;
+	updateCustomTemplate: (id: string, template: RequestTemplate) => void;
+	deleteCustomTemplate: (id: string) => void;
+	setCustomTemplates: (templates: RequestTemplate[]) => void;
+}
+
+export interface TemplateSelectionSlice {
+	selectedTemplateId: string | null;
+	setSelectedTemplateId: (id: string | null) => void;
+	applyTemplate: (templateId: string) => void;
+	clearSelectedTemplate: () => void;
 }
 
 export interface JsonModeSlice {
@@ -102,6 +118,8 @@ export type AppState = ConfigSlice &
 	CredentialRequestsSlice &
 	ResponseModeSlice &
 	CustomCasesSlice &
+	CustomTemplatesSlice &
+	TemplateSelectionSlice &
 	JsonModeSlice &
 	SessionSlice &
 	UiSlice &

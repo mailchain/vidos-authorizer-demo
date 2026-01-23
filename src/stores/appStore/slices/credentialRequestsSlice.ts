@@ -7,11 +7,13 @@ export const createCredentialRequestsSlice: SliceCreator<
 	credentialRequests: [],
 	credentialSets: [],
 
-	setCredentialRequests: (credentialRequests) => set({ credentialRequests }),
+	setCredentialRequests: (credentialRequests) =>
+		set({ credentialRequests, selectedTemplateId: null }),
 
 	addCredentialRequest: (request) =>
 		set((state) => ({
 			credentialRequests: [...state.credentialRequests, request],
+			selectedTemplateId: null,
 			error: null,
 		})),
 
@@ -20,6 +22,7 @@ export const createCredentialRequestsSlice: SliceCreator<
 			credentialRequests: state.credentialRequests.map((req) =>
 				req.id === id ? { ...req, ...request } : req,
 			),
+			selectedTemplateId: null,
 			error: null,
 		})),
 
@@ -44,6 +47,7 @@ export const createCredentialRequestsSlice: SliceCreator<
 			return {
 				credentialRequests,
 				credentialSets,
+				selectedTemplateId: null,
 				error: null,
 			};
 		}),
@@ -60,6 +64,7 @@ export const createCredentialRequestsSlice: SliceCreator<
 						required: true,
 					},
 				],
+				selectedTemplateId: null,
 				error: null,
 			};
 		}),
@@ -69,6 +74,7 @@ export const createCredentialRequestsSlice: SliceCreator<
 			credentialSets: state.credentialSets.map((credSet) =>
 				credSet.id === id ? { ...credSet, ...updates } : credSet,
 			),
+			selectedTemplateId: null,
 			error: null,
 		})),
 
@@ -77,6 +83,7 @@ export const createCredentialRequestsSlice: SliceCreator<
 			credentialSets: state.credentialSets.filter(
 				(credSet) => credSet.id !== id,
 			),
+			selectedTemplateId: null,
 			error: null,
 		})),
 
