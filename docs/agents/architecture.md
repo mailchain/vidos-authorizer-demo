@@ -5,6 +5,7 @@
 - Vite 7, React 19, TypeScript strict mode
 - Tailwind v4 Vite plugin (not PostCSS)
 - shadcn/ui "new-york"
+- Zustand 5 (slices pattern)
 - openapi-fetch client
 
 ## Conventions
@@ -17,31 +18,39 @@
 - OpenAPI spec -> `openapi-typescript` -> `src/api/authorizer.ts` (auto-generated)
 - `createAuthorizerClient()` in `src/api/client.ts` creates typed fetch client
 
-## Three-Stage Flow (AuthorizationContext.tsx)
+## App Store (`src/stores/appStore/`)
 
-Wizard-style React Context + useReducer managing:
+Zustand store with slices pattern. Import: `import { useAppStore } from "@/stores/appStore"`.
+
+**Slices:**
+- `configSlice` - instanceType, ownAuthorizerUrl
+- `credentialRequestsSlice` - credentialRequests, credentialSets CRUD
+- `responseModeSlice` - responseModeConfig
+- `customCasesSlice` - customCredentialCases CRUD
+- `jsonModeSlice` - useRawJsonMode, rawJsonContent, customJsonRequests
+- `sessionSlice` - stage, authorizationId, authorizeUrl, startFresh, backToCreateStage
+- `uiSlice` - showPreview, error
+- `debugSlice` - lastRequest, lastResponse
+
+**Selectors:** `selectAuthorizerUrl` + domain selectors in `selectors.ts`.
+
+**Persist:** localStorage key `vidos-flow-storage`, partializes config/customCases/customJsonRequests.
+
+## Three-Stage Flow
 
 1. **Create Stage** (`stage: "create"`)
-   - Configure authorizer URL (persisted to localStorage)
-   - Build credential requests array (multiple allowed)
+   - Configure authorizer URL (persisted)
+   - Build credential requests + credential sets (DCQL)
    - Select response mode: `direct_post`, `direct_post.jwt`, `dc_api`, `dc_api.jwt`
-   - Generate DCQL query via `queryBuilder.ts`
 
 2. **Authorization Stage** (`stage: "authorization"`)
-   - Standard flows: QR code with `openid4vp://` URI
-   - DC API flows: "Get Credentials" button invoking `navigator.credentials.get()`
-   - Polls status every 2s via `useAuthorizationStatus`
-   - Transitions on terminal status
+   - Standard: QR code with `openid4vp://` URI
+   - DC API: "Get Credentials" button → `navigator.credentials.get()`
+   - Polls status via `useAuthorizationStatusQuery`
 
 3. **Result Stage** (`stage: "result"`)
-   - Shows outcome: authorized/rejected/expired/error
-   - Displays policy evaluation results fetched by `usePolicyResponse`
-
-**State Properties:**
-
-- `stage`, `credentialRequests`, `responseModeConfig`, `authorizationId`
-- `authorizeUrl` (null for DC API), `digitalCredentialGetRequest` (null for standard)
-- `policyResponse`, `authorizationStatus`
+   - Shows authorized/rejected/expired/error
+   - Displays policy results via `usePolicyResponseQuery`
 
 ## Response Modes
 

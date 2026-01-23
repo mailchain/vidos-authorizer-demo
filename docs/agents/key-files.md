@@ -1,10 +1,26 @@
 # Key Files
 
-- `AuthorizationContext.tsx`: global state, stage transitions
-- `src/hooks/useCreateAuthorization.ts`: creates auth requests
-- `src/hooks/useAuthorizationStatus.ts`: polls status
-- `src/hooks/usePolicyResponse.ts`: fetches verification results
-- `src/utils/requestBuilder.ts`: builds request bodies per response mode
-- `src/utils/queryBuilder.ts`: builds DCQL from credential requests
-- `src/utils/dcapi.ts`: DC API support detection + request building
-- `src/config/credential-cases.ts`: credential type definitions
+## State
+
+- `src/stores/appStore/` - Zustand store (slices pattern)
+  - `index.ts` - combined store with persist middleware
+  - `types.ts` - slice interfaces
+  - `selectors.ts` - typed selectors
+  - `slices/` - domain slices (config, session, credentialRequests, etc.)
+
+## Queries
+
+- `src/queries/useCreateAuthorizationMutation.ts` - creates auth requests
+- `src/queries/useAuthorizationStatusQuery.ts` - polls status
+- `src/queries/usePolicyResponseQuery.ts` - fetches verification results
+- `src/queries/useDCAPIMutation.ts` - DC API credential request
+
+## Utils
+
+- `src/utils/requestBuilder.ts` - builds request bodies per response mode
+- `src/utils/queryBuilder.ts` - builds DCQL from credential requests
+- `src/utils/dcapi.ts` - DC API support detection + request building
+
+## Config
+
+- `src/config/credential-cases/` - credential type definitions (PID, MDL, Photo ID)
