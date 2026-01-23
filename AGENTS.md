@@ -7,8 +7,8 @@ Package manager: Bun (`bun install`).
 Non-standard commands:
 
 - `bun run type-check` - TS check (no emit)
-- `bun run lint` - Biome lint
-- `bun run format` - Biome format+fix
+- `bun run lint` - Biome lint. Respect the errors and warnings, no new issues should be coming from your changes.
+- `bun run format` - Biome format+fix. Run after finishing your changes.
 - `bun run build` - type-check + prod build
 - `bun run generate-api:local` - regenerate `src/api/authorizer.ts` from OpenAPI with local `authorizer.service.yaml`
 - `bun run generate-api:prod` - regenerate `src/api/authorizer.ts` from OpenAPI with remote prod OpenAPI spec
