@@ -30,6 +30,7 @@ export default defineConfig({
 					"vendor-qr": ["qrcode.react"],
 					"vendor-validation": ["zod"],
 					"vendor-state": ["zustand"],
+					"vendor-id": ["mnemonic-id"],
 					"vendor-utils": [
 						"class-variance-authority",
 						"clsx",

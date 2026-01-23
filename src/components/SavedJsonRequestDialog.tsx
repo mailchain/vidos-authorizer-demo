@@ -20,6 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAppStore } from "@/stores/appStore";
 import type { SavedJsonRequest } from "@/types/app";
+import { generateReactKey } from "@/utils/id";
 import { validateSavedJsonRequest } from "@/utils/jsonRequestValidation";
 
 interface SavedJsonRequestDialogProps {
@@ -113,7 +114,7 @@ export function SavedJsonRequestDialog({
 		} else {
 			// Create mode
 			addCustomJsonRequest({
-				id: crypto.randomUUID(),
+				id: generateReactKey(),
 				name: name.trim(),
 				content: content.trim(),
 				createdAt: now,

@@ -1,3 +1,4 @@
+import { generateCredentialSetId, generateReactKey } from "@/utils/id";
 import type { CredentialRequestsSlice, SliceCreator } from "../types";
 
 export const createCredentialRequestsSlice: SliceCreator<
@@ -49,13 +50,12 @@ export const createCredentialRequestsSlice: SliceCreator<
 
 	addCredentialSet: () =>
 		set((state) => {
-			const uniqueId = crypto.randomUUID();
 			return {
 				credentialSets: [
 					...state.credentialSets,
 					{
-						id: uniqueId,
-						reactKey: uniqueId,
+						id: generateCredentialSetId(),
+						reactKey: generateReactKey(),
 						options: [[]],
 						required: true,
 					},

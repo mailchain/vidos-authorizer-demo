@@ -14,6 +14,7 @@ import {
 } from "@/config/credential-cases/utils";
 import { useAppStore } from "@/stores/appStore";
 import type { CredentialRequestWithId } from "@/types/app";
+import { generateCredentialId, generateReactKey } from "@/utils/id";
 import { CredentialRequestBuilder } from "./CredentialRequestBuilder";
 
 export function CredentialRequestList() {
@@ -29,10 +30,9 @@ export function CredentialRequestList() {
 	);
 
 	const handleAdd = () => {
-		const uniqueId = crypto.randomUUID();
 		const newRequest: CredentialRequestWithId = {
-			reactKey: uniqueId,
-			id: uniqueId,
+			reactKey: generateReactKey(),
+			id: generateCredentialId(),
 			documentType: "pid",
 			formatId: "pid_sd_jwt",
 			format: "dc+sd-jwt",
