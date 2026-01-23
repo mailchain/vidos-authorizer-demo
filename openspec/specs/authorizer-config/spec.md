@@ -11,7 +11,36 @@ This specification defines the authorizer configuration feature that allows user
 
 The configuration supports two modes: a pre-configured Vidos Managed instance for quick demos/testing, or a custom authorizer URL for production use with user-owned Vidos Gateway instances.
 
+## UI Placement
+
+The authorizer configuration is located within the **Advanced Options** collapsible section on the Create Authorization Request page. This placement reflects that most users will use the default Vidos Managed instance, while power users who need custom instances can easily access the configuration within the advanced settings.
+
 ## Requirements
+
+### Requirement: Advanced Options Auto-Expansion
+
+The application SHALL automatically expand the Advanced Options section when the user has previously selected "Own instance".
+
+#### Scenario: Advanced Options collapsed by default
+
+- **WHEN** a user opens the Create Authorization Request page
+- **AND** the "Vidos Managed instance" is selected
+- **THEN** the Advanced Options section SHALL be collapsed by default
+- **AND** the authorizer configuration SHALL be hidden until the user expands Advanced Options
+
+#### Scenario: Advanced Options expanded for own instance
+
+- **WHEN** a user opens the Create Authorization Request page
+- **AND** the "Own instance" is selected (from a previous session)
+- **THEN** the Advanced Options section SHALL be automatically expanded
+- **AND** the authorizer configuration SHALL be visible immediately
+
+#### Scenario: Visual container for Advanced Options
+
+- **WHEN** the Advanced Options section is expanded
+- **THEN** all content SHALL be contained within a bordered container
+- **AND** the container SHALL have rounded corners and subtle background color
+- **AND** the visual treatment SHALL clearly identify what content is part of Advanced Options
 
 ### Requirement: Instance Type Selection
 

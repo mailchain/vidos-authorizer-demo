@@ -4,7 +4,41 @@
 
 This specification defines the credential request builder feature that allows users to construct one or more credential requests for OID4VP authorization flows. Users can select document types (PID, MDL, Photo ID), choose appropriate formats based on document type availability, and build complex authorization requests with multiple credentials.
 
+## UI Overview
+
+The Create Authorization Request page features an enhanced header that provides clear context about the workflow:
+
+- **Title**: "Create Authorization Request" (displayed at `text-xl` size)
+- **Description**: Multi-line explanation that describes the three methods available (templates, visual builder, raw JSON) and clarifies that the request generates a shareable link for credential verification
+- **Visual Treatment**: Subtle spacing enhancements (`space-y-1.5`) for improved readability and hierarchy
+
+This header design prioritizes clarity and user guidance while maintaining a minimalistic, professional aesthetic.
+
 ## Requirements
+
+### Requirement: Page Header Context
+
+The application SHALL provide clear, informative context about the authorization request creation workflow in the page header.
+
+#### Scenario: Display page title
+
+- **WHEN** a user navigates to the Create Authorization Request page
+- **THEN** the page title SHALL read "Create Authorization Request"
+- **AND** the title SHALL be displayed at a larger size (`text-xl`) for visual prominence
+
+#### Scenario: Display comprehensive description
+
+- **WHEN** a user views the page header
+- **THEN** a multi-line description SHALL be displayed below the title
+- **AND** the description SHALL explain the three available methods: templates, visual builder, and raw JSON
+- **AND** the description SHALL clarify that the request generates a shareable link for credential verification
+- **AND** the description text SHALL be: "Build and send credential verification requests using templates, the visual builder, or raw JSON. Your request will generate a shareable link for credential verification."
+
+#### Scenario: Visual spacing and hierarchy
+
+- **WHEN** the page header is rendered
+- **THEN** appropriate spacing SHALL be applied between title and description (`space-y-1.5`)
+- **AND** the visual hierarchy SHALL guide users through the workflow understanding
 
 ### Requirement: Document Type Selection
 

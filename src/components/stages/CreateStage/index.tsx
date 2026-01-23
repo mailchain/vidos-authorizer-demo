@@ -26,7 +26,6 @@ import {
 import { buildAuthorizationRequestBody } from "@/utils/requestBuilder";
 import { validateAuthorizationRequest } from "@/utils/validation";
 import { AdvancedOptions } from "./AdvancedOptions";
-import { AuthorizerConfig } from "./AuthorizerConfig";
 import { BuilderActions } from "./BuilderActions";
 import { CredentialRequestList } from "./CredentialRequestList";
 import { CredentialSetList } from "./CredentialSetList";
@@ -189,17 +188,15 @@ export function CreateStage() {
 
 	return (
 		<Card>
-			<CardHeader>
-				<CardTitle>Create Authorization</CardTitle>
+			<CardHeader className="space-y-1.5">
+				<CardTitle className="text-xl">Create Authorization Request</CardTitle>
 				<CardDescription>
-					Configure your credential authorization request
+					Build and send credential verification requests using templates, the
+					visual builder, or raw JSON. Your request will generate a shareable
+					link for credential verification.
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-6 md:space-y-8">
-				<AuthorizerConfig />
-
-				<Separator />
-
 				{/* Tab Navigation */}
 				<Tabs
 					value={viewMode}
