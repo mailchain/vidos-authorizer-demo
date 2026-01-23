@@ -70,7 +70,7 @@ function CredentialSetItem({
 
 	return (
 		<Collapsible open={isOpen} onOpenChange={setIsOpen}>
-			<div className="border rounded-md">
+			<div className="border rounded-md" data-credential-set-id={set.id}>
 				<div className="flex items-center gap-2 p-2">
 					<Button
 						type="button"

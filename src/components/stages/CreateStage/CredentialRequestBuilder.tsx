@@ -77,12 +77,25 @@ export function CredentialRequestBuilder({
 			`[data-credential-set-id="${setId}"]`,
 		);
 		if (element) {
-			element.scrollIntoView({ behavior: "smooth", block: "center" });
-			// Add highlight effect
-			element.classList.add("highlight-flash");
+			// Find the parent Collapsible and check if it's closed
+			const collapsible = element.parentElement;
+			if (collapsible?.getAttribute("data-state") === "closed") {
+				// Find and click the CollapsibleTrigger to open it
+				const trigger = element.querySelector('button[data-state="closed"]');
+				if (trigger instanceof HTMLElement) {
+					trigger.click();
+				}
+			}
+
+			// Scroll after a brief delay to allow expansion animation
 			setTimeout(() => {
-				element.classList.remove("highlight-flash");
-			}, 2000);
+				element.scrollIntoView({ behavior: "smooth", block: "center" });
+				// Add highlight effect
+				element.classList.add("highlight-flash");
+				setTimeout(() => {
+					element.classList.remove("highlight-flash");
+				}, 2000);
+			}, 100);
 		}
 	};
 
@@ -222,19 +235,21 @@ export function CredentialRequestBuilder({
 				</div>
 				{/* Credential Set Membership - Task 4.3 */}
 				{referencingSets.length > 0 && (
-					<div className="flex items-center gap-2 text-xs text-muted-foreground">
-						<span>Used in credential sets:</span>
-						{referencingSets.map((set) => (
-							<Badge
-								key={set.id}
-								variant="secondary"
-								className="text-xs cursor-pointer hover:bg-secondary/80 transition-colors"
-								onClick={() => handleScrollToSet(set.id)}
-								title={`Scroll to credential set: ${set.id}`}
-							>
-								{set.id}
-							</Badge>
-						))}
+					<div className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs text-muted-foreground">
+						<span className="shrink-0">Used in credential sets:</span>
+						<div className="flex flex-wrap items-center gap-2">
+							{referencingSets.map((set) => (
+								<Badge
+									key={set.id}
+									variant="secondary"
+									className="text-xs cursor-pointer hover:bg-secondary/80 transition-colors break-words max-w-full"
+									onClick={() => handleScrollToSet(set.id)}
+									title={`Scroll to credential set: ${set.id}`}
+								>
+									{set.id}
+								</Badge>
+							))}
+						</div>
 					</div>
 				)}
 			</div>
