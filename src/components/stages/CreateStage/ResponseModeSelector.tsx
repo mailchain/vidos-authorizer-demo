@@ -1,12 +1,12 @@
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useFlowStore } from "@/stores/useFlowStore";
+import { useAuthorizationStore } from "@/stores/authorizationStore";
 import type { DCAPIProtocol, ResponseMode } from "@/types/app";
 import { checkDCAPISupport } from "@/utils/dcapi";
 
 export function ResponseModeSelector() {
-	const config = useFlowStore((state) => state.responseModeConfig);
-	const setResponseModeConfig = useFlowStore(
+	const config = useAuthorizationStore((state) => state.responseModeConfig);
+	const setResponseModeConfig = useAuthorizationStore(
 		(state) => state.setResponseModeConfig,
 	);
 	const dcApiSupported = checkDCAPISupport().available;

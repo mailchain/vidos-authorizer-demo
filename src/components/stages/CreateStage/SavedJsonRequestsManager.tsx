@@ -19,7 +19,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { useFlowStore } from "@/stores/useFlowStore";
+import { useAuthorizationStore } from "@/stores/authorizationStore";
 import type { SavedJsonRequest } from "@/types/app";
 
 export function SavedJsonRequestsManager() {
@@ -28,12 +28,16 @@ export function SavedJsonRequestsManager() {
 		useState<SavedJsonRequest | null>(null);
 	const [requestToDelete, setRequestToDelete] = useState<string | null>(null);
 
-	const customJsonRequests = useFlowStore((state) => state.customJsonRequests);
-	const deleteCustomJsonRequest = useFlowStore(
+	const customJsonRequests = useAuthorizationStore(
+		(state) => state.customJsonRequests,
+	);
+	const deleteCustomJsonRequest = useAuthorizationStore(
 		(state) => state.deleteCustomJsonRequest,
 	);
-	const rawJsonContent = useFlowStore((state) => state.rawJsonContent);
-	const setRawJsonContent = useFlowStore((state) => state.setRawJsonContent);
+	const rawJsonContent = useAuthorizationStore((state) => state.rawJsonContent);
+	const setRawJsonContent = useAuthorizationStore(
+		(state) => state.setRawJsonContent,
+	);
 
 	const handleSaveNew = () => {
 		setDialogMode("create");

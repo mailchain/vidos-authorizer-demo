@@ -12,19 +12,19 @@ import {
 	getCredentialCase,
 	getFormatDefinitionById,
 } from "@/config/credential-cases/utils";
-import { useFlowStore } from "@/stores/useFlowStore";
+import { useAuthorizationStore } from "@/stores/authorizationStore";
 import type { CredentialRequestWithId } from "@/types/app";
 import { CredentialRequestBuilder } from "./CredentialRequestBuilder";
 
 export function CredentialRequestList() {
-	const requests = useFlowStore((state) => state.credentialRequests);
-	const addCredentialRequest = useFlowStore(
+	const requests = useAuthorizationStore((state) => state.credentialRequests);
+	const addCredentialRequest = useAuthorizationStore(
 		(state) => state.addCredentialRequest,
 	);
-	const updateCredentialRequest = useFlowStore(
+	const updateCredentialRequest = useAuthorizationStore(
 		(state) => state.updateCredentialRequest,
 	);
-	const removeCredentialRequest = useFlowStore(
+	const removeCredentialRequest = useAuthorizationStore(
 		(state) => state.removeCredentialRequest,
 	);
 

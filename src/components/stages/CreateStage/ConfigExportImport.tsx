@@ -12,7 +12,7 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { useFlowStore } from "@/stores/useFlowStore";
+import { useAuthorizationStore } from "@/stores/authorizationStore";
 import {
 	type ConfigExport,
 	downloadConfigAsJson,
@@ -31,12 +31,14 @@ async function parseConfigFile(file: File): Promise<ConfigExport> {
 }
 
 export function ConfigExportImport() {
-	const instanceType = useFlowStore((state) => state.instanceType);
-	const ownAuthorizerUrl = useFlowStore((state) => state.ownAuthorizerUrl);
-	const customCredentialCases = useFlowStore(
+	const instanceType = useAuthorizationStore((state) => state.instanceType);
+	const ownAuthorizerUrl = useAuthorizationStore(
+		(state) => state.ownAuthorizerUrl,
+	);
+	const customCredentialCases = useAuthorizationStore(
 		(state) => state.customCredentialCases,
 	);
-	const importConfig = useFlowStore((state) => state.importConfig);
+	const importConfig = useAuthorizationStore((state) => state.importConfig);
 
 	const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 	const [pendingConfig, setPendingConfig] = useState<ConfigExport | null>(null);

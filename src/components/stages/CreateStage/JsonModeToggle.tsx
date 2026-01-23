@@ -11,7 +11,7 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useFlowStore } from "@/stores/useFlowStore";
+import { useAuthorizationStore } from "@/stores/authorizationStore";
 
 interface JsonModeToggleProps {
 	value: boolean; // useRawJsonMode
@@ -26,8 +26,10 @@ export function JsonModeToggle({
 }: JsonModeToggleProps) {
 	const [showWarning, setShowWarning] = useState(false);
 	const [showSaveDialog, setShowSaveDialog] = useState(false);
-	const rawJsonContent = useFlowStore((state) => state.rawJsonContent);
-	const setRawJsonContent = useFlowStore((state) => state.setRawJsonContent);
+	const rawJsonContent = useAuthorizationStore((state) => state.rawJsonContent);
+	const setRawJsonContent = useAuthorizationStore(
+		(state) => state.setRawJsonContent,
+	);
 
 	const handleTabChange = (newValue: string) => {
 		const useRaw = newValue === "json";

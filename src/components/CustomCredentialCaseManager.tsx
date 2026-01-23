@@ -22,7 +22,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { CREDENTIAL_CASES } from "@/config/credential-cases/credential-cases";
 import type { CredentialCaseDefinition } from "@/config/credential-cases/types";
-import { useFlowStore } from "@/stores/useFlowStore";
+import { useAuthorizationStore } from "@/stores/authorizationStore";
 import { CustomCredentialCaseDialog } from "./CustomCredentialCaseDialog";
 
 export function CustomCredentialCaseManager() {
@@ -34,11 +34,15 @@ export function CustomCredentialCaseManager() {
 		useState<CredentialCaseDefinition | null>(null);
 	const [caseToDelete, setCaseToDelete] = useState<string | null>(null);
 
-	const customCases = useFlowStore((state) => state.customCredentialCases);
-	const deleteCustomCase = useFlowStore(
+	const customCases = useAuthorizationStore(
+		(state) => state.customCredentialCases,
+	);
+	const deleteCustomCase = useAuthorizationStore(
 		(state) => state.deleteCustomCredentialCase,
 	);
-	const credentialRequests = useFlowStore((state) => state.credentialRequests);
+	const credentialRequests = useAuthorizationStore(
+		(state) => state.credentialRequests,
+	);
 
 	const handleAddNew = () => {
 		setDialogMode("create");

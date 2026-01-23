@@ -7,13 +7,15 @@ import {
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
-import { useFlowStore } from "@/stores/useFlowStore";
+import { useAuthorizationStore } from "@/stores/authorizationStore";
 import { CredentialSetBuilder } from "./CredentialSetBuilder";
 
 export function CredentialSetList() {
-	const credentialSets = useFlowStore((state) => state.credentialSets);
-	const addCredentialSet = useFlowStore((state) => state.addCredentialSet);
-	const removeCredentialSet = useFlowStore(
+	const credentialSets = useAuthorizationStore((state) => state.credentialSets);
+	const addCredentialSet = useAuthorizationStore(
+		(state) => state.addCredentialSet,
+	);
+	const removeCredentialSet = useAuthorizationStore(
 		(state) => state.removeCredentialSet,
 	);
 
@@ -65,7 +67,7 @@ function CredentialSetItem({
 	onRemove,
 }: CredentialSetItemProps) {
 	const [isOpen, setIsOpen] = useState(defaultOpen);
-	const credentialSets = useFlowStore((state) => state.credentialSets);
+	const credentialSets = useAuthorizationStore((state) => state.credentialSets);
 	const set = credentialSets.find((s) => s.id === setId);
 
 	if (!set) return null;

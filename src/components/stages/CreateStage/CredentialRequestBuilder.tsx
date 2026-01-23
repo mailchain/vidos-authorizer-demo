@@ -28,7 +28,7 @@ import {
 	getFormatDefinitionById,
 	isCustomCase,
 } from "@/config/credential-cases/utils";
-import { useFlowStore } from "@/stores/useFlowStore";
+import { useAuthorizationStore } from "@/stores/authorizationStore";
 import type { CredentialRequestWithId } from "@/types/app";
 import { AttributeSelector } from "./AttributeSelector";
 
@@ -45,12 +45,14 @@ export function CredentialRequestBuilder({
 	onRemove: _onRemove,
 	canRemove: _canRemove,
 }: CredentialRequestBuilderProps) {
-	const customCredentialCases = useFlowStore(
+	const customCredentialCases = useAuthorizationStore(
 		(state) => state.customCredentialCases,
 	);
-	const credentialSets = useFlowStore((state) => state.credentialSets);
-	const updateCredentialId = useFlowStore((state) => state.updateCredentialId);
-	const updateCredentialSet = useFlowStore(
+	const credentialSets = useAuthorizationStore((state) => state.credentialSets);
+	const updateCredentialId = useAuthorizationStore(
+		(state) => state.updateCredentialId,
+	);
+	const updateCredentialSet = useAuthorizationStore(
 		(state) => state.updateCredentialSet,
 	);
 	const allCredentialCases = getAllCredentialCases(customCredentialCases);

@@ -2,10 +2,10 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useDCAPIMutation } from "@/queries/useDCAPIMutation";
-import { useFlowStore } from "@/stores/useFlowStore";
+import { useAuthorizationStore } from "@/stores/authorizationStore";
 
 export function DCAPIButton() {
-	const digitalCredentialGetRequest = useFlowStore(
+	const digitalCredentialGetRequest = useAuthorizationStore(
 		(state) => state.digitalCredentialGetRequest,
 	);
 

@@ -25,7 +25,7 @@ import { SUPPORT_CONFIG } from "@/config/support";
 import { cn } from "@/lib/utils";
 import { useAuthorizationStatusQuery } from "@/queries/useAuthorizationStatusQuery";
 import { usePolicyResponseQuery } from "@/queries/usePolicyResponseQuery";
-import { useFlowStore } from "@/stores/useFlowStore";
+import { useAuthorizationStore } from "@/stores/authorizationStore";
 import type { AuthorizationStatus, PolicyResult } from "@/types/app";
 import { downloadDebugInfo, generateDebugInfo } from "@/utils/debugExport";
 import { PolicyResults } from "./PolicyResults";
@@ -67,9 +67,11 @@ const statusConfig: Record<
 };
 
 export function ResultStage() {
-	const backToCreateStage = useFlowStore((state) => state.backToCreateStage);
-	const startFresh = useFlowStore((state) => state.startFresh);
-	const flowStore = useFlowStore();
+	const backToCreateStage = useAuthorizationStore(
+		(state) => state.backToCreateStage,
+	);
+	const startFresh = useAuthorizationStore((state) => state.startFresh);
+	const flowStore = useAuthorizationStore();
 	const queryClient = useQueryClient();
 
 	// Get status and policy from React Query

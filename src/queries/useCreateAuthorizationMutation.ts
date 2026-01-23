@@ -1,7 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { createAuthorizerClient } from "@/api/client";
-import { selectAuthorizerUrl, useFlowStore } from "@/stores/useFlowStore";
+import {
+	selectAuthorizerUrl,
+	useAuthorizationStore,
+} from "@/stores/authorizationStore";
 import type {
 	CreateAuthorizationRequest,
 	DigitalCredentialGetRequest,
@@ -36,7 +39,7 @@ const dcApiResponseSchema = baseResponseSchema.extend({
 });
 
 export function useCreateAuthorizationMutation() {
-	const authorizationUrl = useFlowStore(selectAuthorizerUrl);
+	const authorizationUrl = useAuthorizationStore(selectAuthorizerUrl);
 	return useMutation({
 		mutationKey: ["authorization", "create", authorizationUrl],
 		mutationFn: async (params: CreateAuthorizationParams) => {
@@ -124,11 +127,11 @@ export function useCreateAuthorizationMutation() {
 			}
 
 			if (body) {
-				useFlowStore.getState().setLastRequest(body);
+				useAuthorizationStore.getState().setLastRequest(body);
 			}
 		},
 		onSuccess: (data) => {
-			const store = useFlowStore.getState();
+			const store = useAuthorizationStore.getState();
 
 			// Save response data to store
 			store.setAuthorizationId(data.authorizationId);

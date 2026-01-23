@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useFlowStore } from "@/stores/useFlowStore";
+import { useAuthorizationStore } from "@/stores/authorizationStore";
 import type { SavedJsonRequest } from "@/types/app";
 import { validateSavedJsonRequest } from "@/utils/jsonRequestValidation";
 
@@ -41,11 +41,13 @@ export function SavedJsonRequestDialog({
 	const [isValidating, setIsValidating] = useState(false);
 	const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
-	const customJsonRequests = useFlowStore((state) => state.customJsonRequests);
-	const addCustomJsonRequest = useFlowStore(
+	const customJsonRequests = useAuthorizationStore(
+		(state) => state.customJsonRequests,
+	);
+	const addCustomJsonRequest = useAuthorizationStore(
 		(state) => state.addCustomJsonRequest,
 	);
-	const updateCustomJsonRequest = useFlowStore(
+	const updateCustomJsonRequest = useAuthorizationStore(
 		(state) => state.updateCustomJsonRequest,
 	);
 
