@@ -1,4 +1,5 @@
 import { Asterisk, Lock } from "lucide-react";
+import { useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -20,6 +21,7 @@ export function AttributeSelector({
 	selectedAttributes,
 	onChange,
 }: AttributeSelectorProps) {
+	const attrSelectorId = useId();
 	const formatDef = getFormatDefinitionById(formatId);
 
 	if (!formatDef) {
@@ -114,12 +116,12 @@ export function AttributeSelector({
 							>
 								<div className="flex items-center space-x-2">
 									<Checkbox
-										id={`attr-${attr.id}`}
+										id={`attr-${attrSelectorId}-${attr.id}`}
 										checked={true}
 										disabled={true}
 									/>
 									<Label
-										htmlFor={`attr-${attr.id}`}
+										htmlFor={`attr-${attrSelectorId}-${attr.id}`}
 										className="font-normal text-muted-foreground"
 									>
 										{attr.displayName}
@@ -142,14 +144,14 @@ export function AttributeSelector({
 							>
 								<div className="flex items-center space-x-2">
 									<Checkbox
-										id={`attr-${attr.id}`}
+										id={`attr-${attrSelectorId}-${attr.id}`}
 										checked={isChecked}
 										onCheckedChange={(checked) =>
 											handleToggle(attr.id, checked as boolean)
 										}
 									/>
 									<Label
-										htmlFor={`attr-${attr.id}`}
+										htmlFor={`attr-${attrSelectorId}-${attr.id}`}
 										className="font-normal cursor-pointer"
 									>
 										{attr.displayName}
