@@ -48,17 +48,21 @@ export const createCredentialRequestsSlice: SliceCreator<
 		}),
 
 	addCredentialSet: () =>
-		set((state) => ({
-			credentialSets: [
-				...state.credentialSets,
-				{
-					id: crypto.randomUUID(),
-					options: [],
-					required: true,
-				},
-			],
-			error: null,
-		})),
+		set((state) => {
+			const uniqueId = crypto.randomUUID();
+			return {
+				credentialSets: [
+					...state.credentialSets,
+					{
+						id: uniqueId,
+						reactKey: uniqueId,
+						options: [[]],
+						required: true,
+					},
+				],
+				error: null,
+			};
+		}),
 
 	updateCredentialSet: (id, updates) =>
 		set((state) => ({

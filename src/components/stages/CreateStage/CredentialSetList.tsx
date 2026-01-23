@@ -26,7 +26,7 @@ export function CredentialSetList() {
 					<div className="space-y-2">
 						{credentialSets.map((set, index) => (
 							<CredentialSetItem
-								key={set.id}
+								key={set.reactKey}
 								setId={set.id}
 								defaultOpen={index === 0}
 								onRemove={removeCredentialSet}

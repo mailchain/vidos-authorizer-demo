@@ -45,6 +45,7 @@ export interface CredentialSet {
 	id: string; // User-editable ID, pre-filled with UUID
 	options: CredentialSetOption[]; // Array of alternatives (OR), each option is AND of credential IDs
 	required: boolean; // Maps to spec's 'required' field (default: true)
+	reactKey: string; // UUID for tracking
 }
 
 // Response mode configuration

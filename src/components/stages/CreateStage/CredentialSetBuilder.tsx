@@ -109,12 +109,12 @@ export function CredentialSetBuilder({ set }: CredentialSetBuilderProps) {
 
 			{/* Set ID Field - Task 4.6 */}
 			<div className="space-y-2">
-				<Label htmlFor={`set-id-${set.id}`} className="text-xs">
+				<Label htmlFor={`set-id-${set.reactKey}`} className="text-xs">
 					Set ID
 				</Label>
 				<div className="flex gap-2">
 					<Input
-						id={`set-id-${set.id}`}
+						id={`set-id-${set.reactKey}`}
 						value={set.id}
 						onChange={(e) => handleIdChange(e.target.value)}
 						className="font-mono text-sm"
@@ -140,12 +140,12 @@ export function CredentialSetBuilder({ set }: CredentialSetBuilderProps) {
 			{/* Required Toggle */}
 			<div className="flex items-center gap-3">
 				<Checkbox
-					id={`required-${set.id}`}
+					id={`required-${set.reactKey}`}
 					checked={set.required}
 					onCheckedChange={handleRequiredToggle}
 				/>
 				<div className="space-y-0.5">
-					<Label htmlFor={`required-${set.id}`} className="text-sm">
+					<Label htmlFor={`required-${set.reactKey}`} className="text-sm">
 						Required
 					</Label>
 					<p className="text-xs text-muted-foreground">
@@ -177,7 +177,7 @@ export function CredentialSetBuilder({ set }: CredentialSetBuilderProps) {
 				) : (
 					<div className="space-y-3">
 						{set.options.map((option, optionIndex) => (
-							<div key={`${set.id}-option-${optionIndex}`}>
+							<div key={`${set.reactKey}-option-${optionIndex}`}>
 								<div className="p-3 border rounded bg-muted/30 space-y-3">
 									<div className="flex items-center gap-2">
 										<Button
