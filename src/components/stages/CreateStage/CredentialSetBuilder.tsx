@@ -241,7 +241,7 @@ export function CredentialSetBuilder({ set }: CredentialSetBuilderProps) {
 										>
 											<SelectTrigger size="sm" className="w-auto">
 												<Plus className="h-3 w-3 mr-1" />
-												<SelectValue placeholder="Add credential" />
+												<SelectValue placeholder="Add credential option" />
 											</SelectTrigger>
 											<SelectContent>
 												{getAvailableCredentialsForOption(optionIndex)
