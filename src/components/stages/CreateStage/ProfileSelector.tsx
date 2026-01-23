@@ -6,12 +6,12 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { useAuthorizationStore } from "@/stores/authorizationStore";
+import { useAppStore } from "@/stores/appStore";
 import type { Profile } from "@/types/app";
 
 export function ProfileSelector() {
-	const config = useAuthorizationStore((state) => state.responseModeConfig);
-	const setResponseModeConfig = useAuthorizationStore(
+	const config = useAppStore((state) => state.responseModeConfig);
+	const setResponseModeConfig = useAppStore(
 		(state) => state.setResponseModeConfig,
 	);
 

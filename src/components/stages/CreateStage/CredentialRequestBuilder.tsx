@@ -28,7 +28,7 @@ import {
 	getFormatDefinitionById,
 	isCustomCase,
 } from "@/config/credential-cases/utils";
-import { useAuthorizationStore } from "@/stores/authorizationStore";
+import { useAppStore } from "@/stores/appStore";
 import type { CredentialRequestWithId } from "@/types/app";
 import { AttributeSelector } from "./AttributeSelector";
 
@@ -45,16 +45,12 @@ export function CredentialRequestBuilder({
 	onRemove: _onRemove,
 	canRemove: _canRemove,
 }: CredentialRequestBuilderProps) {
-	const customCredentialCases = useAuthorizationStore(
+	const customCredentialCases = useAppStore(
 		(state) => state.customCredentialCases,
 	);
-	const credentialSets = useAuthorizationStore((state) => state.credentialSets);
-	const updateCredentialId = useAuthorizationStore(
-		(state) => state.updateCredentialId,
-	);
-	const updateCredentialSet = useAuthorizationStore(
-		(state) => state.updateCredentialSet,
-	);
+	const credentialSets = useAppStore((state) => state.credentialSets);
+	const updateCredentialId = useAppStore((state) => state.updateCredentialId);
+	const updateCredentialSet = useAppStore((state) => state.updateCredentialSet);
 	const allCredentialCases = getAllCredentialCases(customCredentialCases);
 
 	// Local state for credential ID to prevent re-mapping of credential sets on each keystroke

@@ -10,21 +10,19 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthorizationStatusQuery } from "@/queries/useAuthorizationStatusQuery";
-import { useAuthorizationStore } from "@/stores/authorizationStore";
+import { useAppStore } from "@/stores/appStore";
 import { AuthorizeLink } from "./AuthorizeLink";
 import { DCAPIButton } from "./DCAPIButton";
 import { QRCodeDisplay } from "./QRCodeDisplay";
 
 export function AuthorizationStage() {
-	const digitalCredentialGetRequest = useAuthorizationStore(
+	const digitalCredentialGetRequest = useAppStore(
 		(state) => state.digitalCredentialGetRequest,
 	);
-	const authorizeUrl = useAuthorizationStore((state) => state.authorizeUrl);
-	const lastResponse = useAuthorizationStore((state) => state.lastResponse);
-	const expiresAt = useAuthorizationStore((state) => state.expiresAt);
-	const backToCreateStage = useAuthorizationStore(
-		(state) => state.backToCreateStage,
-	);
+	const authorizeUrl = useAppStore((state) => state.authorizeUrl);
+	const lastResponse = useAppStore((state) => state.lastResponse);
+	const expiresAt = useAppStore((state) => state.expiresAt);
+	const backToCreateStage = useAppStore((state) => state.backToCreateStage);
 
 	const { data: statusData, error: statusError } =
 		useAuthorizationStatusQuery();

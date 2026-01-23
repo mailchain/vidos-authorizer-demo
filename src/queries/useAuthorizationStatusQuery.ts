@@ -1,9 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createAuthorizerClient } from "@/api/client";
-import {
-	selectAuthorizerUrl,
-	useAuthorizationStore,
-} from "@/stores/authorizationStore";
+import { selectAuthorizerUrl, useAppStore } from "@/stores/appStore";
 import type { AuthorizationStatus } from "@/types/app";
 import { authorizationKeys } from "./keys";
 
@@ -15,11 +12,9 @@ const TERMINAL_STATES: AuthorizationStatus[] = [
 ];
 
 export function useAuthorizationStatusQuery() {
-	const authorizationId = useAuthorizationStore(
-		(state) => state.authorizationId,
-	);
-	const authorizerUrl = useAuthorizationStore(selectAuthorizerUrl);
-	const stage = useAuthorizationStore((state) => state.stage);
+	const authorizationId = useAppStore((state) => state.authorizationId);
+	const authorizerUrl = useAppStore(selectAuthorizerUrl);
+	const stage = useAppStore((state) => state.stage);
 
 	return useQuery({
 		queryKey: authorizationKeys.status(authorizationId!),

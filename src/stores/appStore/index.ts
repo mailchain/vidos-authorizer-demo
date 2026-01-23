@@ -9,9 +9,9 @@ import { createJsonModeSlice } from "./slices/jsonModeSlice";
 import { createResponseModeSlice } from "./slices/responseModeSlice";
 import { createSessionSlice } from "./slices/sessionSlice";
 import { createUiSlice } from "./slices/uiSlice";
-import type { AuthorizationState } from "./types";
+import type { AppState } from "./types";
 
-export const useAuthorizationStore = create<AuthorizationState>()(
+export const useAppStore = create<AppState>()(
 	persist(
 		(...a) => ({
 			...createConfigSlice(...a),
@@ -33,14 +33,14 @@ export const useAuthorizationStore = create<AuthorizationState>()(
 			}),
 			merge: (persistedState, currentState) => {
 				console.log("Merging persisted state:", persistedState, currentState);
-				const persisted = persistedState as Partial<AuthorizationState>;
+				const persisted = persistedState as Partial<AppState>;
 				return {
 					...currentState,
 					...persisted,
 					instanceType: getManagedAuthorizerUrl()
 						? (persisted.instanceType ?? currentState.instanceType)
 						: "own",
-				} satisfies AuthorizationState;
+				} satisfies AppState;
 			},
 		},
 	),

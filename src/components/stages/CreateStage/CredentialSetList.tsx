@@ -7,17 +7,13 @@ import {
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
-import { useAuthorizationStore } from "@/stores/authorizationStore";
+import { useAppStore } from "@/stores/appStore";
 import { CredentialSetBuilder } from "./CredentialSetBuilder";
 
 export function CredentialSetList() {
-	const credentialSets = useAuthorizationStore((state) => state.credentialSets);
-	const addCredentialSet = useAuthorizationStore(
-		(state) => state.addCredentialSet,
-	);
-	const removeCredentialSet = useAuthorizationStore(
-		(state) => state.removeCredentialSet,
-	);
+	const credentialSets = useAppStore((state) => state.credentialSets);
+	const addCredentialSet = useAppStore((state) => state.addCredentialSet);
+	const removeCredentialSet = useAppStore((state) => state.removeCredentialSet);
 
 	return (
 		<div className="space-y-4">
@@ -67,7 +63,7 @@ function CredentialSetItem({
 	onRemove,
 }: CredentialSetItemProps) {
 	const [isOpen, setIsOpen] = useState(defaultOpen);
-	const credentialSets = useAuthorizationStore((state) => state.credentialSets);
+	const credentialSets = useAppStore((state) => state.credentialSets);
 	const set = credentialSets.find((s) => s.id === setId);
 
 	if (!set) return null;

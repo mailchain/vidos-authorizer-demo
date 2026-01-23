@@ -1,8 +1,9 @@
-# Change: Refactor Authorization Store Using Zustand Slices Pattern
+# Change: Refactor App Store Using Zustand Slices Pattern
 
 ## Why
 
 The `useFlowStore` (345 lines, 30+ state properties, 35+ actions) has grown into a monolithic store mixing:
+
 - Authorization session state (stage, authorizationId, authorizeUrl, etc.)
 - Credential configuration (credentialRequests, credentialSets, responseModeConfig)
 - Custom credential cases (customCredentialCases CRUD)
@@ -12,6 +13,7 @@ The `useFlowStore` (345 lines, 30+ state properties, 35+ actions) has grown into
 - Debug state (lastRequest, lastResponse)
 
 This causes:
+
 1. **Re-render issues** - Components like CreateStage/index.tsx subscribe to 12+ properties; any change triggers re-renders
 2. **Cognitive load** - Hard to understand which state belongs to which domain
 3. **Maintenance burden** - All actions interleaved; error-clearing logic duplicated across ~15 actions
@@ -19,7 +21,7 @@ This causes:
 
 ## What Changes
 
-1. **Rename store** from `useFlowStore` to `useAuthorizationStore` (clearer purpose)
+1. **Rename store** from `useFlowStore` to `useAppStore` (clearer purpose)
 
 2. **Split into domain slices** using Zustand slices pattern:
    - `configSlice` - instanceType, ownAuthorizerUrl
@@ -38,9 +40,9 @@ This causes:
 
 ## Impact
 
-- **Affected code**: `src/stores/useFlowStore.ts` → `src/stores/authorizationStore/`
+- **Affected code**: `src/stores/useFlowStore.ts` → `src/stores/AppStore/`
 - **Affected consumers**: 26 files importing useFlowStore (rename + update selectors)
-- **Breaking change**: Hook renamed `useFlowStore` → `useAuthorizationStore`
+- **Breaking change**: Hook renamed `useFlowStore` → `useAppStore`
 - **Bundle size**: Negligible change (code reorganization only)
 - **Persistence**: Unchanged (same localStorage key and partialize config)
 

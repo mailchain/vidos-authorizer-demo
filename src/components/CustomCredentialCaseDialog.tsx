@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { CredentialCaseDefinition } from "@/config/credential-cases/types";
-import { useAuthorizationStore } from "@/stores/authorizationStore";
+import { useAppStore } from "@/stores/appStore";
 import { validateCredentialCase } from "@/utils/credentialCaseValidation";
 
 interface CustomCredentialCaseDialogProps {
@@ -32,13 +32,9 @@ export function CustomCredentialCaseDialog({
 	const [errors, setErrors] = useState<string[]>([]);
 	const [isValidating, setIsValidating] = useState(false);
 
-	const customCases = useAuthorizationStore(
-		(state) => state.customCredentialCases,
-	);
-	const addCustomCase = useAuthorizationStore(
-		(state) => state.addCustomCredentialCase,
-	);
-	const updateCustomCase = useAuthorizationStore(
+	const customCases = useAppStore((state) => state.customCredentialCases);
+	const addCustomCase = useAppStore((state) => state.addCustomCredentialCase);
+	const updateCustomCase = useAppStore(
 		(state) => state.updateCustomCredentialCase,
 	);
 

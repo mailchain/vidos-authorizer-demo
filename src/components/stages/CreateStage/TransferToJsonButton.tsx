@@ -1,6 +1,6 @@
 import { FileJson } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuthorizationStore } from "@/stores/authorizationStore";
+import { useAppStore } from "@/stores/appStore";
 import { buildAuthorizationRequestBody } from "@/utils/requestBuilder";
 
 interface TransferToJsonButtonProps {
@@ -8,19 +8,11 @@ interface TransferToJsonButtonProps {
 }
 
 export function TransferToJsonButton({ disabled }: TransferToJsonButtonProps) {
-	const credentialRequests = useAuthorizationStore(
-		(state) => state.credentialRequests,
-	);
-	const credentialSets = useAuthorizationStore((state) => state.credentialSets);
-	const responseModeConfig = useAuthorizationStore(
-		(state) => state.responseModeConfig,
-	);
-	const setRawJsonContent = useAuthorizationStore(
-		(state) => state.setRawJsonContent,
-	);
-	const setUseRawJsonMode = useAuthorizationStore(
-		(state) => state.setUseRawJsonMode,
-	);
+	const credentialRequests = useAppStore((state) => state.credentialRequests);
+	const credentialSets = useAppStore((state) => state.credentialSets);
+	const responseModeConfig = useAppStore((state) => state.responseModeConfig);
+	const setRawJsonContent = useAppStore((state) => state.setRawJsonContent);
+	const setUseRawJsonMode = useAppStore((state) => state.setUseRawJsonMode);
 
 	const handleTransfer = () => {
 		try {

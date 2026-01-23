@@ -1,20 +1,14 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useAuthorizationStore } from "@/stores/authorizationStore";
+import { useAppStore } from "@/stores/appStore";
 import { getManagedAuthorizerUrl } from "@/utils/env";
 
 export function AuthorizerConfig() {
-	const ownAuthorizerUrl = useAuthorizationStore(
-		(state) => state.ownAuthorizerUrl,
-	);
-	const setOwnAuthorizerUrl = useAuthorizationStore(
-		(state) => state.setOwnAuthorizerUrl,
-	);
-	const instanceType = useAuthorizationStore((state) => state.instanceType);
-	const setInstanceType = useAuthorizationStore(
-		(state) => state.setInstanceType,
-	);
+	const ownAuthorizerUrl = useAppStore((state) => state.ownAuthorizerUrl);
+	const setOwnAuthorizerUrl = useAppStore((state) => state.setOwnAuthorizerUrl);
+	const instanceType = useAppStore((state) => state.instanceType);
+	const setInstanceType = useAppStore((state) => state.setInstanceType);
 
 	// Check if managed instance is available
 	const isManagedInstanceAvailable = getManagedAuthorizerUrl() !== undefined;

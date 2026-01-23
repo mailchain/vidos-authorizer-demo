@@ -17,10 +17,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
 import { useCreateAuthorizationMutation } from "@/queries/useCreateAuthorizationMutation";
-import {
-	selectAuthorizerUrl,
-	useAuthorizationStore,
-} from "@/stores/authorizationStore";
+import { selectAuthorizerUrl, useAppStore } from "@/stores/appStore";
 import {
 	type JsonValidationResult,
 	validateJsonRequest,
@@ -39,26 +36,20 @@ import { SavedJsonRequestsManager } from "./SavedJsonRequestsManager";
 import { TransferToJsonButton } from "./TransferToJsonButton";
 
 export function CreateStage() {
-	const authorizerUrl = useAuthorizationStore(selectAuthorizerUrl);
-	const credentialRequests = useAuthorizationStore(
-		(state) => state.credentialRequests,
-	);
-	const credentialSets = useAuthorizationStore((state) => state.credentialSets);
-	const responseModeConfig = useAuthorizationStore(
-		(state) => state.responseModeConfig,
-	);
-	const showPreview = useAuthorizationStore((state) => state.showPreview);
-	const lastRequest = useAuthorizationStore((state) => state.lastRequest);
-	const error = useAuthorizationStore((state) => state.error);
-	const setShowPreview = useAuthorizationStore((state) => state.setShowPreview);
-	const setLastRequest = useAuthorizationStore((state) => state.setLastRequest);
+	const authorizerUrl = useAppStore(selectAuthorizerUrl);
+	const credentialRequests = useAppStore((state) => state.credentialRequests);
+	const credentialSets = useAppStore((state) => state.credentialSets);
+	const responseModeConfig = useAppStore((state) => state.responseModeConfig);
+	const showPreview = useAppStore((state) => state.showPreview);
+	const lastRequest = useAppStore((state) => state.lastRequest);
+	const error = useAppStore((state) => state.error);
+	const setShowPreview = useAppStore((state) => state.setShowPreview);
+	const setLastRequest = useAppStore((state) => state.setLastRequest);
 
 	// JSON mode state
-	const useRawJsonMode = useAuthorizationStore((state) => state.useRawJsonMode);
-	const setUseRawJsonMode = useAuthorizationStore(
-		(state) => state.setUseRawJsonMode,
-	);
-	const rawJsonContent = useAuthorizationStore((state) => state.rawJsonContent);
+	const useRawJsonMode = useAppStore((state) => state.useRawJsonMode);
+	const setUseRawJsonMode = useAppStore((state) => state.setUseRawJsonMode);
+	const rawJsonContent = useAppStore((state) => state.rawJsonContent);
 
 	// Credential sets section collapsed state
 	const [credentialSetsExpanded, setCredentialSetsExpanded] = useState(false);
@@ -215,7 +206,7 @@ export function CreateStage() {
 						{/* Raw JSON Mode */}
 						<JsonEditor
 							value={rawJsonContent}
-							onChange={useAuthorizationStore.getState().setRawJsonContent}
+							onChange={useAppStore.getState().setRawJsonContent}
 							validation={jsonValidation}
 						/>
 

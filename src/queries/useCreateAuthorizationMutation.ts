@@ -1,10 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { createAuthorizerClient } from "@/api/client";
-import {
-	selectAuthorizerUrl,
-	useAuthorizationStore,
-} from "@/stores/authorizationStore";
+import { selectAuthorizerUrl, useAppStore } from "@/stores/appStore";
 import type {
 	CreateAuthorizationRequest,
 	DigitalCredentialGetRequest,
@@ -39,7 +36,7 @@ const dcApiResponseSchema = baseResponseSchema.extend({
 });
 
 export function useCreateAuthorizationMutation() {
-	const authorizationUrl = useAuthorizationStore(selectAuthorizerUrl);
+	const authorizationUrl = useAppStore(selectAuthorizerUrl);
 	return useMutation({
 		mutationKey: ["authorization", "create", authorizationUrl],
 		mutationFn: async (params: CreateAuthorizationParams) => {
@@ -127,11 +124,11 @@ export function useCreateAuthorizationMutation() {
 			}
 
 			if (body) {
-				useAuthorizationStore.getState().setLastRequest(body);
+				useAppStore.getState().setLastRequest(body);
 			}
 		},
 		onSuccess: (data) => {
-			const store = useAuthorizationStore.getState();
+			const store = useAppStore.getState();
 
 			// Save response data to store
 			store.setAuthorizationId(data.authorizationId);

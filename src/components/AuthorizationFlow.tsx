@@ -1,7 +1,7 @@
 import { lazy, Suspense } from "react";
 import { ProgressIndicator } from "@/components/ProgressIndicator";
 import { useFlowTransitions } from "@/hooks/useFlowTransitions";
-import { useAuthorizationStore } from "@/stores/authorizationStore";
+import { useAppStore } from "@/stores/appStore";
 
 // Lazy load stage components for code splitting
 const CreateStage = lazy(() =>
@@ -33,7 +33,7 @@ function StageLoader() {
 }
 
 export function AuthorizationFlow() {
-	const stage = useAuthorizationStore((state) => state.stage);
+	const stage = useAppStore((state) => state.stage);
 	useFlowTransitions(); // Enable automatic stage transitions
 
 	return (

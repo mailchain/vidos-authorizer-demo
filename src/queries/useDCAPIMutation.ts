@@ -1,10 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createAuthorizerClient } from "@/api/client";
 import { authorizationKeys } from "@/queries/keys";
-import {
-	selectAuthorizerUrl,
-	useAuthorizationStore,
-} from "@/stores/authorizationStore";
+import { selectAuthorizerUrl, useAppStore } from "@/stores/appStore";
 import type { DcApiResponse, DigitalCredentialGetRequest } from "@/types/api";
 import {
 	checkDCAPISupport,
@@ -13,13 +10,9 @@ import {
 } from "@/utils/dcapi";
 
 export function useDCAPIMutation() {
-	const authorizerUrl = useAuthorizationStore(selectAuthorizerUrl);
-	const authorizationId = useAuthorizationStore(
-		(state) => state.authorizationId,
-	);
-	const responseModeConfig = useAuthorizationStore(
-		(state) => state.responseModeConfig,
-	);
+	const authorizerUrl = useAppStore(selectAuthorizerUrl);
+	const authorizationId = useAppStore((state) => state.authorizationId);
+	const responseModeConfig = useAppStore((state) => state.responseModeConfig);
 	const queryClient = useQueryClient();
 
 	return useMutation({

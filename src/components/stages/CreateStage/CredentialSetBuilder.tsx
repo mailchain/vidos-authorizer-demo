@@ -13,7 +13,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { useAuthorizationStore } from "@/stores/authorizationStore";
+import { useAppStore } from "@/stores/appStore";
 import type { CredentialSet } from "@/types/app";
 import { validateCredentialSets } from "@/utils/validation";
 
@@ -22,12 +22,8 @@ interface CredentialSetBuilderProps {
 }
 
 export function CredentialSetBuilder({ set }: CredentialSetBuilderProps) {
-	const updateCredentialSet = useAuthorizationStore(
-		(state) => state.updateCredentialSet,
-	);
-	const credentialRequests = useAuthorizationStore(
-		(state) => state.credentialRequests,
-	);
+	const updateCredentialSet = useAppStore((state) => state.updateCredentialSet);
+	const credentialRequests = useAppStore((state) => state.credentialRequests);
 
 	const [copiedId, setCopiedId] = useState(false);
 

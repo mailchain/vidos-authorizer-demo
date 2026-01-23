@@ -1,9 +1,9 @@
-# Tasks: Refactor Authorization Store Using Zustand Slices Pattern
+# Tasks: Refactor App Store Using Zustand Slices Pattern
 
 ## 1. Setup
 
-- [x] 1.1 Create `src/stores/authorizationStore/` directory structure
-- [x] 1.2 Create `src/stores/authorizationStore/types.ts` with all slice interfaces and `AuthorizationState`
+- [x] 1.1 Create `src/stores/AppStore/` directory structure
+- [x] 1.2 Create `src/stores/AppStore/types.ts` with all slice interfaces and `AuthorizationState`
 - [x] 1.3 Verify TypeScript strict mode works with StateCreator types
 
 ## 2. Implement Slices
@@ -19,8 +19,8 @@
 
 ## 3. Combine and Export
 
-- [x] 3.1 Create `src/stores/authorizationStore/index.ts` combining all slices with persist middleware
-- [x] 3.2 Create `src/stores/authorizationStore/selectors.ts` with typed selectors per domain
+- [x] 3.1 Create `src/stores/AppStore/index.ts` combining all slices with persist middleware
+- [x] 3.2 Create `src/stores/AppStore/selectors.ts` with typed selectors per domain
 - [x] 3.3 Verify persist middleware works (same localStorage key, same partialize fields)
 
 ## 4. Update Consumers

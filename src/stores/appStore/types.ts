@@ -98,7 +98,7 @@ export interface DebugSlice {
 }
 
 // Combined state type
-export type AuthorizationState = ConfigSlice &
+export type AppState = ConfigSlice &
 	CredentialRequestsSlice &
 	ResponseModeSlice &
 	CustomCasesSlice &
@@ -108,4 +108,4 @@ export type AuthorizationState = ConfigSlice &
 	DebugSlice;
 
 // Helper type for slice creators (Zustand slices pattern)
-export type SliceCreator<T> = StateCreator<AuthorizationState, [], [], T>;
+export type SliceCreator<T> = StateCreator<AppState, [], [], T>;

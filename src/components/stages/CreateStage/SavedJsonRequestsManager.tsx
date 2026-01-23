@@ -19,7 +19,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { useAuthorizationStore } from "@/stores/authorizationStore";
+import { useAppStore } from "@/stores/appStore";
 import type { SavedJsonRequest } from "@/types/app";
 
 export function SavedJsonRequestsManager() {
@@ -28,16 +28,12 @@ export function SavedJsonRequestsManager() {
 		useState<SavedJsonRequest | null>(null);
 	const [requestToDelete, setRequestToDelete] = useState<string | null>(null);
 
-	const customJsonRequests = useAuthorizationStore(
-		(state) => state.customJsonRequests,
-	);
-	const deleteCustomJsonRequest = useAuthorizationStore(
+	const customJsonRequests = useAppStore((state) => state.customJsonRequests);
+	const deleteCustomJsonRequest = useAppStore(
 		(state) => state.deleteCustomJsonRequest,
 	);
-	const rawJsonContent = useAuthorizationStore((state) => state.rawJsonContent);
-	const setRawJsonContent = useAuthorizationStore(
-		(state) => state.setRawJsonContent,
-	);
+	const rawJsonContent = useAppStore((state) => state.rawJsonContent);
+	const setRawJsonContent = useAppStore((state) => state.setRawJsonContent);
 
 	const handleSaveNew = () => {
 		setDialogMode("create");

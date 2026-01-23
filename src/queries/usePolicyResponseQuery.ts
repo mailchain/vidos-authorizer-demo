@@ -1,18 +1,13 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createAuthorizerClient } from "@/api/client";
-import {
-	selectAuthorizerUrl,
-	useAuthorizationStore,
-} from "@/stores/authorizationStore";
+import { selectAuthorizerUrl, useAppStore } from "@/stores/appStore";
 import type { AuthorizationStatusResponse } from "@/types/api";
 import { authorizationKeys } from "./keys";
 
 export function usePolicyResponseQuery() {
-	const authorizationId = useAuthorizationStore(
-		(state) => state.authorizationId,
-	);
-	const authorizerUrl = useAuthorizationStore(selectAuthorizerUrl);
-	const stage = useAuthorizationStore((state) => state.stage);
+	const authorizationId = useAppStore((state) => state.authorizationId);
+	const authorizerUrl = useAppStore(selectAuthorizerUrl);
+	const stage = useAppStore((state) => state.stage);
 
 	// Get current status from React Query cache
 	const queryClient = useQueryClient();

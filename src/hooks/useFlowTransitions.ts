@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useAuthorizationStatusQuery } from "@/queries/useAuthorizationStatusQuery";
-import { useAuthorizationStore } from "@/stores/authorizationStore";
+import { useAppStore } from "@/stores/appStore";
 import type { AuthorizationStatus } from "@/types/app";
 
 const TERMINAL_STATES: AuthorizationStatus[] = [
@@ -11,8 +11,8 @@ const TERMINAL_STATES: AuthorizationStatus[] = [
 ];
 
 export function useFlowTransitions() {
-	const stage = useAuthorizationStore((state) => state.stage);
-	const setStage = useAuthorizationStore((state) => state.setStage);
+	const stage = useAppStore((state) => state.stage);
+	const setStage = useAppStore((state) => state.setStage);
 
 	// Get status from React Query
 	const { data: statusData } = useAuthorizationStatusQuery();
