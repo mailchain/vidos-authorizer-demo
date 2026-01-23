@@ -7,42 +7,58 @@ export interface PolicyDefinition {
 export const policyDefinitions: Record<string, PolicyDefinition> = {
 	// Validator service policies
 	"validator.credentialQuery": {
-		description: "Validates the credential query request format",
-		docsUrl: "https://docs.vidos.id/policies/validator/credential-query",
+		description:
+			"Ensures verifiable presentations contain the credentials and data required by credential queries, validating compatibility between requests and submissions across multiple standards",
+		docsUrl:
+			"https://vidos.id/docs/reference/services/validator/policies/credential-query/",
 	},
 	"validator.trustedIssuer": {
-		description: "Verifies the credential issuer is trusted",
-		docsUrl: "https://docs.vidos.id/policies/validator/trusted-issuer",
+		description:
+			"Validates that credential issuers are trusted by verifying their certificate chains against configured root certificates",
+		docsUrl:
+			"https://vidos.id/docs/reference/services/validator/policies/trusted-issuer/",
 	},
 
 	// Authorizer service policies
 	"authorizer.validate": {
-		description: "Validates the authorization request",
-		docsUrl: "https://docs.vidos.id/policies/authorizer/validate",
+		description:
+			"Validates that credentials and presentations comply with reader policies and requirements in the authorization process",
+		docsUrl:
+			"https://vidos.id/docs/reference/services/authorizer/policies/validate/",
 	},
 	"authorizer.verify": {
-		description: "Verifies the presentation token",
-		docsUrl: "https://docs.vidos.id/policies/authorizer/verify",
+		description:
+			"Verifies credential authenticity, issuer trustworthiness, and cryptographic validity in the authorization workflow",
+		docsUrl:
+			"https://vidos.id/docs/reference/services/authorizer/policies/verify/",
 	},
 
 	// Verifier service policies
 	"verifier.notAfter": {
-		description: "Checks the credential has not expired",
-		docsUrl: "https://docs.vidos.id/policies/verifier/not-after",
+		description:
+			"Validates temporal validity by ensuring credentials and presentations have not been used after their expiration date",
+		docsUrl:
+			"https://vidos.id/docs/reference/services/verifier/policies/not-after/",
 	},
 	"verifier.notBefore": {
-		description: "Checks the credential is already valid",
-		docsUrl: "https://docs.vidos.id/policies/verifier/not-before",
+		description:
+			"Validates temporal validity by ensuring credentials and presentations are not used before their effective date",
+		docsUrl:
+			"https://vidos.id/docs/reference/services/verifier/policies/not-before/",
 	},
 	"verifier.proof": {
-		description: "Verifies the cryptographic proof of the credential",
-		docsUrl: "https://docs.vidos.id/policies/verifier/proof",
+		description:
+			"Validates cryptographic signatures and proofs to ensure credential and presentation authenticity and integrity",
+		docsUrl:
+			"https://vidos.id/docs/reference/services/verifier/policies/proof/",
 	},
 
 	// Default policies (no service specified)
 	format: {
-		description: "Verifies the credential format matches expected type",
-		docsUrl: "https://docs.vidos.id/policies/verifier/format",
+		description:
+			"Validates that credentials and presentations conform to supported standards and data structures",
+		docsUrl:
+			"https://vidos.id/docs/reference/services/verifier/policies/format/",
 	},
 };
 
