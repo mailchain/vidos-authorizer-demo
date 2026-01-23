@@ -17,14 +17,15 @@ export function useAuthorizationStatusQuery() {
 	const stage = useAppStore((state) => state.stage);
 
 	return useQuery({
-		queryKey: authorizationKeys.status(authorizationId!),
+		queryKey: authorizationKeys.status(authorizationId ?? undefined),
 		queryFn: async () => {
+			if (!authorizationId) throw new Error("No authorization ID provided");
 			const client = createAuthorizerClient(authorizerUrl);
 			const { data, error } = await client.GET(
 				"/openid4/vp/v1_0/authorizations/{authorizationId}/status",
 				{
 					params: {
-						path: { authorizationId: authorizationId! },
+						path: { authorizationId: authorizationId },
 					},
 				},
 			);

@@ -12,20 +12,17 @@ export function usePolicyResponseQuery() {
 	// Get current status from React Query cache
 	const queryClient = useQueryClient();
 	const statusData = queryClient.getQueryData<AuthorizationStatusResponse>(
-		authorizationKeys.status(authorizationId!),
+		authorizationKeys.status(authorizationId ?? undefined),
 	);
 
 	return useQuery({
-		queryKey: authorizationKeys.policy(authorizationId!),
+		queryKey: authorizationId ? authorizationKeys.policy(authorizationId) : [],
 		queryFn: async () => {
+			if (!authorizationId) throw new Error("No authorization ID provided");
 			const client = createAuthorizerClient(authorizerUrl);
 			const { data, error } = await client.GET(
 				"/openid4/vp/v1_0/authorizations/{authorizationId}/policy-response",
-				{
-					params: {
-						path: { authorizationId: authorizationId! },
-					},
-				},
+				{ params: { path: { authorizationId } } },
 			);
 
 			if (error) {

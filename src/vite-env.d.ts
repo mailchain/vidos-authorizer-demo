@@ -8,6 +8,7 @@ interface ImportMeta {
 
 // W3C Digital Credentials API
 // Spec: https://www.w3.org/TR/digital-credentials/
+// biome-ignore lint/complexity/noStaticOnlyClass: Okay to have static-only class for this typings
 declare class DigitalCredential {
 	static userAgentAllowsProtocol(protocol: string): boolean;
 }

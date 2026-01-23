@@ -51,7 +51,6 @@ export type DigitalCredentialGetResponse =
 			data: {
 				vp_token: Record<
 					string,
-					// biome-ignore lint: API spec allows string or object
 					| ({ [key: string]: unknown } | string)[]
 					| ({ [key: string]: unknown } | string)
 				>;
